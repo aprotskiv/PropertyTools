@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - RadioButtonList: Enhance RadioButton Control with Individual Button Enable/Disable Capability #350
 - ItemsBag: Ensure that the ItemsBag Property Descriptor does not suppress the property change notifications #354
 - ItemsBag: Propagation of IsReadOnly property to the ItemsBag Property Descriptor #369
+- TreeListBox: Catching the ArgumentException by message title, fails in non english regions #38 #142
 
 ### Changed
 - TypeHelper.IsIListIList(Type) method changed to private #343
