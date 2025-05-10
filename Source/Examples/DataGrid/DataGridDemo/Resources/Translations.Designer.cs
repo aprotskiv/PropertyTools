@@ -61,7 +61,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Boolean -.
+        ///   Looks up a localized string similar to Boolean*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_Boolean {
             get {
@@ -70,7 +70,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Color - .
+        ///   Looks up a localized string similar to Color*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_Color {
             get {
@@ -79,7 +79,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DateTime -.
+        ///   Looks up a localized string similar to DateTime*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_DateTime {
             get {
@@ -88,7 +88,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Fruit - .
+        ///   Looks up a localized string similar to Fruit*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_Fruit {
             get {
@@ -97,7 +97,16 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Integer - .
+        ///   Looks up a localized string similar to Fruits*.
+        /// </summary>
+        internal static string DataGridDemo_ExampleObject_Fruits {
+            get {
+                return ResourceManager.GetString("DataGridDemo.ExampleObject.Fruits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integer*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_Integer {
             get {
@@ -106,7 +115,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Items -.
+        ///   Looks up a localized string similar to Items*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_Items {
             get {
@@ -115,7 +124,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mass - .
+        ///   Looks up a localized string similar to Mass*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_Mass {
             get {
@@ -124,7 +133,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number - .
+        ///   Looks up a localized string similar to Number*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_Number {
             get {
@@ -133,7 +142,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ReadOnlyBoolean - .
+        ///   Looks up a localized string similar to ReadOnlyBoolean*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_ReadOnlyBoolean {
             get {
@@ -142,7 +151,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ReadOnlyInteger - .
+        ///   Looks up a localized string similar to ReadOnlyInteger*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_ReadOnlyInteger {
             get {
@@ -151,7 +160,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ReadOnlyString - .
+        ///   Looks up a localized string similar to ReadOnlyString*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_ReadOnlyString {
             get {
@@ -160,7 +169,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Selector - .
+        ///   Looks up a localized string similar to Selector*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_Selector {
             get {
@@ -169,7 +178,7 @@ namespace DataGridDemo.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to String - .
+        ///   Looks up a localized string similar to String*.
         /// </summary>
         internal static string DataGridDemo_ExampleObject_String {
             get {
