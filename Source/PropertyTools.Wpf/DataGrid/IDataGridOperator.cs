@@ -11,7 +11,6 @@ namespace PropertyTools.Wpf
 {
     using PropertyTools.Wpf.Operators;
     using System;
-    using System.ComponentModel;
 
     /// <summary>
     /// Specifies DataGrid functionality that depends on the type of items source.

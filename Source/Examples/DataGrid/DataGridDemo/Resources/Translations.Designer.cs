@@ -185,5 +185,41 @@ namespace DataGridDemo.Resources {
                 return ResourceManager.GetString("DataGridDemo.ExampleObject.String", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (no seleccionado).
+        /// </summary>
+        internal static string DataGridDemo_SelectorExample_ViewModel_Fruit7__ {
+            get {
+                return ResourceManager.GetString("DataGridDemo.SelectorExample+ViewModel+Fruit7.-", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manzana.
+        /// </summary>
+        internal static string DataGridDemo_SelectorExample_ViewModel_Fruit7_Apple {
+            get {
+                return ResourceManager.GetString("DataGridDemo.SelectorExample+ViewModel+Fruit7.Apple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plátano.
+        /// </summary>
+        internal static string DataGridDemo_SelectorExample_ViewModel_Fruit7_Banana {
+            get {
+                return ResourceManager.GetString("DataGridDemo.SelectorExample+ViewModel+Fruit7.Banana", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pera.
+        /// </summary>
+        internal static string DataGridDemo_SelectorExample_ViewModel_Fruit7_Pear {
+            get {
+                return ResourceManager.GetString("DataGridDemo.SelectorExample+ViewModel+Fruit7.Pear", resourceCulture);
+            }
+        }
     }
 }

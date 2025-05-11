@@ -159,4 +159,16 @@
   <data name="DataGridDemo.ExampleObject.String" xml:space="preserve">
     <value>String*</value>
   </data>
+  <data name="DataGridDemo.SelectorExample+ViewModel+Fruit7.-" xml:space="preserve">
+    <value>(no seleccionado)</value>
+  </data>
+  <data name="DataGridDemo.SelectorExample+ViewModel+Fruit7.Apple" xml:space="preserve">
+    <value>Manzana</value>
+  </data>
+  <data name="DataGridDemo.SelectorExample+ViewModel+Fruit7.Banana" xml:space="preserve">
+    <value>Plátano</value>
+  </data>
+  <data name="DataGridDemo.SelectorExample+ViewModel+Fruit7.Pear" xml:space="preserve">
+    <value>Pera</value>
+  </data>
 </root>

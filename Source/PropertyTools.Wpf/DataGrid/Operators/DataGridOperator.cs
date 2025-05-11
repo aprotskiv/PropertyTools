@@ -18,7 +18,7 @@ namespace PropertyTools.Wpf
     using System.Windows;
 
     using PropertyTools.DataAnnotations;
-
+    using PropertyTools.Wpf.Extensions;
 	using PropertyTools.Wpf.Operators;
     using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
@@ -413,6 +413,9 @@ namespace PropertyTools.Wpf
                 BindingPath = this.GetBindingPath(cell),
                 BindingSource = this.GetDataContext(cell)
             };
+
+            d.TrySetEnumMetadata(this);
+
             return d;
         }
 
