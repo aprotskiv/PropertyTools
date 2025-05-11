@@ -20,6 +20,7 @@ namespace PropertyTools.Wpf
     using System.Windows.Data;
 
     using PropertyTools.DataAnnotations;    
+    using PropertyTools.Wpf.Extensions;
     using PropertyTools.Wpf.Operators;
 
     /// <summary>
@@ -474,6 +475,9 @@ namespace PropertyTools.Wpf
                 pi.Converter = new TimeSpanToStringConverter();
                 pi.ConverterParameter = pi.FormatString;
             }
+
+
+            pi.TrySetEnumMetadata(this);            
         }
 
         /// <summary>
