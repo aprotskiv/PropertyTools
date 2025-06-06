@@ -59,12 +59,15 @@ namespace PropertyTools.Wpf
                 return DependencyProperty.UnsetValue;
             }
 
-            if (ReflectionExtensions.TryGetFieldOrPropertyValue(parameter, _selectorDefinition.SelectedValuePath, out object objTargetValue))
+            if (!string.IsNullOrEmpty(_selectorDefinition.SelectedValuePath)
+                && ReflectionExtensions.TryGetFieldOrPropertyValue(parameter, _selectorDefinition.SelectedValuePath, out object objTargetValue))
             {
                 return (value as IList).Contains(objTargetValue);
             }
-
-            return DependencyProperty.UnsetValue;
+            else
+            {
+                return (value as IList).Contains(parameter);
+            }
         }
 
         /// <summary>
@@ -86,7 +89,19 @@ namespace PropertyTools.Wpf
                     bool boolValue = System.Convert.ToBoolean(value, culture);
                     if (parameter != null)
                     {
-                        if (ReflectionExtensions.TryGetFieldOrPropertyValue(parameter, _selectorDefinition.SelectedValuePath, out object objTargetValue))
+                        object objTargetValue = null;
+                        if (!string.IsNullOrEmpty(_selectorDefinition.SelectedValuePath)
+                            && ReflectionExtensions.TryGetFieldOrPropertyValue(parameter, _selectorDefinition.SelectedValuePath, out objTargetValue)
+                            )
+                        {
+                            // objTargetValue is set as OUTPUT parameter  - do nothing
+                        }
+                        else
+                        {
+                            objTargetValue = parameter;
+                        }
+
+                        if (objTargetValue != null)
                         {
                             if (boolValue)
                             {
