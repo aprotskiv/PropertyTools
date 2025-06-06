@@ -100,13 +100,11 @@ namespace PropertyTools.Wpf
             else if (d.PropertyType.IsEnumOrNullableEnum())
             {
                 var enumValues = d.GetEnumValues(nullAtStart: true);
-                var selectorCellDefinition = new SelectorCellDefinition()
+                return new SelectorCellDefinition()
                 {
                     IsEditable = d.PropertyDefinition.IsEditable,
                     DisplayTextForNullItem = d.PropertyDefinition.DisplayTextForNullItem,
-                };
-                d.ConfigureSelectorDefinition(selectorCellDefinition, enumValues);
-                return selectorCellDefinition;
+                }.ConfigureSelectorDefinitionForEnum(d, enumValues);                
             }
 
             return new TextCellDefinition();

@@ -5,6 +5,14 @@
     public interface ISelectorDefinition
     {
         /// <summary>
+        /// Gets or sets the items source property.
+        /// </summary>
+        /// <value>
+        /// The items source property.
+        /// </value>        
+        string ItemsSourceProperty { get; set; }
+
+        /// <summary>
         /// Gets or sets the items source.
         /// </summary>
         /// <value>
