@@ -9,6 +9,8 @@
 
 namespace PropertyTools.Wpf
 {
+    using PropertyTools.Wpf.Common;
+    using PropertyTools.Wpf.Extensions;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -597,22 +599,9 @@ namespace PropertyTools.Wpf
         /// </summary>
         /// <param name="enumType">The enumeration type.</param>
         /// <returns>A sequence of values.</returns>
-        protected virtual IEnumerable<object> GetEnumValues(Type enumType)
+        protected virtual IEnumerable<object> GetEnumValues(PropertyItem property)
         {
-            var ult = Nullable.GetUnderlyingType(enumType);
-            var isNullable = ult != null;
-            if (isNullable)
-            {
-                enumType = ult;
-            }
-
-            var enumValues = Enum.GetValues(enumType).FilterOnBrowsableAttribute().ToList();
-            if (isNullable)
-            {
-                enumValues.Add(null);
-            }
-
-            return enumValues;
+            return property.GetEnumValues(nullAtStart: false);           
         }
 
         /// <summary>
@@ -628,7 +617,7 @@ namespace PropertyTools.Wpf
         {
             //// var isBitField = property.Descriptor.PropertyType.GetTypeInfo().GetCustomAttributes<FlagsAttribute>().Any();
 
-            var values = this.GetEnumValues(property.Descriptor.PropertyType).ToArray();
+            var values = this.GetEnumValues(property).ToArray();
             var style = property.SelectorStyle;
             if (style == DataAnnotations.SelectorStyle.Auto)
             {
@@ -648,14 +637,16 @@ namespace PropertyTools.Wpf
 
                 case DataAnnotations.SelectorStyle.ComboBox:
                     {
-                        var c = new ComboBox { ItemsSource = values };
+                        var c = new ComboBox();
+                        InitEnumSelector(c, property, values);
                         c.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
                         return c;
                     }
 
                 case DataAnnotations.SelectorStyle.ListBox:
                     {
-                        var c = new ListBox { ItemsSource = values };
+                        var c = new ListBox();
+                        InitEnumSelector(c, property, values);
                         c.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
                         return c;
                     }
@@ -663,6 +654,11 @@ namespace PropertyTools.Wpf
                 default:
                     return null;
             }
+        }
+
+        protected virtual void InitEnumSelector(Selector c, PropertyItem property, object[] values)
+        {
+            property.ConfigureSelectorDefinition(new SelectorWrapper(c), values);
         }
 
         /// <summary>

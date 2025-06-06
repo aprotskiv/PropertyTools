@@ -13,8 +13,7 @@ namespace DataGridDemo
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;
-
+    using System.Linq;    
     using PropertyTools;
     using PropertyTools.DataAnnotations;
 
@@ -54,6 +53,9 @@ namespace DataGridDemo
                 private string fruit1;
                 private string fruit2;
 
+                private Fruit7? fruit7;
+                private Fruit7? fruit8;
+
                 private City city1;
                 private string city2;
                 private City city3;
@@ -91,6 +93,34 @@ namespace DataGridDemo
                 }
 
                 public IEnumerable<string> Fruits { get; } = new[] { "Apple", "Banana", "Orange" };
+
+
+                [Editable(true)]
+                public Fruit7? Fruit7
+                {
+                    get
+                    {
+                        return this.fruit7;
+                    }
+                    set
+                    {
+                        this.SetValue(ref this.fruit7, value);
+                    }
+                }
+
+                [Editable(false)]
+                public Fruit7? Fruit8
+                {
+                    get
+                    {
+                        return this.fruit8;
+                    }
+                    set
+                    {
+                        this.SetValue(ref this.fruit8, value);
+                    }
+                }
+
 
                 [ItemsSourceProperty(nameof(Cities))]
                 public City City1
@@ -209,6 +239,13 @@ namespace DataGridDemo
                         return this.Name.GetHashCode();
                     }
                 }
+            }
+
+            public enum Fruit7
+            {
+                [Description("Apple")] Apple,
+                [DisplayName("Pear")] Pear,
+                [System.ComponentModel.DescriptionAttribute("Banana")] Banana
             }
         }
     }
