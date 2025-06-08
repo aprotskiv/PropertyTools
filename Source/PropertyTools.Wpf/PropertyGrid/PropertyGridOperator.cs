@@ -494,6 +494,12 @@ namespace PropertyTools.Wpf
                 pi.SelectorStyle = ssa.SelectorStyle;
             }
 
+            var sma = attribute as SelectorModeAttribute;
+            if (sma != null)
+            {
+                pi.SelectorMode = sma.SelectorMode;
+            }
+
             var svpa = attribute as SelectedValuePathAttribute;
             if (svpa != null)
             {

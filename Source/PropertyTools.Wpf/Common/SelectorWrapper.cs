@@ -10,15 +10,47 @@
 namespace PropertyTools.Wpf.Common
 {
     using System.Collections;
+    using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
+    using System.Windows.Data;
 
     public class SelectorWrapper : ISelectorDefinition
     {
         private readonly Selector _selector;
+        private readonly object _selectorBindingSource;
 
-        public SelectorWrapper(System.Windows.Controls.Primitives.Selector selector)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <param name="bindingSource">The binding source.</param>
+        public SelectorWrapper(System.Windows.Controls.Primitives.Selector selector, object bindingSource)
         {
             _selector = selector;
+            _selectorBindingSource = bindingSource;
+        }
+
+        private string _itemsSourceProperty;
+        /// <inheritdoc/>
+        public string ItemsSourceProperty
+        {
+            get
+            {
+                var bindingExpression = _selector.GetBindingExpression(ItemsControl.ItemsSourceProperty);
+                return bindingExpression.ParentBinding.Path.Path;
+            }
+            set 
+            {
+                _itemsSourceProperty = value;
+
+                if (_itemsSourceProperty != null)
+                {
+                    _selector.DataContext = _selectorBindingSource; // 
+
+                    var itemsSourceBinding = new Binding(_itemsSourceProperty);
+                    _selector.SetBinding(ItemsControl.ItemsSourceProperty, itemsSourceBinding);
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -48,6 +80,7 @@ namespace PropertyTools.Wpf.Common
             get => throw new System.NotImplementedException();
             set => throw new System.NotImplementedException();
         }
+        
     }
 
 

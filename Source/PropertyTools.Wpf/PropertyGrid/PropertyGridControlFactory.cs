@@ -88,7 +88,8 @@ namespace PropertyTools.Wpf
         /// <returns>
         /// A element.
         /// </returns>
-        public virtual FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options)
+        public virtual FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options, 
+            object instance)
         {
             this.UpdateConverter(property);
 
@@ -107,7 +108,7 @@ namespace PropertyTools.Wpf
 
             if (property.Is(typeof(Enum)))
             {
-                return this.CreateEnumControl(property, options);
+                return this.CreateEnumControl(property, options, instance);
             }
 
             if (property.Is(typeof(Color)))
@@ -147,7 +148,7 @@ namespace PropertyTools.Wpf
 
             if (property.ItemsSourceDescriptor != null || property.ItemsSource != null)
             {
-                return this.CreateComboBoxControl(property);
+                return this.CreateSelectorControl(property, options, instance);
             }
 
             if (property.Is(typeof(SecureString)))
@@ -438,6 +439,87 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
+        /// Creates the selector control.
+        /// </summary>
+        /// <param name="property">The property.</param>
+        /// <returns>
+        /// The control.
+        /// </returns>
+        protected virtual FrameworkElement CreateSelectorControl(PropertyItem property, PropertyControlFactoryOptions options, object instance)
+        {
+            var style = property.SelectorStyle;
+            if (style == DataAnnotations.SelectorStyle.Auto)
+            {
+                switch (property.SelectorMode)
+                {
+                    case DataAnnotations.SelectorMode.Single:
+                        style = DataAnnotations.SelectorStyle.ComboBox;                        
+                        break;
+                    default:
+                        style = DataAnnotations.SelectorStyle.ListBox;
+                        break;
+                }
+            }
+            
+            if (style == DataAnnotations.SelectorStyle.RadioButtons 
+                && property.GetItemsSourceCount(instance) > options.RadioButtonsLimit)
+            {
+                style = DataAnnotations.SelectorStyle.ComboBox;
+            }
+
+            Control c = null;
+            switch (style)
+            {
+                case DataAnnotations.SelectorStyle.RadioButtons:
+                    {
+                        RadioButtonSelector btnList = property.SelectorMode == DataAnnotations.SelectorMode.Single
+                            ? new RadioButtonSelector()
+                            : new CheckBoxSelector();
+                        c = btnList;
+                        btnList.ConfigureSelectorDefinition(property);
+                        c.SetBinding(RadioButtonSelector.ValueProperty, property.CreateBinding());
+                        break;
+                    }
+
+                case DataAnnotations.SelectorStyle.ComboBox:
+                    {
+                        var comboBox = new ComboBox()
+                        {
+                            IsEditable = property.IsEditable
+                        };
+                        c = comboBox;
+                        new SelectorWrapper(comboBox, instance).ConfigureSelectorDefinition(property);
+                        c.SetBinding(property.IsEditable ? ComboBox.TextProperty : Selector.SelectedValueProperty, property.CreateBinding());
+                        break;
+                    }
+
+                case DataAnnotations.SelectorStyle.ListBox:
+                    {
+                        var listBox = new ListBox()
+                        {
+                            SelectionMode = property.SelectorMode == DataAnnotations.SelectorMode.Multiple
+                               ? SelectionMode.Multiple
+                               : (property.SelectorMode == DataAnnotations.SelectorMode.Extended
+                                       ? SelectionMode.Extended
+                                       : SelectionMode.Single
+                                  )
+                        };
+                        c = listBox;
+                        new SelectorWrapper(listBox, instance).ConfigureSelectorDefinition(property);
+                        c.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
+                        break;
+                    }
+            }
+
+            if (c != null)
+            {
+                c.VerticalContentAlignment = VerticalAlignment.Center;
+            }
+
+            return c;
+        }
+
+        /// <summary>
         /// Creates the combo box control.
         /// </summary>
         /// <param name="property">The property.</param>
@@ -446,7 +528,13 @@ namespace PropertyTools.Wpf
         /// </returns>
         protected virtual FrameworkElement CreateComboBoxControl(PropertyItem property)
         {
-            var c = new ComboBox { IsEditable = property.IsEditable, ItemsSource = property.ItemsSource, VerticalContentAlignment = VerticalAlignment.Center };
+            var c = new ComboBox
+            {
+                IsEditable = property.IsEditable,
+                ItemsSource = property.ItemsSource,
+                VerticalContentAlignment = VerticalAlignment.Center
+            };
+
             if (property.ItemsSourceDescriptor != null)
             {
                 c.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(property.ItemsSourceDescriptor.Name));
@@ -601,7 +689,7 @@ namespace PropertyTools.Wpf
         /// <returns>A sequence of values.</returns>
         protected virtual IEnumerable<object> GetEnumValues(PropertyItem property)
         {
-            return property.GetEnumValues(nullAtStart: false);           
+            return property.GetEnumValues(nullAtStart: false);
         }
 
         /// <summary>
@@ -613,7 +701,7 @@ namespace PropertyTools.Wpf
         /// The control.
         /// </returns>
         protected virtual FrameworkElement CreateEnumControl(
-            PropertyItem property, PropertyControlFactoryOptions options)
+            PropertyItem property, PropertyControlFactoryOptions options, object instance)
         {
             //// var isBitField = property.Descriptor.PropertyType.GetTypeInfo().GetCustomAttributes<FlagsAttribute>().Any();
 
@@ -621,7 +709,7 @@ namespace PropertyTools.Wpf
             var style = property.SelectorStyle;
             if (style == DataAnnotations.SelectorStyle.Auto)
             {
-                style = values.Length > options.EnumAsRadioButtonsLimit
+                style = values.Length > options.RadioButtonsLimit
                             ? DataAnnotations.SelectorStyle.ComboBox
                             : DataAnnotations.SelectorStyle.RadioButtons;
             }
@@ -638,7 +726,7 @@ namespace PropertyTools.Wpf
                 case DataAnnotations.SelectorStyle.ComboBox:
                     {
                         var c = new ComboBox();
-                        InitEnumSelector(c, property, values);
+                        InitEnumSelector(c, instance, property, values);
                         c.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
                         return c;
                     }
@@ -646,7 +734,7 @@ namespace PropertyTools.Wpf
                 case DataAnnotations.SelectorStyle.ListBox:
                     {
                         var c = new ListBox();
-                        InitEnumSelector(c, property, values);
+                        InitEnumSelector(c, instance, property, values);
                         c.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
                         return c;
                     }
@@ -656,9 +744,9 @@ namespace PropertyTools.Wpf
             }
         }
 
-        protected virtual void InitEnumSelector(Selector c, PropertyItem property, object[] values)
+        protected virtual void InitEnumSelector(Selector c, object instance, PropertyItem enumProperty, object[] enumValues)
         {
-            property.ConfigureSelectorDefinition(new SelectorWrapper(c), values);
+            new SelectorWrapper(c, instance).ConfigureSelectorDefinitionForEnum(enumProperty, enumValues);
         }
 
         /// <summary>

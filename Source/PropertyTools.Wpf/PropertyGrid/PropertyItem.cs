@@ -590,6 +590,11 @@ namespace PropertyTools.Wpf
         public SelectorStyle SelectorStyle { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the property should use single or multiple selection mode.
+        /// </summary>
+        public SelectorMode SelectorMode { get; set; }
+
+        /// <summary>
         /// Gets or sets the width.
         /// </summary>
         /// <value>The width.</value>
