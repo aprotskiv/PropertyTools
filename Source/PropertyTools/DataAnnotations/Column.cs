@@ -7,12 +7,14 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Collections;
+
 namespace PropertyTools.DataAnnotations
 {
     /// <summary>
     /// Defines a column for displaying an item collection. Typically used with <see cref="ColumnsPropertyAttribute"/>.
     /// </summary>
-    public class Column
+    public class Column : IColumnSelectorDefinition
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Column" /> class.
@@ -36,7 +38,7 @@ namespace PropertyTools.DataAnnotations
             : this(propertyName)
         {
             this.Header = header;
-            this.ItemsSourcePropertyName = itemsSourcePropertyName;
+            this.ItemsSourcePropertyName_ColumnsPropertyOwner = itemsSourcePropertyName;
         }
 
         /// <summary>
@@ -103,15 +105,80 @@ namespace PropertyTools.DataAnnotations
         public string PropertyName { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the items source property.
+        /// Gets or sets the name of the items source property (ColumnsProperty owner instance)
         /// </summary>
-        /// <value>The name of the item source property.</value>
-        public string ItemsSourcePropertyName{ get; set; }
+        /// <value>The name of the item source property (ColumnsProperty owner context).</value>
+        public string ItemsSourcePropertyName_ColumnsPropertyOwner { get; set; }
 
         /// <summary>
         /// Gets or sets the width ("Auto", "0.5*" etc. are ok).
         /// </summary>
         /// <value>The width.</value>
         public string Width { get; set; }
+
+        #region  IColumnSelectorDefinition properties
+
+        /// <inheritdoc/>
+        public string ItemsSourceProperty_DataGridItem { get; set; }
+
+        /// <inheritdoc/>
+        public IEnumerable ItemsSource { get; set; }
+
+        /// <inheritdoc/>
+        public string DisplayMemberPath { get; set; }
+
+        /// <inheritdoc/>
+        public string SelectedValuePath { get; set; }
+
+        #endregion
+    }
+
+    /// <remarks>
+    ///  Similar to PropertyTools.Wpf.Common.ISelectorDefinition    
+    /// </remarks>    
+    public interface IColumnSelectorDefinition
+    {
+        /// <summary>
+        /// Gets or sets the items source property (DataGrid item instance)
+        /// </summary>
+        /// <value>
+        /// The items source property (DataGrid item context)
+        /// </value>        
+        string ItemsSourceProperty_DataGridItem { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the items source.
+        /// </summary>
+        /// <value>
+        /// The items source.
+        /// </value>
+        IEnumerable ItemsSource { get; set; }
+
+        /// <summary>
+        /// Gets or sets the display member path.
+        /// </summary>
+        /// <value>
+        /// The display member path.
+        /// </value>
+        string DisplayMemberPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the selected value path.
+        /// </summary>
+        /// <value>
+        /// The selected value path.
+        /// </value>
+        string SelectedValuePath { get; set; }
+
+        /// <summary>
+        /// Indicates whether to display or not the display member text (from <see cref="DisplayMemberPath"/>) in cases:<para/> 
+        /// 1) when NULL item selected. <para/>
+        ///     For example, <see cref="System.Windows.Controls.Primitives.Selector.SelectedValue"/> is NULL, 
+        ///     but <see cref="System.Windows.Controls.Primitives.Selector.SelectedItem"/> is NOT null <para/> 
+        /// 2) no item selected <para/>
+        ///     For example, <see cref="System.Windows.Controls.Primitives.Selector.SelectedItem"/> is NULL<para/>         
+        /// </summary>
+        bool DisplayTextForNullItem { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using PropertyTools.Wpf.Common;
+﻿using PropertyTools.DataAnnotations;
+using PropertyTools.Wpf.Common;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,17 @@ namespace PropertyTools.Wpf.Extensions
             selectorDefinition.ItemsSourceProperty = property.ItemsSourceDescriptor?.Name; // May be NULL
             selectorDefinition.DisplayMemberPath = property.DisplayMemberPath;
             selectorDefinition.SelectedValuePath = property.SelectedValuePath;
+
+            return selectorDefinition;
+        }
+
+        public static T ConfigureSelectorDefinition<T>(this T selectorDefinition, IColumnSelectorDefinition column)
+            where T : ISelectorDefinition
+        {
+            selectorDefinition.ItemsSource = column.ItemsSource; // May be NULL
+            selectorDefinition.ItemsSourceProperty = column.ItemsSourceProperty_DataGridItem; // May be NULL
+            selectorDefinition.DisplayMemberPath = column.DisplayMemberPath;
+            selectorDefinition.SelectedValuePath = column.SelectedValuePath;
 
             return selectorDefinition;
         }

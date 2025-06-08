@@ -630,12 +630,13 @@ namespace PropertyTools.Wpf
                             HorizontalAlignment = StringUtilities.ToHorizontalAlignment(column.Alignment.ToString(CultureInfo.InvariantCulture)),
                             Converter = converter,
                             Tooltip = toolTip,
-                        };
+                        }.ConfigureSelectorDefinition(column);
 
-                        if (column.ItemsSourcePropertyName != null)
+                        
+                        if (column.ItemsSourcePropertyName_ColumnsPropertyOwner != null)
                         {
                             // use instance.GetType to be able to fetch static properties also
-                            var p = instance.GetType().GetProperties().FirstOrDefault(x => x.Name == column.ItemsSourcePropertyName);
+                            var p = instance.GetType().GetProperties().FirstOrDefault(x => x.Name == column.ItemsSourcePropertyName_ColumnsPropertyOwner);
                             cd.ItemsSource = p?.GetValue(instance) as IEnumerable;
                         }
 
