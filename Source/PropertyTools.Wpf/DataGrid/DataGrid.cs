@@ -125,6 +125,15 @@ namespace PropertyTools.Wpf
             new UIPropertyMetadata(true));
 
         /// <summary>
+        /// Identifies the <see cref="CanCopy"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty CanCopyProperty = DependencyProperty.Register(
+            nameof(CanCopy),
+            typeof(bool),
+            typeof(DataGrid),
+            new UIPropertyMetadata(true));
+
+        /// <summary>
         /// Identifies the <see cref="CanDelete"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty CanDeleteProperty = DependencyProperty.Register(
@@ -138,6 +147,15 @@ namespace PropertyTools.Wpf
         /// </summary>
         public static readonly DependencyProperty CanInsertProperty = DependencyProperty.Register(
             nameof(CanInsert),
+            typeof(bool),
+            typeof(DataGrid),
+            new UIPropertyMetadata(true));
+
+        /// <summary>
+        /// Identifies the <see cref="CanPaste"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty CanPasteProperty = DependencyProperty.Register(
+            nameof(CanPaste),
             typeof(bool),
             typeof(DataGrid),
             new UIPropertyMetadata(true));
@@ -784,6 +802,16 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this grid can copy cells.
+        /// </summary>
+        /// <value><c>true</c> if this instance can copy cell; otherwise, <c>false</c> .</value>
+        public bool CanCopy
+        {
+            get => (bool)this.GetValue(CanCopyProperty);
+            set => this.SetValue(CanCopyProperty, value);
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this instance can delete.
         /// </summary>
         /// <value><c>true</c> if this instance can delete; otherwise, <c>false</c> .</value>
@@ -801,6 +829,16 @@ namespace PropertyTools.Wpf
         {
             get => (bool)this.GetValue(CanInsertProperty);
             set => this.SetValue(CanInsertProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this grid can paste cells.
+        /// </summary>
+        /// <value><c>true</c> if this instance can paste cell; otherwise, <c>false</c> .</value>
+        public bool CanPaste
+        {
+            get => (bool)this.GetValue(CanPasteProperty);
+            set => this.SetValue(CanPasteProperty, value);
         }
 
         /// <summary>
@@ -1347,9 +1385,9 @@ namespace PropertyTools.Wpf
             this.UpdateGridContent();
             this.SelectedCellsChanged();
 
-            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, (s, e) => this.Copy()));
-            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Cut, (s, e) => this.Cut()));
-            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, (s, e) => this.Paste()));
+            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, (s, e) => this.Copy(), (s, e) => e.CanExecute = this.CanCopy));
+            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Cut, (s, e) => this.Cut(), (s, e) => e.CanExecute = this.CanCopy && this.CanClear));
+            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, (s, e) => this.Paste(), (s, e) => e.CanExecute = this.CanPaste));
             this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Delete, (s, e) => this.Clear(), (s, e) => e.CanExecute = this.CanClear));
         }
 
