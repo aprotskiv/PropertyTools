@@ -54,6 +54,23 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the Cancel button is visible.
+        /// </summary>
+        /// <value><c>true</c> if this instance can Canceled; otherwise, <c>false</c> .</value>
+        public bool CanCancel
+        {
+            get
+            {
+                return this.CancelButton.Visibility == Visibility.Visible;
+            }
+
+            set
+            {
+                this.CancelButton.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        /// <summary>
         /// Gets the property control.
         /// </summary>
         /// <value>The property control.</value>
@@ -216,7 +233,8 @@ namespace PropertyTools.Wpf
                     continue;
                 }
 
-                if (oldValue != null && !oldValue.Equals(newValue))
+                if (oldValue != null && !oldValue.Equals(newValue) 
+                    || oldValue == null)
                 {
                     pi.SetValue(this.DataContext, newValue, null);
                 }
@@ -226,7 +244,7 @@ namespace PropertyTools.Wpf
         /// <summary>
         /// Ends the edit.
         /// </summary>
-        private void EndEdit()
+        protected void EndEdit()
         {
             var editableDataContext = this.DataContext as IEditableObject;
 
@@ -254,10 +272,10 @@ namespace PropertyTools.Wpf
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The e.</param>
-        private void OkButtonClick(object sender, RoutedEventArgs e)
+        protected virtual void OkButtonClick(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
             this.EndEdit();
+            this.DialogResult = true;
             this.Close();
         }
 

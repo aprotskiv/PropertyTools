@@ -20,6 +20,18 @@ namespace PropertyTools.Wpf.Extensions
             return selectorDefinition;
         }
 
+        public static T ConfigureSelectorDefinition<T>(this T selectorDefinition, SelectorCellDefinition property)
+            where T : ISelectorDefinition
+        {
+            selectorDefinition.ItemsSource = property.ItemsSource; // May be NULL
+            selectorDefinition.ItemsSourceProperty = property.ItemsSourceProperty; // May be NULL
+            selectorDefinition.DisplayMemberPath = property.DisplayMemberPath;
+            selectorDefinition.SelectedValuePath = property.SelectedValuePath;
+            selectorDefinition.DisplayTextForNullItem = property.DisplayTextForNullItem;
+
+            return selectorDefinition;
+        }
+
         public static T ConfigureSelectorDefinition<T>(this T selectorDefinition, IColumnSelectorDefinition column)
             where T : ISelectorDefinition
         {
@@ -27,6 +39,7 @@ namespace PropertyTools.Wpf.Extensions
             selectorDefinition.ItemsSourceProperty = column.ItemsSourceProperty_DataGridItem; // May be NULL
             selectorDefinition.DisplayMemberPath = column.DisplayMemberPath;
             selectorDefinition.SelectedValuePath = column.SelectedValuePath;
+            selectorDefinition.DisplayTextForNullItem = column.DisplayTextForNullItem;
 
             return selectorDefinition;
         }

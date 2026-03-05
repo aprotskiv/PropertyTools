@@ -7,6 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections;
 
 namespace PropertyTools.DataAnnotations
@@ -26,6 +27,7 @@ namespace PropertyTools.DataAnnotations
             this.Width = "Auto";
             this.Alignment = 'C';
             this.IsReadOnly = false;
+            this.IsSortable = true;
         }
 
         /// <summary>
@@ -51,6 +53,9 @@ namespace PropertyTools.DataAnnotations
         /// <param name="alignment">The alignment.</param>
         /// <param name="isReadOnly">The columns is read only if set to <c>true</c>.</param>
         /// <param name="itemsSourcePropertyName">Name of the items source property.</param>
+        /// <param name="isSortable">The column is sortable if set to <c>true</c>.<para/> 
+        /// In order to be sortable the column property's type must implement <see cref="System.IComparable"/>
+        /// </param>
         public Column(
             string propertyName,
             string header,
@@ -58,13 +63,17 @@ namespace PropertyTools.DataAnnotations
             string width = "Auto",
             char alignment = 'C',
             bool isReadOnly = false,
-            string itemsSourcePropertyName = null)
+            string itemsSourcePropertyName = null,
+            bool isSortable = true,
+            bool autoUpdateText = false)
             : this(propertyName, header, itemsSourcePropertyName)
         {
             this.FormatString = formatString;
             this.Width = width;
             this.Alignment = alignment;
             this.IsReadOnly = isReadOnly;
+            this.IsSortable = isSortable;
+            this.AutoUpdateText = autoUpdateText;
         }
 
         /// <summary>
@@ -79,6 +88,15 @@ namespace PropertyTools.DataAnnotations
         /// <value><c>true</c> if the column is read only; otherwise, <c>false</c>.</value>
         /// <remarks>If this property is set to <c>true</c>, the binding mode will be one-way also for properties with setters.</remarks>
         public bool IsReadOnly { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the column can be included into DataGrid sorting rules.
+        /// </summary>
+        /// <remarks>
+        /// In order to be sortable the column property's type must implement <see cref="System.IComparable"/>
+        /// </remarks>
+        /// <value><c>true</c> if the column is sortable; otherwise, <c>false</c>.</value>
+        public bool IsSortable { get; set; }
 
         /// <summary>
         /// Gets or sets the index of the column.
@@ -130,7 +148,19 @@ namespace PropertyTools.DataAnnotations
         /// <inheritdoc/>
         public string SelectedValuePath { get; set; }
 
+        /// <inheritdoc/>
+        public bool DisplayTextForNullItem { get; set; }
+
         #endregion
+
+        public SelectorStyle SelectorStyle { get; set; }
+
+        public SelectorMode SelectorMode { get; set; }
+
+        /// <summary>
+        /// Specifies that the text binding should be triggered at every change.
+        /// </summary>
+        public bool AutoUpdateText { get; set; }
     }
 
     /// <remarks>

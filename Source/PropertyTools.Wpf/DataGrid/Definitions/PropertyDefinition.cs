@@ -9,6 +9,7 @@
 
 namespace PropertyTools.Wpf
 {
+    using PropertyTools.DataAnnotations;
     using PropertyTools.Wpf.Common;
     using System.Collections;
     using System.Globalization;
@@ -116,10 +117,19 @@ namespace PropertyTools.Wpf
 
         #endregion
 
+        public SelectorStyle SelectorStyle { get; set; }
+
+        public SelectorMode SelectorMode { get; set; }
+
         /// <summary>
         /// Gets or sets the max length (for TextBox).
         /// </summary>
         public int MaxLength { get; set; }
+
+        /// <summary>
+        /// Specifies that the text binding should be triggered at every change. (for TextBox).
+        /// </summary>
+        public bool AutoUpdateText { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the property.

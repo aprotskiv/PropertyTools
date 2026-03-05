@@ -10,7 +10,7 @@ namespace PropertyTools.Wpf.Extensions
     public static class EnumPropertyExtensions
     {
 
-        public static void TrySetEnumMetadata(this IPropertyItem pi, ILocalizableOperator localizedPropertyOperator)
+        public static void TrySetEnumMetadata(this IPropertyItem pi, ILocalizableOperator localizedPropertyOperator, object instance)
         {
             var propertyType = pi.PropertyType;
             if (propertyType.IsEnumOrNullableEnum())
@@ -38,12 +38,12 @@ namespace PropertyTools.Wpf.Extensions
                            ?? descriptionAttribute2?.Description
                            ?? x.ToString();
 
-                        return localizedPropertyOperator.GetLocalizedString(enumMemberDisplayName, enumType);
+                        return localizedPropertyOperator.GetLocalizedString(enumMemberDisplayName, enumType, instanceType: instance?.GetType());
                     });
 
                 if (propertyType.IsNullableEnum())
                 {
-                    pi.EnumMetadata.EnumDisplayNull = localizedPropertyOperator.GetLocalizedString(null, enumType);
+                    pi.EnumMetadata.EnumDisplayNull = localizedPropertyOperator.GetLocalizedString(null, enumType, instanceType: instance?.GetType());
                 }
             }
         }

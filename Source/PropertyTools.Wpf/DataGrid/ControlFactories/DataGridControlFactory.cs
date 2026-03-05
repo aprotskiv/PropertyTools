@@ -9,7 +9,11 @@
 
 namespace PropertyTools.Wpf
 {
+    using PropertyTools.Wpf.Common;
+    using PropertyTools.Wpf.Extensions;
+    using System;
     using System.Collections.Generic;
+    using System.Drawing.Printing;
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
@@ -29,12 +33,13 @@ namespace PropertyTools.Wpf
         /// Creates the display control with data binding.
         /// </summary>
         /// <param name="d">The cell definition.</param>
+        /// <param name="cell">The cell. Control may depend on cell object</param>
         /// <returns>
         /// The control.
         /// </returns>
-        public FrameworkElement CreateDisplayControl(CellDefinition d)
+        public FrameworkElement CreateDisplayControl(CellDefinition d, CellRef cell)
         {
-            var element = this.CreateDisplayControlOverride(d);
+            var element = this.CreateDisplayControlOverride(d, cell);
             return element;
         }
 
@@ -42,17 +47,18 @@ namespace PropertyTools.Wpf
         /// Creates the edit control with data binding.
         /// </summary>
         /// <param name="d">The cell definition.</param>
+        /// <param name="cell">The cell. Control may depend on cell object</param>
         /// <returns>
         /// The control.
         /// </returns>
-        public virtual FrameworkElement CreateEditControl(CellDefinition d)
+        public virtual FrameworkElement CreateEditControl(CellDefinition d, CellRef cell)
         {
             if (d.IsReadOnly)
             {
                 return null;
             }
 
-            var element = this.CreateEditControlOverride(d);
+            var element = this.CreateEditControlOverride(d, cell);
 
             if (element != null)
             {
@@ -68,13 +74,14 @@ namespace PropertyTools.Wpf
         /// Creates the display control.
         /// </summary>
         /// <param name="d">The cell definition.</param>
+        /// <param name="cell">The cell. Control may depend on cell object</param>
         /// <returns>The display control.</returns>
-        protected virtual FrameworkElement CreateDisplayControlOverride(CellDefinition d)
+        protected virtual FrameworkElement CreateDisplayControlOverride(CellDefinition d, CellRef cell)
         {
             var scd = d as SelectorCellDefinition;
             if (scd != null)
             {
-                return this.CreateTextBlockControl(scd);
+                return this.CreateDisplaySelectorControl(scd);
             }
 
             var pcd = d as ProgressCellDefinition;
@@ -104,19 +111,25 @@ namespace PropertyTools.Wpf
             return this.CreateTextBlockControl(d);
         }
 
+        protected virtual FrameworkElement CreateDisplaySelectorControl(SelectorCellDefinition scd)
+        {
+            return this.CreateTextBlockControl(scd);
+        }
+
         /// <summary>
         /// Creates the edit control.
         /// </summary>
         /// <param name="d">The cell definition.</param>
+        /// <param name="cell">The cell. Control may depend on cell object</param>
         /// <returns>
         /// The control.
         /// </returns>
-        protected virtual FrameworkElement CreateEditControlOverride(CellDefinition d)
+        protected virtual FrameworkElement CreateEditControlOverride(CellDefinition d, CellRef cell)
         {
             var co = d as SelectorCellDefinition;
             if (co != null)
             {
-                return this.CreateComboBox(co);
+                return this.CreateEditSelectorControl(co);
             }
 
             var cb = d as CheckCellDefinition;
@@ -143,7 +156,12 @@ namespace PropertyTools.Wpf
                 return this.CreateTextBox(te);
             }
 
-            return this.CreateDisplayControl(d);
+            return this.CreateDisplayControl(d, cell);
+        }
+
+        protected virtual FrameworkElement CreateEditSelectorControl(SelectorCellDefinition scd)
+        {
+            return this.CreateComboBox(scd);
         }
 
         /// <summary>
@@ -451,8 +469,8 @@ namespace PropertyTools.Wpf
             if (!string.IsNullOrEmpty(d.DisplayMemberPath))
             {
                 if (string.IsNullOrEmpty(d.SelectedValuePath))
-            {
-                binding.Path.Path += "." + d.DisplayMemberPath;
+                {
+                    binding.Path.Path += "." + d.DisplayMemberPath;
                 }
                 else
                 {
@@ -495,6 +513,8 @@ namespace PropertyTools.Wpf
                 };
 
             var binding = this.CreateBinding(d);
+            binding.UpdateSourceTrigger = d.AutoUpdateText ? UpdateSourceTrigger.PropertyChanged : UpdateSourceTrigger.Default;
+
             c.SetBinding(TextBox.TextProperty, binding);
             this.SetIsEnabledBinding(d, c);
             this.SetBackgroundBinding(d, c);
@@ -577,7 +597,7 @@ namespace PropertyTools.Wpf
         /// Focuses on the parent data grid.
         /// </summary>
         /// <param name="obj">The <see cref="DependencyObject" />.</param>
-        private static void FocusParentDataGrid(DependencyObject obj)
+        protected static void FocusParentDataGrid(DependencyObject obj)
         {
             var parent = VisualTreeHelper.GetParent(obj);
             while (parent != null && !(parent is DataGrid))

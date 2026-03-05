@@ -42,13 +42,23 @@ namespace PropertyTools.Wpf
                 return true;
             }
 
-            if (value == null || parameter == null)
+            if (parameter == null)
+            {
+                return DependencyProperty.UnsetValue;
+            }
+
+            var isTargetTypeNullable = Nullable.GetUnderlyingType(targetType) != null;
+            if (value == null && !isTargetTypeNullable)// null for non-Nullable type
             {
                 return DependencyProperty.UnsetValue;
             }
 
             if (ReflectionExtensions.TryGetFieldOrPropertyValue(parameter, SelectorDefinition.SelectedValuePath, out object objTargetValue))
             {
+                if (value == null)
+                {
+                    return objTargetValue == null;
+                }
                 return value.Equals(objTargetValue);
             }
 

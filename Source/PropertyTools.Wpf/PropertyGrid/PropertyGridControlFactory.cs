@@ -80,6 +80,8 @@ namespace PropertyTools.Wpf
         /// </summary>
         public bool UseDatePicker { get; set; }
 
+        public IDataGridControlFactory DataGridControlFactory { get; set; }
+
         /// <summary>
         /// Creates the control for a property.
         /// </summary>
@@ -88,7 +90,7 @@ namespace PropertyTools.Wpf
         /// <returns>
         /// A element.
         /// </returns>
-        public virtual FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options, 
+        public virtual FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options,
             object instance)
         {
             this.UpdateConverter(property);
@@ -99,6 +101,12 @@ namespace PropertyTools.Wpf
                 {
                     return this.CreateEditorControl(property, editor);
                 }
+            }
+
+
+            if (property.ItemsSourceDescriptor != null || property.ItemsSource != null)
+            {
+                return this.CreateSelectorControl(property, options, instance);
             }
 
             if (property.Is(typeof(bool)))
@@ -144,11 +152,6 @@ namespace PropertyTools.Wpf
             if (property.Is(typeof(Uri)))
             {
                 return this.CreateLinkControl(property);
-            }
-
-            if (property.ItemsSourceDescriptor != null || property.ItemsSource != null)
-            {
-                return this.CreateSelectorControl(property, options, instance);
             }
 
             if (property.Is(typeof(SecureString)))
@@ -448,23 +451,28 @@ namespace PropertyTools.Wpf
         protected virtual FrameworkElement CreateSelectorControl(PropertyItem property, PropertyControlFactoryOptions options, object instance)
         {
             var style = property.SelectorStyle;
+            var mode = property.SelectorMode;
+            var isEditable = property.IsEditable;
+
             if (style == DataAnnotations.SelectorStyle.Auto)
             {
                 switch (property.SelectorMode)
                 {
                     case DataAnnotations.SelectorMode.Single:
-                        style = DataAnnotations.SelectorStyle.ComboBox;                        
+                        style = DataAnnotations.SelectorStyle.ComboBox;
                         break;
                     default:
                         style = DataAnnotations.SelectorStyle.ListBox;
                         break;
                 }
             }
-            
-            if (style == DataAnnotations.SelectorStyle.RadioButtons 
+
+            if (style == DataAnnotations.SelectorStyle.RadioButtons
                 && property.GetItemsSourceCount(instance) > options.RadioButtonsLimit)
             {
-                style = DataAnnotations.SelectorStyle.ComboBox;
+                style = (mode == DataAnnotations.SelectorMode.Single)
+                    ? DataAnnotations.SelectorStyle.ComboBox
+                    : DataAnnotations.SelectorStyle.ListBox;
             }
 
             Control c = null;
@@ -472,7 +480,7 @@ namespace PropertyTools.Wpf
             {
                 case DataAnnotations.SelectorStyle.RadioButtons:
                     {
-                        RadioButtonSelector btnList = property.SelectorMode == DataAnnotations.SelectorMode.Single
+                        RadioButtonSelector btnList = mode == DataAnnotations.SelectorMode.Single
                             ? new RadioButtonSelector()
                             : new CheckBoxSelector();
                         c = btnList;
@@ -489,7 +497,11 @@ namespace PropertyTools.Wpf
                         };
                         c = comboBox;
                         new SelectorWrapper(comboBox, instance).ConfigureSelectorDefinition(property);
-                        c.SetBinding(property.IsEditable ? ComboBox.TextProperty : Selector.SelectedValueProperty, property.CreateBinding());
+                        c.SetBinding(property.IsEditable
+                                ? ComboBox.TextProperty
+                                : Selector.SelectedValueProperty,
+                                property.CreateBinding()
+                            );
                         break;
                     }
 
@@ -497,9 +509,9 @@ namespace PropertyTools.Wpf
                     {
                         var listBox = new ListBox()
                         {
-                            SelectionMode = property.SelectorMode == DataAnnotations.SelectorMode.Multiple
+                            SelectionMode = mode == DataAnnotations.SelectorMode.Multiple
                                ? SelectionMode.Multiple
-                               : (property.SelectorMode == DataAnnotations.SelectorMode.Extended
+                               : (mode == DataAnnotations.SelectorMode.Extended
                                        ? SelectionMode.Extended
                                        : SelectionMode.Single
                                   )
@@ -849,6 +861,11 @@ namespace PropertyTools.Wpf
             return c;
         }
 
+        protected virtual DataGrid CreateDataGrid()
+        {
+            return new DataGrid();
+        }
+
         /// <summary>
         /// Creates the grid control.
         /// </summary>
@@ -858,15 +875,30 @@ namespace PropertyTools.Wpf
         /// </returns>
         protected virtual FrameworkElement CreateGridControl(PropertyItem property)
         {
-            var c = new DataGrid
+            var c = CreateDataGrid();
+
+            c.CanDelete = property.ListCanRemove;
+            c.CanInsert = property.ListCanAdd;
+            c.InputDirection = property.InputDirection;
+            c.IsEasyInsertByMouseEnabled = property.IsEasyInsertByMouseEnabled;
+            c.IsEasyInsertByKeyboardEnabled = property.IsEasyInsertByKeyboardEnabled;
+            c.AutoGenerateColumns = property.Columns.Count == 0;
+
+            if (this.DataGridControlFactory != null)
             {
-                CanDelete = property.ListCanRemove,
-                CanInsert = property.ListCanAdd,
-                InputDirection = property.InputDirection,
-                IsEasyInsertByMouseEnabled = property.IsEasyInsertByMouseEnabled,
-                IsEasyInsertByKeyboardEnabled = property.IsEasyInsertByKeyboardEnabled,
-                AutoGenerateColumns = property.Columns.Count == 0
-            };
+                c.ControlFactory = this.DataGridControlFactory;
+            }
+
+
+            if (property.DataGridDefaultRowHeightInPixels.HasValue)
+            {
+                c.DefaultRowHeight = new GridLength(property.DataGridDefaultRowHeightInPixels.Value);
+            }
+            else if (property.DataGridDefaultRowHeightAuto == true)
+            {
+                c.DefaultRowHeight = new GridLength();
+            }
+
 
             foreach (var cd in property.Columns)
             {

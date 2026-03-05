@@ -12,7 +12,7 @@ namespace PropertyTools.DataAnnotations
     using System;
 
     /// <summary>
-    /// Specifies the name of a property that provides columns for a data grid.
+    /// Specifies the name of a non-static property that provides columns for a data grid.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class ColumnsPropertyAttribute : Attribute

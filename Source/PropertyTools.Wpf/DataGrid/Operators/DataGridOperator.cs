@@ -404,17 +404,18 @@ namespace PropertyTools.Wpf
         public CellDescriptor CreateCellDescriptor(CellRef cell)
         {
             var pd = this.GetPropertyDefinition(cell);
+            var cellItem = this.GetItem(cell);
             var d = new CellDescriptor
             {
                 PropertyDefinition = pd,
-                Item = this.GetItem(cell),
+                Item = cellItem,
                 Descriptor = this.GetPropertyDescriptor(pd, null, cell),
                 PropertyType = this.GetPropertyType(cell),
                 BindingPath = this.GetBindingPath(cell),
                 BindingSource = this.GetDataContext(cell)
             };
 
-            d.TrySetEnumMetadata(this);
+            d.TrySetEnumMetadata(this, cellItem);
 
             return d;
         }

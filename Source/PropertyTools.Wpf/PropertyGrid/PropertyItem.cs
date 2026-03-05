@@ -107,10 +107,16 @@ namespace PropertyTools.Wpf
         public int IndentationLevel { get; set; }
 
         /// <summary>
-        /// Gets or sets the category.
+        /// Gets or sets the category (localizable)
         /// </summary>
         /// <value>The category.</value>
         public string Category { get; set; }
+
+        /// <summary>
+        /// Gets or sets the original category (non-localizable)
+        /// </summary>
+        /// <value>The original category.</value>
+        public string CategoryOriginal { get; internal set; }
 
         /// <summary>
         /// Gets the columns.
@@ -609,6 +615,20 @@ namespace PropertyTools.Wpf
         /// Gets or sets the name of the IsChecked property for a property of checkable items.
         /// </summary>
         public string CheckableItemsIsCheckedPropertyName { get; set; }
+
+
+        /// <summary>
+        /// Default row height in pixels
+        /// </summary>
+        public double? DataGridDefaultRowHeightInPixels { get; set; }
+
+        /// <summary>
+        /// Determines whether default row height is set automatically or not.
+        /// </summary>
+        /// <remarks>
+        /// Ignored when <see cref="DataGridDefaultRowHeightInPixels"/> is set
+        /// </remarks>
+        public bool? DataGridDefaultRowHeightAuto { get; set; }
 
         /// <summary>
         /// Creates a binding.

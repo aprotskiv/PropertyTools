@@ -107,6 +107,15 @@ namespace PropertyTools.Wpf
                 new UIPropertyMetadata(true));
 
         /// <summary>
+        /// Identifies the <see cref="RegenerateColumnsProperty"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty RegenerateColumnsProperty  = DependencyProperty.Register(
+                nameof(RegenerateColumns),
+                typeof(bool),
+                typeof(DataGrid),
+                new UIPropertyMetadata(false));
+
+        /// <summary>
         /// Identifies the <see cref="AutoInsert"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty AutoInsertProperty = DependencyProperty.Register(
@@ -424,10 +433,10 @@ namespace PropertyTools.Wpf
             nameof(LocalizableOperator),
             typeof(ILocalizableOperator),
             typeof(DataGrid),
-            new PropertyMetadata(null, (d, e) => 
+            new PropertyMetadata(null, (d, e) =>
                 {
                     var newLocalizableOperator = (ILocalizableOperator)e.NewValue;
-                    var operatorValue =  ((DataGrid)d).Operator;
+                    var operatorValue = ((DataGrid)d).Operator;
                     if (operatorValue != null)
                     {
                         operatorValue.UseLocalizableOperator(newLocalizableOperator);
@@ -606,6 +615,8 @@ namespace PropertyTools.Wpf
         /// </summary>
         private FrameworkElement currentEditControl;
 
+        protected FrameworkElement GetCurrentEditControl() => currentEditControl;
+
         /// <summary>
         /// The editing cells.
         /// </summary>
@@ -762,6 +773,15 @@ namespace PropertyTools.Wpf
         {
             get => (bool)this.GetValue(AutoGenerateColumnsProperty);
             set => this.SetValue(AutoGenerateColumnsProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to regenerate columns.
+        /// </summary>
+        public bool RegenerateColumns
+        {
+            get => (bool)this.GetValue(RegenerateColumnsProperty);
+            set => this.SetValue(RegenerateColumnsProperty, value);
         }
 
         /// <summary>
@@ -1362,7 +1382,7 @@ namespace PropertyTools.Wpf
         /// <returns>
         /// true if the listener handled the event. It is considered an error by the <see cref="T:System.Windows.WeakEventManager" /> handling in WPF to register a listener for an event that the listener does not handle. Regardless, the method should return false if it receives an event that it does not recognize or handle.
         /// </returns>
-        public bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+        public virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
         {
             if (managerType == typeof(CollectionChangedEventManager) && sender == this.subscribedCollection)
             {
@@ -2681,7 +2701,7 @@ namespace PropertyTools.Wpf
         {
             var d = this.Operator.CreateCellDescriptor(cell);
             var cd = this.CellDefinitionFactory.CreateCellDefinition(d);
-            var element = this.ControlFactory.CreateDisplayControl(cd);
+            var element = this.ControlFactory.CreateDisplayControl(cd, cell);
             if (element == null)
             {
 #if DEBUG
@@ -2708,7 +2728,7 @@ namespace PropertyTools.Wpf
         {
             var d = this.Operator.CreateCellDescriptor(cell);
             var cd = this.CellDefinitionFactory.CreateCellDefinition(d);
-            var element = this.ControlFactory.CreateEditControl(cd);
+            var element = this.ControlFactory.CreateEditControl(cd, cell);
             if (element == null)
             {
                 return null;
@@ -3140,6 +3160,7 @@ namespace PropertyTools.Wpf
             }
 
             sortDescriptionCollection.Clear();
+
             foreach (var sd in this.sortDescriptions)
             {
                 sortDescriptionCollection.Add(sd);
@@ -4377,9 +4398,17 @@ namespace PropertyTools.Wpf
 
             this.Operator = this.CreateOperator();
 
-            if (this.AutoGenerateColumns && this.ColumnDefinitions.Count == 0)
+            if (this.AutoGenerateColumns)
             {
-                this.Operator.AutoGenerateColumns();
+                if (this.RegenerateColumns && this.ColumnDefinitions.Count > 0)
+                {
+                    this.ColumnDefinitions.Clear();
+                }
+
+                if (this.ColumnDefinitions.Count == 0)
+                {
+                    this.Operator.AutoGenerateColumns();
+                }   
             }
 
             this.Operator.UpdatePropertyDefinitions();

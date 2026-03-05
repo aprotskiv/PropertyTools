@@ -94,7 +94,9 @@ namespace PropertyTools.Wpf
                     SelectedValuePath = d.PropertyDefinition.SelectedValuePath,
                     DisplayMemberPath = d.PropertyDefinition.DisplayMemberPath,
                     DisplayTextForNullItem = d.PropertyDefinition.DisplayTextForNullItem,
-                    IsEditable = d.PropertyDefinition.IsEditable
+                    IsEditable = d.PropertyDefinition.IsEditable,
+                    Style = d.PropertyDefinition.SelectorStyle,
+                    Mode = d.PropertyDefinition.SelectorMode,
                 };
             }
             else if (d.PropertyType.IsEnumOrNullableEnum())
@@ -107,7 +109,11 @@ namespace PropertyTools.Wpf
                 }.ConfigureSelectorDefinitionForEnum(d, enumValues);                
             }
 
-            return new TextCellDefinition();
+            return new TextCellDefinition()
+            {
+                AutoUpdateText = d.PropertyDefinition.AutoUpdateText,
+                MaxLength = d.PropertyDefinition.MaxLength,
+            };
         }
 
         /// <summary>

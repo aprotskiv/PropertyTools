@@ -37,7 +37,7 @@ namespace PropertyTools.Wpf.Common
             get
             {
                 var bindingExpression = _selector.GetBindingExpression(ItemsControl.ItemsSourceProperty);
-                return bindingExpression.ParentBinding.Path.Path;
+                return bindingExpression?.ParentBinding.Path.Path;
             }
             set 
             {

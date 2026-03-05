@@ -154,7 +154,7 @@ namespace PropertyTools.Wpf
                 yield return
                      new ColumnDefinition
                      {
-                         Header = this.GetLocalizedString(innerType.Name, declaringType: innerType),                         
+                         Header = this.GetLocalizedString(innerType.Name, declaringType: innerType, instanceType: innerType),
                          HorizontalAlignment = this.DefaultHorizontalAlignment,
                          Width = this.DefaultColumnWidth
                      };

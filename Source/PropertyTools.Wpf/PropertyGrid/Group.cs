@@ -32,10 +32,19 @@ namespace PropertyTools.Wpf
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the header.
+        /// Gets or sets the header (localizable).
         /// </summary>
         /// <value>The header.</value>
         public string Header { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group identifier (non-localizable).
+        /// </summary>
+        /// <remarks>
+        /// May be used in resolving the <see cref="Icon"/> property value.
+        /// </remarks>
+        /// <value>The name.</value>
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the icon.

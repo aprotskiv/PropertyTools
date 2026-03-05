@@ -9,6 +9,7 @@
 
 namespace PropertyTools.Wpf
 {
+    using PropertyTools.DataAnnotations;
     using PropertyTools.Wpf.Common;
     using System.Collections;
 
@@ -18,6 +19,10 @@ namespace PropertyTools.Wpf
     /// <seealso cref="PropertyTools.Wpf.CellDefinition" />
     public class SelectorCellDefinition : CellDefinition, ISelectorDefinition
     {
+        public SelectorCellDefinition()
+        { 
+        }
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is editable.
         /// </summary>
@@ -71,5 +76,9 @@ namespace PropertyTools.Wpf
         public bool DisplayTextForNullItem { get; set; }
 
         #endregion
+
+        public SelectorStyle Style { get; set; }
+
+        public SelectorMode Mode { get; set; }
     }
 }

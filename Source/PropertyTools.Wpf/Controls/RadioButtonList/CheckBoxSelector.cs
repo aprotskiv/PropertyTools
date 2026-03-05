@@ -4,6 +4,8 @@
 // </copyright>
 // <summary>
 //   Represents a control that shows a list of check boxes.
+//   Alternative to CheckableItems  control (<see cref="PropertyGridControlFactory.CreateCheckableItems(PropertyItem) "/>).
+//   But does not require <see cref="PropertyTools.DataAnnotations.CheckableItemsAttribute.IsCheckedPropertyName"/> boolean property.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -16,7 +18,9 @@ namespace PropertyTools.Wpf
     using System.Windows.Data;
 
     /// <summary>
-    /// Represents a control that shows a list of check boxes.
+    /// Represents a control that shows a list of check boxes. <para/> 
+    /// Alternative to CheckableItems  control (<see cref="PropertyGridControlFactory.CreateCheckableItems(PropertyItem) "/>).
+    /// But does not require <see cref="PropertyTools.DataAnnotations.CheckableItemsAttribute.IsCheckedPropertyName"/> boolean property.
     /// </summary>
     /// <remarks>
     /// The target property must be an <see cref="IList"/>

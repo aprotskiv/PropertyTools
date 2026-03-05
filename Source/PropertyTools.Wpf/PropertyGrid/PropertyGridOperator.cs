@@ -132,7 +132,7 @@ namespace PropertyTools.Wpf
                 var group = tab.Groups.FirstOrDefault(g => g.Header == category);
                 if (group == null)
                 {
-                    group = new Group { Header = pi.Category };
+                    group = new Group { Header = pi.Category, Name = pi.CategoryOriginal }; 
                     tab.Groups.Add(group);
                 }
 
@@ -387,7 +387,8 @@ namespace PropertyTools.Wpf
         /// <param name="instance">The instance.</param>
         protected virtual void SetProperties(PropertyItem pi, object instance)
         {
-            var tabName = this.DefaultTabName ?? instance.GetType().Name;
+            var instanceType = instance.GetType();
+            var tabName = this.DefaultTabName ?? instanceType.Name;
             var categoryName = this.DefaultCategoryName;
 
             // find the declaring type
@@ -444,11 +445,13 @@ namespace PropertyTools.Wpf
             var displayName = this.GetDisplayName(pi.Descriptor, declaringType);
             var description = this.GetDescription(pi.Descriptor, declaringType);
 
+            pi.CategoryOriginal = categoryName;
+
             // Localize the strings
-            pi.DisplayName = this.GetLocalizedString(displayName, declaringType);
-            pi.Description = this.GetLocalizedDescription(description, declaringType);
-            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType);
-            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType);
+            pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instanceType);
+            pi.Description = this.GetLocalizedDescription(description, declaringType, instanceType);
+            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instanceType);
+            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType, instanceType);
 
             pi.IsReadOnly = pi.Descriptor.IsReadOnly();
 
@@ -477,7 +480,7 @@ namespace PropertyTools.Wpf
             }
 
 
-            pi.TrySetEnumMetadata(this);            
+            pi.TrySetEnumMetadata(this, instance);
         }
 
         /// <summary>
@@ -575,9 +578,9 @@ namespace PropertyTools.Wpf
             var cpa = attribute as ColumnsPropertyAttribute;
             if (cpa != null)
             {
-                var descriptor = pi.GetDescriptor(cpa.PropertyName);
-                var columns = descriptor?.GetValue(instance) as IEnumerable<Column>;
-
+                // allow static and non-static properties
+                var instanceType = instance?.GetType();
+                var columns = instanceType?.GetProperty(cpa.PropertyName)?.GetValue(instance) as IEnumerable<Column>;
                 if (columns != null)
                 {
                     var glc = new GridLengthConverter();
@@ -603,7 +606,9 @@ namespace PropertyTools.Wpf
 
                         if (elementType != null)
                         {
-                            object[] converterAttributes = elementType.GetProperty(column.PropertyName)?.GetCustomAttributes(typeof(ConverterAttribute), true);
+                            var elementProperty = elementType.GetProperty(column.PropertyName);
+
+                            object[] converterAttributes = elementProperty?.GetCustomAttributes(typeof(ConverterAttribute), true);
                             if (converterAttributes != null && converterAttributes.Length > 0)
                             {
                                 Type converterType = ((ConverterAttribute)converterAttributes[0]).ConverterType;
@@ -613,23 +618,34 @@ namespace PropertyTools.Wpf
                                 }
                             }
 
-                            object[] descriptionAttributes = elementType.GetProperty(column.PropertyName)?.GetCustomAttributes(typeof(PropertyTools.DataAnnotations.DescriptionAttribute), true);
-                            if (descriptionAttributes != null && descriptionAttributes.Length > 0)
+                            string description =
+                                elementProperty?.GetCustomAttributes(typeof(PropertyTools.DataAnnotations.DescriptionAttribute), true)
+                                    .Cast< PropertyTools.DataAnnotations.DescriptionAttribute>().FirstOrDefault()?.Description
+                                ??
+                                elementProperty?.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), true)
+                                    .Cast<System.ComponentModel.DescriptionAttribute>().FirstOrDefault()?.Description
+                                ;
+                            
+                            if (!string.IsNullOrWhiteSpace(description))
                             {
-                                toolTip = ((DataAnnotations.DescriptionAttribute)descriptionAttributes[0]).Description;
+                                toolTip = this.GetLocalizedString(description, declaringType: column.GetType(), instanceType: instanceType);
                             }
                         }
 
                         var cd = new ColumnDefinition
                         {
                             PropertyName = column.PropertyName,
-                            Header = this.GetLocalizedString(column.Header, declaringType: null),
+                            Header = this.GetLocalizedString(column.Header, declaringType: null, instanceType: instanceType),
                             FormatString = column.FormatString,
                             Width = (GridLength)(glc.ConvertFromInvariantString(column.Width) ?? GridLength.Auto),
                             IsReadOnly = column.IsReadOnly,
                             HorizontalAlignment = StringUtilities.ToHorizontalAlignment(column.Alignment.ToString(CultureInfo.InvariantCulture)),
                             Converter = converter,
                             Tooltip = toolTip,
+                            CanSort = column.IsSortable,
+                            SelectorStyle = column.SelectorStyle,
+                            SelectorMode = column.SelectorMode,
+                            AutoUpdateText = column.AutoUpdateText
                         }.ConfigureSelectorDefinition(column);
 
                         
@@ -848,6 +864,13 @@ namespace PropertyTools.Wpf
                 pi.MinimumHeight = hea.MinimumHeight;
                 pi.MaximumHeight = hea.MaximumHeight;
                 pi.AcceptsReturn = true;
+            }
+
+            var dgdrha = attribute as DataGridDefaultRowHeightAttribute;
+            if (dgdrha != null)
+            {
+                pi.DataGridDefaultRowHeightInPixels = dgdrha.Pixels;
+                pi.DataGridDefaultRowHeightAuto = dgdrha.IsAuto();
             }
 
             var fta = attribute as FillTabAttribute;
