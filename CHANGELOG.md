@@ -4,10 +4,40 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 ### Added
-- Support for .NET 8 - Windows #367
-- ProgressAttribute #391
+- DemoLauncher: Created centralized demo launcher application that discovers and launches all example windows from any assembly, with text/tag filtering, command-line support, and screenshot capture functionality #468
+- TreeListBoxDemo: Restructured to support multiple examples with a launcher window, added MultipleRootsExample demonstrating the fix for issue #282 #282
+- TreeListBoxDemo: Added TabControlExample demonstrating the fix for issue #312 - TreeListBox crash when used in TabControl #312
+- DataGrid: Added FilteringExample demonstrating how to filter DataGrid items using CollectionViewSource with search text, enum, and boolean filters #392
+- DataGrid: Added DynamicBackgroundExample with dismissible explanation panel demonstrating BackgroundProperty for data-driven cell backgrounds #TBD
+- Created GitHub issue templates (bug report and feature request) and pull request template following best practices #448 #452
+- Observable: Added comprehensive unit tests for VerifyProperty method including tests for inherited properties #462
+- PropertyGridDemos: Added ValidationErrorStyleExample demonstrating how to use ValidationErrorStyle with a custom ControlFactory #455
+- PropertyGridDemos: Added SelectedObjectsExample demonstrating ObservableCollection binding to PropertyGrid.SelectedObjects #267
 
 ### Fixed
+- DataGrid: Fixed selection extending on simple click when hosted in a scrollable container #478
+- TreeListBox: Fixed crash when used in TabControl - resolved race condition where collection events fired before parent items were initialized during deferred loading #312
+- PropertyGrid: Fixed SelectedObjects binding not working - initialization logic now properly sets CurrentObject when binding ObservableCollection #267
+- TreeListBox: Fixed multiple root items expansion issue where children were incorrectly displayed under the last root item instead of their respective parent #282
+- TreeListBox: Fixed InvalidOperationException in HierarchySourceChanged when SelectionMode is Single - now uses SelectedItem instead of SelectedItems collection #324
+- DataGrid: Fixed thick borders when background is set by using z-index ordering - grid lines now render on top of cells instead of each cell drawing borders #TBD
+- DataGrid: Fixed BackgroundProperty binding not working - now correctly sets BackgroundBindingSource for property-based backgrounds #TBD
+- DataGrid: Fixed background color regression where TextBlock cells showed white instead of configured colors - now properly wraps in Border #TBD
+- PropertyGrid: Fixed style application issue where implicit styles from Style.Resources were not applied to controls when bound to objects implementing IDataErrorInfo or INotifyDataErrorInfo #455
+- Observable: VerifyProperty now correctly accepts inherited properties in addition to declared properties #462
+- DataGrid: Handle SerializationException gracefully in clipboard operations when non-serializable objects are present #460
+- Security: FilePicker.Explore() - Validate and escape file paths to prevent command injection attacks #459
+- Security: FilePicker.Open() - Validate file paths before opening to prevent path traversal attacks #459
+- Security: DirectoryPicker.Explore() - Validate and escape directory paths to prevent command injection attacks #459
+- Security: LinkBlock - Restrict URI schemes to safe protocols (http, https, mailto, ftp) to prevent malicious URI execution #459
+- DataGrid: Paste operation with active sorting now correctly updates items in source collection instead of incorrect rows #444
+- DataGrid: Clipboard commands remain enabled when grid is empty (no rows) #450
+- DataGrid: Context menu items should be disabled when operations are not applicable #446
+- FilePicker: Fix Open button not opening files with associated applications on .NET Core/.NET 5+ #435
+- DirectoryPicker: Use full system path for explorer.exe to prevent PATH-based security vulnerabilities #433
+- FilePicker: Use full system path for explorer.exe to prevent PATH-based security vulnerabilities #433
+- AboutDialog: Use full system path for msinfo32.exe to prevent PATH-based security vulnerabilities #429
+- GitHub Actions: Fix CodeQL workflow failure by upgrading to CodeQL action v3 #426
 - DataGrid: Update after pasting values #269
 - DataGrid: Deleting last item in a sorted data grid causes an exception #321
 - TreeListBox: Fix items being added under collapsed nodes #264
@@ -20,21 +50,30 @@ All notable changes to this project will be documented in this file.
 - TreeListBox: Catching the ArgumentException by message title, fails in non english regions #38 #142
 
 ### Changed
-- TypeHelper.IsIListIList(Type) method changed to private #343
-
-### Added 
-- Support for .NET 6 - Windows #317
-- Support for .NET 4.6.2 #317
-- PropertyGrid: Only show properties that are adorned with Browsable(true) if Browsable(false) not used #278
-- PropertyGrid: Add Button Control for properties inheriting from ICommand #279
-- PropertyGrid: Enhances options for PropertyGrid size #277
-- PropertyGrid: Add IValueConverter and ToolTip lookups for property grid array/collection elements #285
+- Added EnableWindowsTargeting property to all WPF projects to support building on non-Windows platforms #474
+- Custom GitHub Copilot agent for updating package dependencies and target frameworks #422
+- GitHub Actions workflows: Support for building with .NET 10 SDK in all workflows #424
+- Documentation: Added AGENTS.md with comprehensive coding agent guidelines including code style, test coverage requirements, how to write tests, how to implement demos, and documentation update requirements #420
+- Documentation: Added CLAUDE.md as a quick reference guide for Claude AI that refers to AGENTS.md #420
+- Support for .NET 10 - Windows #416
+- Support for .NET 8 - Windows #367
+- ProgressAttribute #391
+- DataGrid/PropertyGrid: ILocalizableOperator and ICustomLocalizableOperator interfaces #398
+- DataDialog supporting INotifyDataErrorInfo #405
+- ItemsBag: Added comprehensive unit tests for value type properties (int, double, enum) #355
+- ItemsBag: Added comprehensive unit tests for already-nullable value types to verify PropertyType behavior #355
+- GitHub Actions: Configure CodeQL workflow to use security-extended query suite for more comprehensive security scanning #437
+- PropertyGridDemo: Implemented INotifyPropertyChanged in Example base class and all Example classes, removed Fody dependency #TBD
+- Tests: Updated NUnit tests to use constraint syntax (Assert.That with Is.EqualTo) instead of classic assertions (Assert.AreEqual) #417
+- Updated DotNetProjects.Extended.Wpf.Toolkit package from version 5.0.103 to 5.0.129
+- Tests: Upgraded NUnit from 3.12.0 to 4.4.0 for latest features and improvements
+- Tests: Upgraded Microsoft.NET.Test.SDK from 16.0.1 to 18.0.1 for improved test execution
+- Tests: Upgraded NUnit3TestAdapter from 3.15.1 to 6.0.1 for compatibility with NUnit 4
+- ItemsBag: Improved documentation explaining how it works with type descriptors and property descriptors #355
 
 ### Removed
-- Support for .NET 4.5.2 #317
-- Support for .NET Core App 3.0 #317
-- AppVeyor build #362
-- Support for .NET 6 #368
+- AboutDialog: Removed from PropertyTools.Wpf library and moved to DialogDemos example #431
+- PropertyGridDemo: Removed Fody and PropertyChanged.Fody package dependencies #TBD
 
 ## [3.1.0]
 ### Added
