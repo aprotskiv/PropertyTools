@@ -5,7 +5,7 @@
         Title="Selectors" Height="450" Width="800">
     <Grid>
         <p:DataGrid ItemsSource="{Binding Items}"
-                    LocalizableOperator="{StaticResource CustomDataGridLocalizableOperator}" >
+                    LocalizableOperator="{StaticResource CustomLocalizableOperator}" >
             <p:DataGrid.ColumnDefinitions>
                 <p:ColumnDefinition PropertyName="Fruit1" Header="Fruit1" Width="*"/>
                 <p:ColumnDefinition PropertyName="Fruit2" Header="Fruit2" Width="*"/>
