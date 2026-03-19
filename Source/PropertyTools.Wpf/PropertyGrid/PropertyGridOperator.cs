@@ -635,7 +635,9 @@ namespace PropertyTools.Wpf
                         var cd = new ColumnDefinition
                         {
                             PropertyName = column.PropertyName,
-                            Header = this.GetLocalizedString(column.Header, declaringType: null, instanceType: instanceType),
+                            Header = this.GetLocalizedString(column.Header, 
+                            		declaringType: null,  // TODO: or elementType ???
+                            		instanceType: instanceType),
                             FormatString = column.FormatString,
                             Width = (GridLength)(glc.ConvertFromInvariantString(column.Width) ?? GridLength.Auto),
                             IsReadOnly = column.IsReadOnly,
