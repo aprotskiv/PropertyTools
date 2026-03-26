@@ -462,7 +462,6 @@ namespace PropertyTools.Wpf
             typeof(ILocalizableOperator),
             typeof(DataGrid),
             new PropertyMetadata(null, (d, e) =>
-<<<<<<< HEAD
                 {
                     var newLocalizableOperator = (ILocalizableOperator)e.NewValue;
                     var operatorValue = ((DataGrid)d).Operator;
@@ -471,16 +470,6 @@ namespace PropertyTools.Wpf
                         operatorValue.UseLocalizableOperator(newLocalizableOperator);
                     }
                 })
-=======
-            {
-                var newLocalizableOperator = (ILocalizableOperator)e.NewValue;
-                var operatorValue = ((DataGrid)d).Operator;
-                if (operatorValue != null)
-                {
-                    operatorValue.UseLocalizableOperator(newLocalizableOperator);
-                }
-            })
->>>>>>> checkbox-selector
             );
 
         /// <summary>
