@@ -35,7 +35,7 @@ namespace PropertyTools.Wpf.Operators
 		/// <param name="key">The key.</param>
 		/// <param name="declaringType">The declaring type.</param>
 		/// <param name="instanceType">The type of instance what contains property item.</param>
-		/// /// <param name="resourceKind">The kind of localizable resource.</param>
+		/// <param name="resourceKind">The kind of localizable resource.</param>
 		/// <returns>
 		/// The localized string.
 		/// </returns>
