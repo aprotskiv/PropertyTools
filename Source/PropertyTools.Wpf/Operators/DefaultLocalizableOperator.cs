@@ -49,20 +49,21 @@ namespace PropertyTools.Wpf.Operators
             return key;
         }
 
-        /// <summary>
-        /// Gets the localized string.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="declaringType">The declaring type.</param>
-        /// <param name="instanceType">The type of instance what contains property item.</param>
-        /// <returns>
-        /// The localized string.
-        /// </returns>
-        public virtual string GetLocalizedString(string key, Type declaringType, Type instanceType)
-        {
+		/// <summary>
+		/// Gets the localized string.
+		/// </summary>
+		/// <param name="key">The key.</param>
+		/// <param name="declaringType">The declaring type.</param>
+		/// <param name="instanceType">The type of instance what contains property item.</param>
+		/// <param name="resourceKind">The kind of localizable resource.</param>
+		/// <returns>
+		/// The localized string.
+		/// </returns>
+		public virtual string GetLocalizedString(string key, Type declaringType, Type instanceType, LocalizableResourceKind resourceKind)
+		{
             if (this.customLocalizableOperator != null)
             {
-                return this.customLocalizableOperator.GetLocalizedString(key, declaringType, instanceType);
+                return this.customLocalizableOperator.GetLocalizedString(key, declaringType, instanceType, resourceKind);
             }
 
             return key;

@@ -9,7 +9,8 @@
 
 namespace PropertyTools.Wpf
 {
-    using System.Collections;
+	using PropertyTools.Wpf.Operators;
+	using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -154,7 +155,7 @@ namespace PropertyTools.Wpf
                 yield return
                      new ColumnDefinition
                      {
-                         Header = this.GetLocalizedString(innerType.Name, declaringType: innerType, instanceType: innerType),
+                         Header = this.GetLocalizedString(innerType.Name, declaringType: innerType, instanceType: innerType, LocalizableResourceKind.Name),
                          HorizontalAlignment = this.DefaultHorizontalAlignment,
                          Width = this.DefaultColumnWidth
                      };

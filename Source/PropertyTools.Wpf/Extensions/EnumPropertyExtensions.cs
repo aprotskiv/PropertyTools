@@ -38,12 +38,12 @@ namespace PropertyTools.Wpf.Extensions
                            ?? descriptionAttribute2?.Description
                            ?? x.ToString();
 
-                        return localizedPropertyOperator.GetLocalizedString(enumMemberDisplayName, enumType, instanceType: instance?.GetType());
+                        return localizedPropertyOperator.GetLocalizedString(enumMemberDisplayName, enumType, instanceType: instance?.GetType(), LocalizableResourceKind.Name);
                     });
 
                 if (propertyType.IsNullableEnum())
                 {
-                    pi.EnumMetadata.EnumDisplayNull = localizedPropertyOperator.GetLocalizedString(null, enumType, instanceType: instance?.GetType());
+                    pi.EnumMetadata.EnumDisplayNull = localizedPropertyOperator.GetLocalizedString(null, enumType, instanceType: instance?.GetType(), LocalizableResourceKind.Name);
                 }
             }
         }

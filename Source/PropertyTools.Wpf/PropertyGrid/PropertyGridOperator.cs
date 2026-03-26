@@ -448,10 +448,10 @@ namespace PropertyTools.Wpf
             pi.CategoryOriginal = categoryName;
 
             // Localize the strings
-            pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instanceType);
+            pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instanceType, LocalizableResourceKind.Name);
             pi.Description = this.GetLocalizedDescription(description, declaringType, instanceType);
-            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instanceType);
-            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType, instanceType);
+            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instanceType, LocalizableResourceKind.Category);
+            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType, instanceType, LocalizableResourceKind.Tab);
 
             pi.IsReadOnly = pi.Descriptor.IsReadOnly();
 
@@ -628,7 +628,7 @@ namespace PropertyTools.Wpf
                             
                             if (!string.IsNullOrWhiteSpace(description))
                             {
-                                toolTip = this.GetLocalizedString(description, declaringType: column.GetType(), instanceType: instanceType);
+                                toolTip = this.GetLocalizedString(description, declaringType: column.GetType(), instanceType: instanceType, LocalizableResourceKind.Description);
                             }
                         }
 
@@ -637,7 +637,8 @@ namespace PropertyTools.Wpf
                             PropertyName = column.PropertyName,
                             Header = this.GetLocalizedString(column.Header, 
                             		declaringType: null,  // TODO: or elementType ???
-                            		instanceType: instanceType),
+                            		instanceType: instanceType,
+                                    resourceKind: LocalizableResourceKind.Name),
                             FormatString = column.FormatString,
                             Width = (GridLength)(glc.ConvertFromInvariantString(column.Width) ?? GridLength.Auto),
                             IsReadOnly = column.IsReadOnly,

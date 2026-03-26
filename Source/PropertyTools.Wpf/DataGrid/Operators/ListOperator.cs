@@ -9,7 +9,8 @@
 
 namespace PropertyTools.Wpf
 {
-    using System;
+	using PropertyTools.Wpf.Operators;
+	using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -63,7 +64,7 @@ namespace PropertyTools.Wpf
                     var cd = new ColumnDefinition
                     {
                         PropertyName = descriptor.Name,
-                        Header = this.GetLocalizedString(info.Name, declaringType: descriptor.ComponentType, instanceType: itemType),
+                        Header = this.GetLocalizedString(info.Name, declaringType: descriptor.ComponentType, instanceType: itemType, LocalizableResourceKind.Name),
                         HorizontalAlignment = this.DefaultHorizontalAlignment,
                         Width = this.DefaultColumnWidth
                     };
@@ -94,7 +95,7 @@ namespace PropertyTools.Wpf
                     var cd = new ColumnDefinition
                     {
                         PropertyName = descriptor.Name,
-                        Header = this.GetLocalizedString(descriptor.Name, declaringType: descriptor.ComponentType, instanceType: itemType),
+                        Header = this.GetLocalizedString(descriptor.Name, declaringType: descriptor.ComponentType, instanceType: itemType, LocalizableResourceKind.Name),
                         HorizontalAlignment = this.DefaultHorizontalAlignment,
                         Width = this.DefaultColumnWidth
                     };
@@ -110,7 +111,7 @@ namespace PropertyTools.Wpf
             yield return
                 new ColumnDefinition
                 {
-                    Header = this.GetLocalizedString(itemsType.Name, itemsType, instanceType: itemsType),
+                    Header = this.GetLocalizedString(itemsType.Name, itemsType, instanceType: itemsType, LocalizableResourceKind.Name),
                     HorizontalAlignment = this.DefaultHorizontalAlignment,
                     Width = this.DefaultColumnWidth
                 };

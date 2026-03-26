@@ -29,15 +29,16 @@ namespace PropertyTools.Wpf.Operators
         string GetLocalizedDescription(string key, Type declaringType, Type instanceType);
 
 
-        /// <summary>
-        /// Gets the localized string.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="declaringType">The declaring type.</param>
-        /// <param name="instanceType">The type of instance what contains property item.</param>
-        /// <returns>
-        /// The localized string.
-        /// </returns>
-        string GetLocalizedString(string key, Type declaringType, Type instanceType);
+		/// <summary>
+		/// Gets the localized string.
+		/// </summary>
+		/// <param name="key">The key.</param>
+		/// <param name="declaringType">The declaring type.</param>
+		/// <param name="instanceType">The type of instance what contains property item.</param>
+		/// /// <param name="resourceKind">The kind of localizable resource.</param>
+		/// <returns>
+		/// The localized string.
+		/// </returns>
+		string GetLocalizedString(string key, Type declaringType, Type instanceType, LocalizableResourceKind resourceKind);
     }
 }
