@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies a description for a property or event.
     /// </summary>
     [AttributeUsage(AttributeTargets.All)]
-    public class DescriptionAttribute : Attribute
+    public class DescriptionAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DescriptionAttribute"/> class.

@@ -14,7 +14,7 @@ namespace PropertyTools.DataAnnotations
     /// <summary>
     /// Specifies the name of a property that contains values for the attributed property.
     /// </summary>
-    public class ItemsSourcePropertyAttribute : Attribute
+    public class ItemsSourcePropertyAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemsSourcePropertyAttribute" /> class.

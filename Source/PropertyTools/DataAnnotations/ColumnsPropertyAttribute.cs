@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the name of a non-static property that provides columns for a data grid.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class ColumnsPropertyAttribute : Attribute
+    public class ColumnsPropertyAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ColumnsPropertyAttribute" /> class.

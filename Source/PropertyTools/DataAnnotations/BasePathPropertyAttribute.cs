@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies a base path property for relative path names.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class BasePathPropertyAttribute : Attribute
+    public class BasePathPropertyAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BasePathPropertyAttribute" /> class.

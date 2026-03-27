@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies that the decorated property should get its DefaultExtension from the specified property.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class DefaultExtensionPropertyAttribute : Attribute
+    public class DefaultExtensionPropertyAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultExtensionPropertyAttribute" /> class.

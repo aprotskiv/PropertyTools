@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies that the property can be edited by a spin control.
     /// </summary>
     [AttributeUsage(AttributeTargets.All)]
-    public class SpinnableAttribute : Attribute
+    public class SpinnableAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SpinnableAttribute" /> class.

@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies what control style a selector property should use.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class SelectorStyleAttribute : Attribute
+    public class SelectorStyleAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SelectorStyleAttribute" /> class.

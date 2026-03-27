@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the display name for a property or field (enum member).
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    public class DisplayNameAttribute : Attribute
+    public class DisplayNameAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DisplayNameAttribute"/> class.

@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the horizontal alignment.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class HorizontalAlignmentAttribute : Attribute
+    public class HorizontalAlignmentAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="HorizontalAlignmentAttribute" /> class.

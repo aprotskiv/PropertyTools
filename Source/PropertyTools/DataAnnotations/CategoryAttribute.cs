@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the name of the category in which to group the property or event when displayed in a PropertyGrid control.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class CategoryAttribute : Attribute
+    public class CategoryAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CategoryAttribute"/> class.

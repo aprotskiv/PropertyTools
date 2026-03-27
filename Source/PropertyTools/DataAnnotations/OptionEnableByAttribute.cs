@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the property name used to enable or disable an option, represented as a radio button, in an enumeration.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    public class OptionEnableByAttribute : Attribute
+    public class OptionEnableByAttribute : AbstractAttribute
     {
         /// <summary>
         /// Gets the name of the property that determines whether the option is enabled or disabled.

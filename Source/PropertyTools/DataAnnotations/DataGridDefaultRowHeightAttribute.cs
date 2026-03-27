@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the default heights of the DataGrid Row.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class DataGridDefaultRowHeightAttribute : Attribute
+    public class DataGridDefaultRowHeightAttribute : AbstractAttribute
     {
         public DataGridDefaultRowHeightAttribute()
         { 

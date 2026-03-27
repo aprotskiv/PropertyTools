@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the path used to get the selected value of an item.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class DisplayMemberPathAttribute : Attribute
+    public class DisplayMemberPathAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DisplayMemberPathAttribute" /> class.

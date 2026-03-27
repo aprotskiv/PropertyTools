@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies that the value is a comment.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class CommentAttribute : Attribute
+    public class CommentAttribute : AbstractAttribute
     {
     }
 }

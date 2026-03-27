@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the width of the editing control.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class WidthAttribute : Attribute
+    public class WidthAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="WidthAttribute" /> class.
