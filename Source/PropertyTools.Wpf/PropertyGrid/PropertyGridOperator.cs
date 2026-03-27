@@ -347,28 +347,30 @@ namespace PropertyTools.Wpf
             return pd.GetCategory();
         }
 
-        /// <summary>
-        /// Gets the description for the specified property.
-        /// </summary>
-        /// <param name="pd">The property descriptor.</param>
-        /// <param name="declaringType">The declaring type.</param>
-        /// <returns>
-        /// A description string.
-        /// </returns>
-        protected virtual string GetDescription(PropertyDescriptor pd, Type declaringType)
+		/// <summary>
+		/// Gets the description for the specified property.
+		/// </summary>
+		/// <param name="pd">The property descriptor.</param>
+		/// <param name="declaringType">The declaring type.</param>
+		/// <param name="instance">The instance.</param>
+		/// <returns>
+		/// A description string.
+		/// </returns>
+		protected virtual string GetDescription(PropertyDescriptor pd, Type declaringType, object instance)
         {
             return pd.GetDescription();
         }
 
-        /// <summary>
-        /// Gets the display name for the specified property.
-        /// </summary>
-        /// <param name="pd">The property descriptor.</param>
-        /// <param name="declaringType">The declaring type.</param>
-        /// <returns>
-        /// A display name string.
-        /// </returns>
-        protected virtual string GetDisplayName(PropertyDescriptor pd, Type declaringType)
+		/// <summary>
+		/// Gets the display name for the specified property.
+		/// </summary>
+		/// <param name="pd">The property descriptor.</param>
+		/// <param name="declaringType">The declaring type.</param>
+		/// <param name="instance">The instance.</param>
+		/// <returns>
+		/// A display name string.
+		/// </returns>
+		protected virtual string GetDisplayName(PropertyDescriptor pd, Type declaringType, object instance)
         {
             var displayName = pd.GetDisplayName();
 
@@ -442,8 +444,8 @@ namespace PropertyTools.Wpf
                 }
             }
 
-            var displayName = this.GetDisplayName(pi.Descriptor, declaringType);
-            var description = this.GetDescription(pi.Descriptor, declaringType);
+            var displayName = this.GetDisplayName(pi.Descriptor, declaringType, instance);
+            var description = this.GetDescription(pi.Descriptor, declaringType, instance);
 
             pi.CategoryOriginal = categoryName;
 
