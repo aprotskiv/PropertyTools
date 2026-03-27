@@ -54,23 +54,6 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the Cancel button is visible.
-        /// </summary>
-        /// <value><c>true</c> if this instance can Canceled; otherwise, <c>false</c> .</value>
-        public bool CanCancel
-        {
-            get
-            {
-                return this.CancelButton.Visibility == Visibility.Visible;
-            }
-
-            set
-            {
-                this.CancelButton.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
-
-        /// <summary>
         /// Gets the property control.
         /// </summary>
         /// <value>The property control.</value>
@@ -185,7 +168,8 @@ namespace PropertyTools.Wpf
             
             if (PropertyControl.DataContext is INotifyDataErrorInfo nde)
             {
-                nde.ErrorsChanged += DataErrorsChanged;
+				nde.ErrorsChanged -= DataErrorsChanged;
+				nde.ErrorsChanged += DataErrorsChanged;
                 this.SetDataErrorAwareButtons();
             }
         }
@@ -228,8 +212,7 @@ namespace PropertyTools.Wpf
                     continue;
                 }
 
-                if (oldValue != null && !oldValue.Equals(newValue) 
-                    || oldValue == null)
+                if (oldValue != null && !oldValue.Equals(newValue))
                 {
                     pi.SetValue(this.DataContext, newValue, null);
                 }
@@ -253,16 +236,24 @@ namespace PropertyTools.Wpf
             }
         }
 
-        /// <summary>
-        /// Handles the Click event of the Cancel button.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The e.</param>
-        private void CancelButtonClick(object sender, RoutedEventArgs e)
+		/// <summary>
+		/// Handles the Click event of the Cancel button.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The e.</param>
+		/// <remarks>
+		/// The <see cref="EndEdit"/> call has been moved into <see cref="OnClosing(CancelEventArgs)"/> method
+		/// </remarks>
+		private void CancelButtonClick(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false;
-            this.CancelEdit();
-            this.Close();
+			this.isClosedAlready_ButtonClickScope = false; // reset flag
+
+			this.DialogResult = false; // also will call Close() method when DialogResult != false
+
+			if (!this.isClosedAlready_ButtonClickScope) // prevent raising Close event twice
+			{
+				this.Close();
+			}
         }
 
         /// <summary>
@@ -284,40 +275,80 @@ namespace PropertyTools.Wpf
         {
         }
 
-        /// <summary>
-        /// Handles the Click event of the Ok button.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The e.</param>
-        protected virtual void OkButtonClick(object sender, RoutedEventArgs e)
-        /// <param name="e">The event arguments.</param>
+		/// <summary>
+		/// Flag determines whether or not dialog was closed already.<para/>
+		/// Suffix (scope) indicates that flag value must be checked only in 
+        /// <see cref="OkButtonClick(object, RoutedEventArgs)"/> and <see cref="CloseButtonClick(object, RoutedEventArgs)"/>. <para/>
+		/// Helps to prevent raising the <see cref="System.Windows.Window.Closed"/> event twice.
+		/// </summary>
+		/// <remarks>
+		/// Flag must be set in <see cref="OnClosed(EventArgs)"/> only
+		/// </remarks>
+		private bool isClosedAlready_ButtonClickScope;
+
+		/// <summary>
+		/// Handles the Click event of the Ok button.
+		/// </summary>        
+		/// <param name="sender">The sender.</param>        
+		/// <param name="e">The event arguments.</param>
+		/// <remarks>
+        /// The <see cref="EndEdit"/> call has been moved into <see cref="OnClosing(CancelEventArgs)"/> method
+		/// </remarks>
+		private void OkButtonClick(object sender, RoutedEventArgs e)
         {
-        	this.EndEdit();
-            this.DialogResult = true;
-            this.Close();
+            this.isClosedAlready_ButtonClickScope = false; // reset flag
+			
+			this.DialogResult = true;  // also will call Close() method when DialogResult != true
+
+			if (!this.isClosedAlready_ButtonClickScope) // prevent raising Close event twice
+            {
+                this.Close();
+            }
         }
 
-        /// <summary>
-        /// Handles the Changed event of the DataContext.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void PropertyDialogDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+		/// <summary>
+		/// Handles the Changed event of the DataContext.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The event arguments.</param>
+		private void PropertyDialogDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             this.BeginEdit();
         }
 
-        /// <summary>
-        /// Handles the Closing event of the PropertyDialog control.
-        /// </summary>
-        /// <param name="e">The event arguments.</param>
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            if (DataContext is INotifyDataErrorInfo nde)
+		/// <inheritdoc/>
+		/// <remarks>
+		/// Also calls <see cref="EndEdit"/> or <see cref="CancelEdit"/> methods depending on <see cref="System.Windows.Window.DialogResult"/> value
+		/// </remarks> 
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			base.OnClosing(e);
+
+            if (!e.Cancel)
             {
-                nde.ErrorsChanged -= DataErrorsChanged; ;
-            }
-        }
+                if (this.DialogResult == true)
+                {
+                    this.EndEdit();
+                }
+                else
+                {
+                    this.CancelEdit();
+                }
+
+				if (DataContext is INotifyDataErrorInfo nde)
+				{
+                    nde.ErrorsChanged -= DataErrorsChanged;
+				}
+			}
+		}
+
+		/// <inheritdoc/>
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+
+			this.isClosedAlready_ButtonClickScope = true;
+		}
 
         /// <summary>
         /// Handles the DataErrorsChanged event to update the state of the data error aware buttons.
