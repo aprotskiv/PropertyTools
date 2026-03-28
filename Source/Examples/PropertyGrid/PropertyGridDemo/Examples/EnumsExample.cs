@@ -42,7 +42,7 @@ namespace ExampleLibrary
         private Fruit4 fruit4C;
         private Fruit5 fruit5C;
         private Fruit6 fruit6C;
-        private Fruit7 fruit7C;
+        private Fruit7? fruit7C;
         private Fruit1? nullableFruit1C;
         private Fruit1 fruit1L;
         private Fruit2 fruit2L;
