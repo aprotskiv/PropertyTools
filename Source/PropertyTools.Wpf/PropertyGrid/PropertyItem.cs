@@ -587,8 +587,14 @@ namespace PropertyTools.Wpf
 		/// <summary>
 		/// Gets or sets the tab sort index.
 		/// </summary>
-		/// <value>The tab.</value>
-		public uint? TabIndex { get; set; }
+		/// <value>The tab sort index.</value>
+		public uint? TabSortIndex { get; set; }
+
+		/// <summary>
+		/// Gets or sets the group sort index.
+		/// </summary>
+		/// <value>The group sort index.</value>
+		public uint? GroupSortIndex { get; set; }
 
 		/// <summary>
 		/// Gets or sets the text wrapping.

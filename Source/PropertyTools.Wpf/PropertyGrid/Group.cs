@@ -57,13 +57,20 @@ namespace PropertyTools.Wpf
         /// </summary>
         public List<PropertyItem> Properties { get; private set; }
 
-        /// <summary>
-        /// The to string.
-        /// </summary>
-        /// <returns>
-        /// The to string.
-        /// </returns>
-        public override string ToString()
+		/// <summary>
+		/// Gets or sets the group sort index.
+		/// </summary>
+		/// <value>The group sort index.</value>
+		public uint? GroupSortIndex { get; set; }
+
+
+		/// <summary>
+		/// The to string.
+		/// </summary>
+		/// <returns>
+		/// The to string.
+		/// </returns>
+		public override string ToString()
         {
             return this.Header;
         }
