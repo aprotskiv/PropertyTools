@@ -198,6 +198,15 @@ namespace PropertyTools.Wpf
                 new UIPropertyMetadata(true));
 
         /// <summary>
+        /// Identifies the <see cref="ClipboardSeparator"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ClipboardSeparatorProperty = DependencyProperty.Register(
+                nameof(ClipboardSeparator),
+                typeof(string),
+                typeof(DataGrid),
+                new UIPropertyMetadata(null));
+
+        /// <summary>
         /// Identifies the <see cref="MultiChangeInChangedColumnOnly"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty MultiChangeInChangedColumnOnlyProperty = DependencyProperty.Register(
@@ -921,6 +930,20 @@ namespace PropertyTools.Wpf
         {
             get => (bool)this.GetValue(CanResizeRowsProperty);
             set => this.SetValue(CanResizeRowsProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the separator used when copying cell data to the clipboard via <c>Ctrl+Alt+C</c>.
+        /// When not explicitly set, the current culture's list separator is used
+        /// (<see cref="System.Globalization.CultureInfo.CurrentCulture"/> TextInfo.ListSeparator,
+        /// e.g. <c>","</c> for en-US or <c>";"</c> for de-DE).
+        /// Set this property to override the separator for a specific instance, or subclass and override to apply it globally.
+        /// </summary>
+        /// <value>The clipboard separator string.</value>
+        public string ClipboardSeparator
+        {
+            get => (string)this.GetValue(ClipboardSeparatorProperty) ?? System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator;
+            set => this.SetValue(ClipboardSeparatorProperty, value);
         }
 
         /// <summary>
@@ -1836,7 +1859,7 @@ namespace PropertyTools.Wpf
             }
 
             var strings = this.GetCellStrings(range);
-            var csv = this.ConvertToCsv(strings, ";", true);
+            var csv = this.ConvertToCsv(strings, separator, true);
             sb.Append(csv);
 
             return sb.ToString();
@@ -2231,7 +2254,7 @@ namespace PropertyTools.Wpf
                 case Key.C:
                     if (control && alt)
                     {
-                        Clipboard.SetText(this.ToCsv(this.GetSelectionRange()));
+                        Clipboard.SetText(this.ToCsv(this.GetSelectionRange(), this.ClipboardSeparator));
                         e.Handled = true;
                     }
 
@@ -2405,7 +2428,7 @@ namespace PropertyTools.Wpf
         /// <returns>
         /// An array of cell strings.
         /// </returns>
-        protected string[,] GetCellStrings(CellRange range, object[,] values = null)
+        protected virtual string[,] GetCellStrings(CellRange range, object[,] values = null)
         {
             var result = new string[range.Rows, range.Columns];
             for (var i = 0; i < range.Rows; i++)
@@ -3683,6 +3706,32 @@ namespace PropertyTools.Wpf
 
             if (this.suspendCollectionChangedNotifications)
             {
+                return;
+            }
+
+            if (e.Action == NotifyCollectionChangedAction.Replace && e.NewStartingIndex >= 0)
+            {
+                // For Replace actions (e.g. list[i] = newValue), only update the affected cell(s)
+                // instead of rebuilding the entire grid content.
+                this.Dispatcher.Invoke(
+                    new Action(() =>
+                    {
+                        for (int i = 0; i < e.NewItems.Count; i++)
+                        {
+                            var index = e.NewStartingIndex + i;
+
+                            // Update all columns/rows for this item
+                            var count = this.ItemsInRows ? this.Columns : this.Rows;
+                            for (int j = 0; j < count; j++)
+                            {
+                                var cellRef = this.ItemsInRows
+                                    ? new CellRef(index, j)
+                                    : new CellRef(j, index);
+                                this.UpdateCellContent(cellRef);
+                            }
+                        }
+                    }));
+
                 return;
             }
 

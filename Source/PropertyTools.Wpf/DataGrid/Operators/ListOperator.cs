@@ -218,7 +218,7 @@ namespace PropertyTools.Wpf
         public override string GetBindingPath(CellRef cell)
         {
             var pd = this.GetPropertyDefinition(cell);
-            if (pd?.PropertyName != null)
+            if (!string.IsNullOrEmpty(pd?.PropertyName))
             {
                 return pd.PropertyName;
             }

@@ -106,23 +106,23 @@ namespace PropertyTools.Wpf
         /// </value>
         public int IndentationLevel { get; set; }
 
-        /// <summary>
-        /// Gets or sets the category (localizable)
-        /// </summary>
-        /// <value>The category.</value>
-        public string Category { get; set; }
+		/// <summary>
+		/// Gets or sets the category (localizable).
+		/// </summary>
+		/// <value>The category.</value>
+		public string Category { get; set; }
 
-        /// <summary>
-        /// Gets or sets the original category (non-localizable)
-        /// </summary>
-        /// <value>The original category.</value>
-        public string CategoryOriginal { get; internal set; }
+		/// <summary>
+		/// Gets or sets the category identifier (non-localizable).
+		/// </summary>
+		/// <value>The category identifier.</value>
+		public string CategoryIdentifier { get; set; }
 
-        /// <summary>
-        /// Gets the columns.
-        /// </summary>
-        /// <value>The columns.</value>
-        public List<ColumnDefinition> Columns { get; private set; }
+		/// <summary>
+		/// Gets the columns.
+		/// </summary>
+		/// <value>The columns.</value>
+		public List<ColumnDefinition> Columns { get; private set; }
 
         /// <summary>
         /// Gets or sets the converter.
@@ -584,11 +584,23 @@ namespace PropertyTools.Wpf
         /// <value>The tab.</value>
         public string Tab { get; set; }
 
-        /// <summary>
-        /// Gets or sets the text wrapping.
-        /// </summary>
-        /// <value>The text wrapping.</value>
-        public TextWrapping TextWrapping { get; set; }
+		/// <summary>
+		/// Gets or sets the tab sort index.
+		/// </summary>
+		/// <value>The tab sort index.</value>
+		public uint? TabSortIndex { get; set; }
+
+		/// <summary>
+		/// Gets or sets the group sort index.
+		/// </summary>
+		/// <value>The group sort index.</value>
+		public uint? GroupSortIndex { get; set; }
+
+		/// <summary>
+		/// Gets or sets the text wrapping.
+		/// </summary>
+		/// <value>The text wrapping.</value>
+		public TextWrapping TextWrapping { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the property should use radio buttons.
