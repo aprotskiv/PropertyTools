@@ -106,23 +106,23 @@ namespace PropertyTools.Wpf
         /// </value>
         public int IndentationLevel { get; set; }
 
-        /// <summary>
-        /// Gets or sets the category (localizable)
-        /// </summary>
-        /// <value>The category.</value>
-        public string Category { get; set; }
+		/// <summary>
+		/// Gets or sets the category (localizable).
+		/// </summary>
+		/// <value>The category.</value>
+		public string Category { get; set; }
 
-        /// <summary>
-        /// Gets or sets the original category (non-localizable)
-        /// </summary>
-        /// <value>The original category.</value>
-        public string CategoryOriginal { get; internal set; }
+		/// <summary>
+		/// Gets or sets the category identifier (non-localizable).
+		/// </summary>
+		/// <value>The category identifier.</value>
+		public string CategoryIdentifier { get; set; }
 
-        /// <summary>
-        /// Gets the columns.
-        /// </summary>
-        /// <value>The columns.</value>
-        public List<ColumnDefinition> Columns { get; private set; }
+		/// <summary>
+		/// Gets the columns.
+		/// </summary>
+		/// <value>The columns.</value>
+		public List<ColumnDefinition> Columns { get; private set; }
 
         /// <summary>
         /// Gets or sets the converter.

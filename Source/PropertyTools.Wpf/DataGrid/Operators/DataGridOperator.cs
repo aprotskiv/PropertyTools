@@ -526,7 +526,7 @@ namespace PropertyTools.Wpf
         {
             var pd = this.GetPropertyDefinition(cell);
             var item = this.GetItem(cell);
-            return pd.PropertyName != null ? item : this.Owner.ItemsSource;
+            return !string.IsNullOrEmpty(pd.PropertyName) ? item : this.Owner.ItemsSource;
         }
 
         /// <summary>

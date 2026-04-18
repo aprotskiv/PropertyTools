@@ -31,26 +31,26 @@ namespace PropertyTools.Wpf
         /// <value>The description.</value>
         public string Description { get; set; }
 
-        /// <summary>
-        /// Gets or sets the header (localizable).
-        /// </summary>
-        /// <value>The header.</value>
-        public string Header { get; set; }
+		/// <summary>
+		/// Gets or sets the header (localizable).
+		/// </summary>
+		/// <value>The header.</value>
+		public string Header { get; set; }
 
-        /// <summary>
-        /// Gets or sets the group identifier (non-localizable).
-        /// </summary>
-        /// <remarks>
-        /// May be used in resolving the <see cref="Icon"/> property value.
-        /// </remarks>
-        /// <value>The name.</value>
-        public string Name { get; set; }
+		/// <summary>
+		/// Gets or sets the group identifier (non-localizable).
+		/// </summary>
+		/// <remarks>
+		/// May be used in resolving the <see cref="Icon"/> property value.
+		/// </remarks>
+		/// <value>The name.</value>
+		public string Name { get; set; }
 
-        /// <summary>
-        /// Gets or sets the icon.
-        /// </summary>
-        /// <value>The icon.</value>
-        public ImageSource Icon { get; set; }
+		/// <summary>
+		/// Gets or sets the icon.
+		/// </summary>
+		/// <value>The icon.</value>
+		public ImageSource Icon { get; set; }
 
         /// <summary>
         /// Gets the properties.
@@ -62,7 +62,6 @@ namespace PropertyTools.Wpf
 		/// </summary>
 		/// <value>The group sort index.</value>
 		public uint? GroupSortIndex { get; set; }
-
 
 		/// <summary>
 		/// The to string.

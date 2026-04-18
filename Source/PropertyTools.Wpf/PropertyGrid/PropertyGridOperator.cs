@@ -107,7 +107,7 @@ namespace PropertyTools.Wpf
 		/// <param name="isEnumerable">if set to <c>true</c> [is enumerable].</param>
 		/// <param name="options">The options.</param>
 		/// <returns>
-		/// A list of <see cref="Tab" /> .
+		/// A sorted list of <see cref="Tab" /> .
 		/// </returns>
 		public virtual IEnumerable<Tab> CreateModel(object instance, bool isEnumerable, IPropertyGridOptions options)
 		{
@@ -132,7 +132,7 @@ namespace PropertyTools.Wpf
 				var group = tab.Groups.FirstOrDefault(g => g.Header == category);
 				if (group == null)
 				{
-					group = new Group { Header = pi.Category, Name = pi.CategoryOriginal };
+					group = new Group { Header = pi.Category, Name = pi.CategoryIdentifier };
 					tab.Groups.Add(group);
 				}
 
@@ -430,7 +430,7 @@ namespace PropertyTools.Wpf
 
 			// find the declaring type
 			var declaringType = pi.Descriptor.ComponentType;
-			var propertyInfo = instance.GetType().GetProperty(pi.Descriptor.Name);
+            var propertyInfo = instance.GetType().GetProperty(pi.Descriptor.Name, pi.Descriptor.PropertyType);
 			if (propertyInfo != null)
 			{
 				declaringType = propertyInfo.DeclaringType;
@@ -482,7 +482,11 @@ namespace PropertyTools.Wpf
 			var displayName = this.GetDisplayName(pi.Descriptor, declaringType, instance);
 			var description = this.GetDescription(pi.Descriptor, declaringType, instance);
 
-			pi.CategoryOriginal = categoryName;
+			pi.CategoryIdentifier = categoryName;
+
+            // set tab/group sort index
+			pi.TabSortIndex = ca2?.TabSortIndex;
+			pi.GroupSortIndex = ca2?.GroupSortIndex;
 
 			// Localize the strings
 			pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instanceType, LocalizableResourceKind.Name);
@@ -490,10 +494,6 @@ namespace PropertyTools.Wpf
 			pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instanceType, LocalizableResourceKind.Category);
 			pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType, instanceType, LocalizableResourceKind.Tab);
 			
-			// set tab/group sort index
-			pi.TabSortIndex = ca2?.TabSortIndex;
-			pi.GroupSortIndex = ca2?.GroupSortIndex;
-
 			pi.IsReadOnly = pi.Descriptor.IsReadOnly();
 
 			// Find descriptors by convention
@@ -520,6 +520,14 @@ namespace PropertyTools.Wpf
 				pi.ConverterParameter = pi.FormatString;
 			}
 
+            var underlyingType = Nullable.GetUnderlyingType(pi.Descriptor.PropertyType);
+            if ((pi.Descriptor.PropertyType == typeof(DateTime) || underlyingType == typeof(DateTime))
+                && pi.Converter == null
+                && !string.IsNullOrWhiteSpace(pi.FormatString))
+            {
+                pi.Converter = new DateTimeToStringConverter();
+                pi.ConverterParameter = pi.FormatString;
+            }
 
 			pi.TrySetEnumMetadata(this, instance);
 		}
