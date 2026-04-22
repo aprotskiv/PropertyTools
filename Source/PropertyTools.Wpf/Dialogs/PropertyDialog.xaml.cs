@@ -165,11 +165,10 @@ namespace PropertyTools.Wpf
                 this.PropertyControl.DataContext = MemberwiseClone(this.DataContext);
             }
 
-            
             if (PropertyControl.DataContext is INotifyDataErrorInfo nde)
             {
-				nde.ErrorsChanged -= DataErrorsChanged;
-				nde.ErrorsChanged += DataErrorsChanged;
+                nde.ErrorsChanged -= DataErrorsChanged;
+                nde.ErrorsChanged += DataErrorsChanged;
                 this.SetDataErrorAwareButtons();
             }
         }
@@ -217,7 +216,7 @@ namespace PropertyTools.Wpf
         /// <summary>
         /// Ends the edit.
         /// </summary>
-        protected void EndEdit()
+        private void EndEdit()
         {
             var editableDataContext = this.DataContext as IEditableObject;
 
@@ -229,26 +228,6 @@ namespace PropertyTools.Wpf
             {
                 this.CommitChanges();
             }
-        }
-
-		/// <summary>
-		/// Handles the Click event of the Cancel button.
-		/// </summary>
-		/// <param name="sender">The sender.</param>
-		/// <param name="e">The e.</param>
-		/// <remarks>
-		/// The <see cref="EndEdit"/> call has been moved into <see cref="OnClosing(CancelEventArgs)"/> method
-		/// </remarks>
-		private void CancelButtonClick(object sender, RoutedEventArgs e)
-        {
-			this.isClosedAlready_ButtonClickScope = false; // reset flag
-
-			this.DialogResult = false; // also will call Close() method when DialogResult != false
-
-			if (!this.isClosedAlready_ButtonClickScope) // prevent raising Close event twice
-			{
-				this.Close();
-			}
         }
 
         /// <summary>
@@ -270,44 +249,26 @@ namespace PropertyTools.Wpf
         {
         }
 
-		/// <summary>
-		/// Flag determines whether or not dialog was closed already.<para/>
-		/// Suffix (scope) indicates that flag value must be checked only in 
-        /// <see cref="OkButtonClick(object, RoutedEventArgs)"/> and <see cref="CloseButtonClick(object, RoutedEventArgs)"/>. <para/>
-		/// Helps to prevent raising the <see cref="System.Windows.Window.Closed"/> event twice.
-		/// </summary>
-		/// <remarks>
-		/// Flag must be set in <see cref="OnClosed(EventArgs)"/> only
-		/// </remarks>
-		private bool isClosedAlready_ButtonClickScope;
-
-		/// <summary>
-		/// Handles the Click event of the Ok button.
-		/// </summary>        
-		/// <param name="sender">The sender.</param>        
-		/// <param name="e">The event arguments.</param>
-		/// <remarks>
+        /// <summary>
+        /// Handles the Click event of the Ok button.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
+        /// <remarks>
         /// The <see cref="EndEdit"/> call has been moved into <see cref="OnClosing(CancelEventArgs)"/> method
-		/// </remarks>
-		private void OkButtonClick(object sender, RoutedEventArgs e)
+        /// </remarks>
+        private void OkButtonClick(object sender, RoutedEventArgs e)
         {
-            this.isClosedAlready_ButtonClickScope = false; // reset flag
-			
-			this.DialogResult = true;  // also will call Close() method when DialogResult != true
-
-			if (this.DialogResult == true  // check if Closing event was not cancelled.
-                && !this.isClosedAlready_ButtonClickScope) // prevent raising Close event twice
-            {
-                this.Close();
-            }
+            this.DialogResult = true;  // also will call Close()
+                                       // Window.Close operation may be interrupted in OnClosing event handler
         }
 
-		/// <summary>
-		/// Handles the Changed event of the DataContext.
-		/// </summary>
-		/// <param name="sender">The sender.</param>
-		/// <param name="e">The event arguments.</param>
-		private void PropertyDialogDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        /// <summary>
+        /// Handles the Changed event of the DataContext.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private void PropertyDialogDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             this.BeginEdit();
         }
@@ -318,10 +279,16 @@ namespace PropertyTools.Wpf
         /// <param name="e">The event arguments.</param>
         protected override void OnClosing(CancelEventArgs e)
         {
-            base.OnClosing(e);
+            var pdcEventArgs = new PropertyDialogCancelEventArgs(
+                editingContext: this.PropertyControl.DataContext,
+                dialogResult: this.DialogResult
+            );
+            base.OnClosing(pdcEventArgs);
+            e.Cancel = pdcEventArgs.Cancel;
 
-            if (DataContext is INotifyDataErrorInfo nde)
+            if (!e.Cancel)
             {
+                // diaglog will be closed -> finish editing before .Closed event is raised
                 if (this.DialogResult == true)
                 {
                     this.EndEdit();
@@ -331,20 +298,12 @@ namespace PropertyTools.Wpf
                     this.CancelEdit();
                 }
 
-				if (DataContext is INotifyDataErrorInfo nde)
-				{
+                if (DataContext is INotifyDataErrorInfo nde)
+                {
                     nde.ErrorsChanged -= DataErrorsChanged;
-				}
-			}
-		}
-
-		/// <inheritdoc/>
-		protected override void OnClosed(EventArgs e)
-		{
-			base.OnClosed(e);
-
-			this.isClosedAlready_ButtonClickScope = true;
-		}
+                }
+            }
+        }
 
         /// <summary>
         /// Handles the DataErrorsChanged event to update the state of the data error aware buttons.
