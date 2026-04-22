@@ -520,6 +520,12 @@ namespace PropertyTools.Wpf
 				pi.ConverterParameter = pi.FormatString;
 			}
 
+            if (pi.Descriptor.PropertyType == typeof(TimeSpan) && pi.Converter == null)
+            {
+                pi.Converter = new TimeSpanToStringConverter();
+                pi.ConverterParameter = pi.FormatString;
+            }
+
             var underlyingType = Nullable.GetUnderlyingType(pi.Descriptor.PropertyType);
             if ((pi.Descriptor.PropertyType == typeof(DateTime) || underlyingType == typeof(DateTime))
                 && pi.Converter == null
@@ -530,7 +536,7 @@ namespace PropertyTools.Wpf
             }
 
 			pi.TrySetEnumMetadata(this, instance);
-		}
+        }
 
 		/// <summary>
 		/// Sets the attribute.
