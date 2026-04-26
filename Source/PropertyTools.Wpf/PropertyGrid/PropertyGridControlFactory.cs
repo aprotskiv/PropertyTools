@@ -11,6 +11,7 @@ namespace PropertyTools.Wpf
 {
     using PropertyTools.Wpf.Common;
     using PropertyTools.Wpf.Extensions;
+    using PropertyTools.Wpf.Operators;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -701,9 +702,36 @@ namespace PropertyTools.Wpf
         /// </summary>
         /// <param name="enumType">The enumeration type.</param>
         /// <returns>A sequence of values.</returns>
-        protected virtual IEnumerable<object> GetEnumValues(PropertyItem property)
+        protected virtual IEnumerable<object> GetEnumValues(PropertyItem property, object instance)
         {
-            return property.GetEnumValues(nullAtStart: false);
+            var nullAtStart = false;
+
+            var result = new List<object>();
+
+            // reuse prepolulated EnumMetadata
+            if (property.EnumMetadata != null)
+            {
+                result.AddRange(property.EnumMetadata.EnumDisplayNames.Keys);
+
+                if (property.EnumMetadata.IsNullableEnum)
+                {
+                    if (nullAtStart)
+                    {
+                        result.Insert(0, null);
+                    }
+                    else
+                    {
+                        result.Add(null);
+                    }
+                }
+            }
+            else
+            {
+                result = new DefaultEnumValuesFilterOperator().GetEnumValuesWithNullEntry(property, instance: instance, nullAtStart: nullAtStart)
+                    .ToList();
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -719,7 +747,8 @@ namespace PropertyTools.Wpf
         {
             //// var isBitField = property.Descriptor.PropertyType.GetTypeInfo().GetCustomAttributes<FlagsAttribute>().Any();
 
-            var values = this.GetEnumValues(property).ToArray();
+            var values = this.GetEnumValues(property, instance).ToArray();
+
             var style = property.SelectorStyle;
             if (style == DataAnnotations.SelectorStyle.Auto)
             {
@@ -732,7 +761,12 @@ namespace PropertyTools.Wpf
             {
                 case DataAnnotations.SelectorStyle.RadioButtons:
                     {
-                        var c = new RadioButtonList { EnumType = property.Descriptor.PropertyType };
+                        var c = new RadioButtonList 
+                        { 
+                            EnumType = property.Descriptor.PropertyType, 
+                            EnumMetadata = property.EnumMetadata,
+                            EnumValues = values,
+                        };
                         c.SetBinding(RadioButtonList.ValueProperty, property.CreateBinding());
                         return c;
                     }

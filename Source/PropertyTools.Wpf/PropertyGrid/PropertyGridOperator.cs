@@ -20,7 +20,8 @@ namespace PropertyTools.Wpf
 	using System.Windows.Data;
 
 	using PropertyTools.DataAnnotations;
-	using PropertyTools.Wpf.Extensions;
+    using PropertyTools.Wpf.Common;
+    using PropertyTools.Wpf.Extensions;
 	using PropertyTools.Wpf.Operators;
 
 	/// <summary>
@@ -535,7 +536,7 @@ namespace PropertyTools.Wpf
                 pi.ConverterParameter = pi.FormatString;
             }
 
-			pi.TrySetEnumMetadata(this, instance);
+			pi.TrySetEnumMetadata(this, this, instance);
         }
 
 		/// <summary>
@@ -938,5 +939,23 @@ namespace PropertyTools.Wpf
 				pi.AcceptsReturn = true;
 			}
 		}
-	}
+
+        /// <summary>
+        /// <see cref="IEnumValuesFilterOperator.GetEnumValues(IPropertyItem, object, bool)"/>
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<Enum> GetEnumValues(IPropertyItem pi, object instance, bool browsableOnly = true)
+        {
+            return new DefaultEnumValuesFilterOperator().GetEnumValues(pi, instance, browsableOnly);
+        }
+
+        /// <summary>
+        
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<object> GetEnumValuesWithNullEntry(IPropertyItem pi, object instance, bool nullAtStart, bool browsableOnly = true)
+        {
+            return new DefaultEnumValuesFilterOperator().GetEnumValuesWithNullEntry(pi, instance, nullAtStart, browsableOnly);
+        }
+    }
 }

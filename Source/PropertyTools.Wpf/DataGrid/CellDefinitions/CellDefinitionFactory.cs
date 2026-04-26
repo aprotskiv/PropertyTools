@@ -11,6 +11,7 @@ namespace PropertyTools.Wpf
 {
     using PropertyTools.DataAnnotations;
     using PropertyTools.Wpf.Extensions;
+    using PropertyTools.Wpf.Operators;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -101,7 +102,9 @@ namespace PropertyTools.Wpf
             }
             else if (d.PropertyType.IsEnumOrNullableEnum())
             {
-                var enumValues = d.GetEnumValues(nullAtStart: true);
+                var enumValues = new DefaultEnumValuesFilterOperator()
+                    .GetEnumValuesWithNullEntry(d, instance: null, nullAtStart: true);
+
                 return new SelectorCellDefinition()
                 {
                     IsEditable = d.PropertyDefinition.IsEditable,

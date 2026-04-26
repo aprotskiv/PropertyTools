@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace PropertyTools.Wpf.Common
 {
@@ -7,7 +8,7 @@ namespace PropertyTools.Wpf.Common
         /// <summary>
         /// Gets or sets the dictionary of Enum values to display names
         /// </summary>
-        public Dictionary<object, string> EnumDisplayNames { get; set; } = new Dictionary<object, string>();
+        public Dictionary<Enum, string> EnumDisplayNames { get; set; } = new Dictionary<Enum, string>();
 
         /// <summary>
         /// Gets or sets the display text for NULL item in Combobox and Listbox
@@ -16,5 +17,12 @@ namespace PropertyTools.Wpf.Common
         /// Applicable for Nullable&lt;EnumType&gt; property only
         /// </remarks>
         public string EnumDisplayNull { get; set; }
+        
+        public bool IsNullableEnum { get; set; }
+        
+        /// <summary>
+        /// Enum type (non-nullable)
+        /// </summary>
+        public Type EnumType { get;  set; }
     }
 }

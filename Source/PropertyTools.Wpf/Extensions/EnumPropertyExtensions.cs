@@ -1,7 +1,6 @@
 ﻿using PropertyTools.Wpf.Common;
 using PropertyTools.Wpf.Operators;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -9,15 +8,19 @@ namespace PropertyTools.Wpf.Extensions
 {
     public static class EnumPropertyExtensions
     {
-
-        public static void TrySetEnumMetadata(this IPropertyItem pi, ILocalizableOperator localizedPropertyOperator, object instance)
+        public static void TrySetEnumMetadata(this IPropertyItem pi, ILocalizableOperator localizedPropertyOperator, 
+            IEnumValuesFilterOperator enumValuesFilterOperator,
+            object instance)
         {
             var propertyType = pi.PropertyType;
             if (propertyType.IsEnumOrNullableEnum())
             {
                 var enumType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+                var enumValues = enumValuesFilterOperator.GetEnumValues(pi, instance, browsableOnly: true);
 
-                pi.EnumMetadata.EnumDisplayNames = Enum.GetValues(enumType).Cast<object>()
+                pi.EnumMetadata.EnumType = enumType;
+
+                pi.EnumMetadata.EnumDisplayNames = enumValues
                    .ToDictionary(x => x,
                     x =>
                     {
@@ -43,54 +46,10 @@ namespace PropertyTools.Wpf.Extensions
 
                 if (propertyType.IsNullableEnum())
                 {
+                    pi.EnumMetadata.IsNullableEnum = true;
                     pi.EnumMetadata.EnumDisplayNull = localizedPropertyOperator.GetLocalizedString(null, enumType, instanceType: instance?.GetType(), LocalizableResourceKind.Name);
                 }
             }
-        }
-
-
-        /// <summary>
-        /// Gets the values for the specified enumeration type.
-        /// </summary>
-        /// <param name="enumType">The enumeration type.</param>
-        /// <param name="nullAtStart">Determines whether to place NULL value at first item or not (as last item). 
-        /// Applicable only for Nullable enumerable type
-        /// </param>
-        /// <returns>A sequence of values.</returns>
-        public static IEnumerable<object> GetEnumValues(this IPropertyItem pi, bool nullAtStart, bool browsableOnly = true)
-        {
-            if (!pi.PropertyType.IsEnumOrNullableEnum())
-            {
-                throw new InvalidOperationException($"The PropertyType ({pi.PropertyType.FullName}) must be enumerable type or nullable enumerable type.");
-            }
-
-            var enumType = pi.PropertyType;
-            var ult = Nullable.GetUnderlyingType(enumType);
-            var isNullable = ult != null;
-            if (isNullable)
-            {
-                enumType = ult;
-            }
-
-            var enumValues = Enum.GetValues(enumType).Cast<object>().ToList();
-            if (browsableOnly)
-            {
-                enumValues = enumValues.FilterOnBrowsableAttribute();
-            }
-            
-            if (isNullable)
-            {
-                if (nullAtStart)
-                {
-                    enumValues.Insert(0, null);
-                }
-                else
-                {
-                    enumValues.Add(null);
-                }
-            }
-
-            return enumValues;
         }
     }
 }

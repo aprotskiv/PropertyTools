@@ -9,6 +9,10 @@
 
 namespace PropertyTools.Wpf
 {
+    using PropertyTools.DataAnnotations;
+    using PropertyTools.Wpf.Common;
+    using PropertyTools.Wpf.Extensions;
+	using PropertyTools.Wpf.Operators;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -16,10 +20,6 @@ namespace PropertyTools.Wpf
     using System.Globalization;
     using System.Linq;
     using System.Windows;
-
-    using PropertyTools.DataAnnotations;
-    using PropertyTools.Wpf.Extensions;
-	using PropertyTools.Wpf.Operators;
     using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
     /// <summary>
@@ -415,7 +415,7 @@ namespace PropertyTools.Wpf
                 BindingSource = this.GetDataContext(cell)
             };
 
-            d.TrySetEnumMetadata(this, cellItem);
+            d.TrySetEnumMetadata(this, this, cellItem);
 
             return d;
         }
@@ -843,6 +843,39 @@ namespace PropertyTools.Wpf
 
             index = -1;
             return false;
+        }
+
+        private IEnumValuesFilterOperator customEnumValuesFilterOperator;
+
+        /// <inheritdoc/>        
+        public void UseEnumValuesFilterOperator(IEnumValuesFilterOperator value)
+        {
+            if (value == this)
+            {
+                throw new ArgumentException("Cannot use itself as custom operator");
+            }
+
+            this.customEnumValuesFilterOperator = value;
+        }
+
+        /// <summary>
+        
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<Enum> GetEnumValues(IPropertyItem pi, object instance, bool browsableOnly = true)
+        {
+            return (customEnumValuesFilterOperator ??  new DefaultEnumValuesFilterOperator())
+                .GetEnumValues(pi, instance, browsableOnly: true);
+        }
+
+        /// <summary>
+        
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<object> GetEnumValuesWithNullEntry(IPropertyItem pi, object instance, bool nullAtStart, bool browsableOnly = true)
+        {
+            return (customEnumValuesFilterOperator ?? new DefaultEnumValuesFilterOperator())
+                .GetEnumValuesWithNullEntry(pi, instance, nullAtStart, browsableOnly);
         }
     }
 }

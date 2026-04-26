@@ -11,6 +11,7 @@ namespace PropertyTools.Wpf
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
@@ -81,6 +82,20 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
+        /// Prepopulated Enum property's metadata
+        /// </summary>
+        /// <remarks>
+        /// Available only when <see cref="EnumType"/> is Enum or Nullable enum
+        /// </remarks>
+        public EnumPropertyMetadata EnumMetadata { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>May contain NULL when <see cref="EnumType"/> is Nullable enum </remarks>
+        public object[] EnumValues { get; set; }
+
+        /// <summary>
         /// Updates the content.
         /// </summary>
         protected override void UpdateContent()
@@ -92,17 +107,16 @@ namespace PropertyTools.Wpf
 
             this.panel.Children.Clear();
 
-            var enumType = this.EnumType;
-            if (enumType != null)
+            Type enumType = null;
+            if (this.EnumMetadata != null)
             {
-                var ult = Nullable.GetUnderlyingType(enumType);
-                if (ult != null)
-                {
-                    enumType = ult;
-                }
+                enumType = this.EnumMetadata.EnumType;
             }
-
-            if (this.Value != null)
+            else if (this.EnumType != null)
+            {
+                enumType = Nullable.GetUnderlyingType(this.EnumType) ?? this.EnumType;                
+            }
+            else if (this.Value != null)
             {
                 enumType = this.Value.GetType();
             }
@@ -112,12 +126,26 @@ namespace PropertyTools.Wpf
                 return;
             }
 
-            var enumValues = Enum.GetValues(enumType).FilterOnBrowsableAttribute().ToList();
-
-            // if the type is nullable, add the null value
-            if (Nullable.GetUnderlyingType(enumType) != null)
+            if (this.Value != null && this.Value.GetType() != enumType)
             {
-                enumValues.Add(null);
+                throw new ArgumentOutOfRangeException($"Value type '{Value.GetType().FullName}' is different than enum type not '{enumType.FullName}'.");
+            }
+
+            List<object> enumValues;
+            if (this.EnumValues != null)
+            {
+                enumValues = this.EnumValues.ToList();
+            }
+            else
+            {
+                enumValues = Enum.GetValues(enumType).Cast<Enum>().FilterOnBrowsableAttribute()
+                    .Cast<object>().ToList();
+
+                // if the type is nullable, add the null value
+                if (Nullable.GetUnderlyingType(enumType) != null)
+                {
+                    enumValues.Add(null);
+                }
             }
 
             var converter = new EnumToBooleanConverter { EnumType = enumType };
@@ -127,15 +155,13 @@ namespace PropertyTools.Wpf
                 object content;
                 if (itemValue != null)
                 {
-                    content = this.DescriptionConverter.Convert(
-                        itemValue,
-                        typeof(string),
-                        null,
-                        CultureInfo.CurrentUICulture);
+                    content = this.EnumMetadata?.EnumDisplayNames?.TryGetValue((Enum)itemValue, out string enumMemberDisplayText) == true
+                            ? enumMemberDisplayText
+                            : this.DescriptionConverter.Convert(itemValue, typeof(string), null, CultureInfo.CurrentUICulture);
                 }
                 else
                 {
-                    content = "-";
+                    content = this.EnumMetadata?.EnumDisplayNull ?? "-";
                 }
 
                 var rb = new RadioButton

@@ -1,5 +1,6 @@
 ﻿using PropertyTools.DataAnnotations;
 using PropertyTools.Wpf.Common;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,7 +74,7 @@ namespace PropertyTools.Wpf.Extensions
                     }
                     else
                     {
-                        displayText = enumPI.EnumMetadata?.EnumDisplayNames?.TryGetValue(x, out string enumMemberDisplayText) == true
+                        displayText = enumPI.EnumMetadata?.EnumDisplayNames?.TryGetValue((Enum)x, out string enumMemberDisplayText) == true
                             ? enumMemberDisplayText
                             : x.ToString();
                     }

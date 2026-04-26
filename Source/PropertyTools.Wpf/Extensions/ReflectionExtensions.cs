@@ -28,10 +28,10 @@ namespace PropertyTools.Wpf
         /// <returns>
         /// The filtered values.
         /// </returns>
-        public static List<object> FilterOnBrowsableAttribute<T>(this T arr) where T : IEnumerable
+        public static List<T> FilterOnBrowsableAttribute<T>(this IEnumerable<T> arr) where T : Enum
         {
             // Default empty list
-            var res = new List<object>();
+            var res = new List<T>();
 
             // Loop each item in the enumerable
             foreach (var o in arr)
