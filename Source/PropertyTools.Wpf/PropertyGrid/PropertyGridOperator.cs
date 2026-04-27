@@ -136,8 +136,6 @@ namespace PropertyTools.Wpf
 					tab.Groups.Add(group);
 				}
 
-				#region Set tab sort index
-
 				if (tab.TabIndex == null)
 				{
 					tab.TabIndex = pi.TabSortIndex;
@@ -150,10 +148,6 @@ namespace PropertyTools.Wpf
 					));
 				}
 
-				#endregion
-
-				#region Set group sort index
-
 				if (group.GroupSortIndex == null)
 				{
 					group.GroupSortIndex = pi.GroupSortIndex;
@@ -165,8 +159,6 @@ namespace PropertyTools.Wpf
 							group.GroupSortIndex, pi.GroupSortIndex, group.Name
 					));
 				}
-
-				#endregion
 
 				group.Properties.Add(pi);
 			}
