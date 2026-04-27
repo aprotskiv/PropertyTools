@@ -14,7 +14,7 @@ namespace PropertyTools.Wpf.Extensions
             where T : ISelectorDefinition
         {
             selectorDefinition.ItemsSource = property.ItemsSource; // May be NULL
-            selectorDefinition.ItemsSourceProperty = property.ItemsSourceDescriptor?.Name; // May be NULL
+            selectorDefinition.ItemsSourcePropertyName = property.ItemsSourceDescriptor?.Name; // May be NULL
             selectorDefinition.DisplayMemberPath = property.DisplayMemberPath;
             selectorDefinition.SelectedValuePath = property.SelectedValuePath;
 
@@ -25,7 +25,7 @@ namespace PropertyTools.Wpf.Extensions
             where T : ISelectorDefinition
         {
             selectorDefinition.ItemsSource = property.ItemsSource; // May be NULL
-            selectorDefinition.ItemsSourceProperty = property.ItemsSourceProperty; // May be NULL
+            selectorDefinition.ItemsSourcePropertyName = property.ItemsSourcePropertyName; // May be NULL
             selectorDefinition.DisplayMemberPath = property.DisplayMemberPath;
             selectorDefinition.SelectedValuePath = property.SelectedValuePath;
             selectorDefinition.DisplayTextForNullItem = property.DisplayTextForNullItem;
@@ -37,7 +37,7 @@ namespace PropertyTools.Wpf.Extensions
             where T : ISelectorDefinition
         {
             selectorDefinition.ItemsSource = column.ItemsSource; // May be NULL
-            selectorDefinition.ItemsSourceProperty = column.ItemsSourceProperty_DataGridItem; // May be NULL
+            selectorDefinition.ItemsSourcePropertyName = column.ItemsSourceProperty_DataGridItem; // May be NULL
             selectorDefinition.DisplayMemberPath = column.DisplayMemberPath;
             selectorDefinition.SelectedValuePath = column.SelectedValuePath;
             selectorDefinition.DisplayTextForNullItem = column.DisplayTextForNullItem;
@@ -63,27 +63,11 @@ namespace PropertyTools.Wpf.Extensions
                 selectorDefinition.ConfigureSelectorDefinition(enumProperty);
             }
 
-            if (selectorDefinition.ItemsSource == null && selectorDefinition.ItemsSourceProperty == null)
+            if (selectorDefinition.ItemsSource == null && selectorDefinition.ItemsSourcePropertyName == null)
             {
                 selectorDefinition.ItemsSource = enumValues.Select(x =>
                 {
-                    string displayText;
-                    if (x == null) // in case it is NULL in Nullable<EnumType>
-                    {
-                        displayText = enumPI.EnumMetadata?.EnumDisplayNull ?? "-";
-                    }
-                    else
-                    {
-                        displayText = enumPI.EnumMetadata?.EnumDisplayNames?.TryGetValue((Enum)x, out string enumMemberDisplayText) == true
-                            ? enumMemberDisplayText
-                            : x.ToString();
-                    }
-
-                    return new ItemsControlItem
-                    {
-                        Value = x,
-                        Text = displayText
-                    };
+                    return BuildItemsControlItem(enumPI.EnumMetadata, x);
                 }).ToList();
 
                 selectorDefinition.DisplayMemberPath = nameof(ItemsControlItem.Text);
@@ -93,10 +77,41 @@ namespace PropertyTools.Wpf.Extensions
             return selectorDefinition;
         }
 
-        public class ItemsControlItem
+        public static ItemsControlItem BuildItemsControlItem(EnumPropertyMetadata enumPropertyMetadata, object value)
+        {
+            string displayText;
+            if (value == null) // in case it is NULL in Nullable<EnumType>
+            {
+                displayText = enumPropertyMetadata?.EnumDisplayNull ?? "-";
+            }
+            else
+            {
+                displayText = enumPropertyMetadata?.EnumDisplayNames?.TryGetValue((Enum)value, out string enumMemberDisplayText) == true
+                    ? enumMemberDisplayText
+                    : value.ToString();
+            }
+
+            return new ItemsControlItem
+            {
+                Value = value,
+                Text = displayText
+            };
+        }
+
+        public class ItemsControlItem : IEquatable<ItemsControlItem>
         {
             public string Text { get; set; }
             public object Value { get; set; }
+
+            public override int GetHashCode()
+            {
+                return Value?.GetHashCode() ?? 0;
+            }
+
+            public bool Equals(ItemsControlItem other)
+            {
+                return Object.Equals(this.Value, other.Value);
+            }
         }
     }
 }

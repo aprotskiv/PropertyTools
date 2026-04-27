@@ -16,12 +16,12 @@ namespace PropertyTools.Wpf
     using System.Windows.Controls.Primitives;
     using System.Windows.Data;
     using PropertyTools.Wpf.Common;
-
+    
     /// <summary>
     /// Represents a control that shows a list of radio buttons.
     /// </summary>
     [TemplatePart(Name = PartPanel, Type = typeof(StackPanel))]
-    public class RadioButtonSelector : Control, ISelectorDefinition
+    public class RadioButtonSelector : ItemsControl, ISelectorDefinition
     {
         /// <summary>
         /// Identifies the <see cref="ItemMargin"/> dependency property.
@@ -208,7 +208,7 @@ namespace PropertyTools.Wpf
                 return;
             }
 
-            var converter = new SelectorItemToBooleanConverter() { SelectorDefinition = this };
+            var converter = CreateConverter();
 
             foreach (var itemValue in itemValues)
             {
@@ -218,11 +218,9 @@ namespace PropertyTools.Wpf
                     content = "-";
                 }
 
-                var rb = new RadioButton
-                {
-                    Content = content,
-                    Padding = this.ItemPadding,
-                };
+                var ctrl = CreateControl();
+                ctrl.Content = content;
+                ctrl.Padding = this.ItemPadding;
 
                 var isCheckedBinding = new Binding(nameof(this.Value))
                 {
@@ -232,12 +230,22 @@ namespace PropertyTools.Wpf
                     Mode = BindingMode.TwoWay
                 };
 
-                rb.SetBinding(ToggleButton.IsCheckedProperty, isCheckedBinding);
+                ctrl.SetBinding(ToggleButton.IsCheckedProperty, isCheckedBinding);
 
-                rb.SetBinding(MarginProperty, new Binding(nameof(this.ItemMargin)) { Source = this });
+                ctrl.SetBinding(MarginProperty, new Binding(nameof(this.ItemMargin)) { Source = this });
 
-                this.panel.Children.Add(rb);
+                this.panel.Children.Add(ctrl);
             }
+        }
+
+        protected virtual ToggleButton CreateControl()
+        {
+            return new RadioButton();
+        }
+
+        protected virtual IValueConverter CreateConverter()
+        {
+            return new SingleStateSelectorItemToBooleanConverter() { SelectorDefinition = this };
         }
 
         protected virtual IEnumerable PopulateItems()
@@ -248,13 +256,13 @@ namespace PropertyTools.Wpf
             {
                 itemValues = this.ItemsSource;
             }
-            else if (this.ItemsSourceProperty != null)
+            else if (this.ItemsSourcePropertyName != null)
             {
                 var instance = this.DataContext;
                 if (instance != null)
                 {
                     // use instance.GetType to be able to fetch static properties also
-                    var p = instance.GetType().GetProperties().FirstOrDefault(x => x.Name == this.ItemsSourceProperty);
+                    var p = instance.GetType().GetProperties().FirstOrDefault(x => x.Name == this.ItemsSourcePropertyName);
                     itemValues = p?.GetValue(instance) as IEnumerable;
                 }
             }
@@ -265,16 +273,10 @@ namespace PropertyTools.Wpf
         #region ISelectorDefinition
 
         /// <inheritdoc/>        
-        public string ItemsSourceProperty {get;set;}
-        
-        /// <inheritdoc/>
-        public IEnumerable ItemsSource { get; set; }
+        public string ItemsSourcePropertyName {get;set;}
         
         /// <inheritdoc/>
         public string SelectedValuePath { get; set; }
-        
-        /// <inheritdoc/>
-        public string DisplayMemberPath { get; set; }
         
         /// <inheritdoc/>
         public bool DisplayTextForNullItem { get; set; }

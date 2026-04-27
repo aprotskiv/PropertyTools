@@ -9,8 +9,11 @@
         /// </summary>
         /// <value>
         /// The items source property.
-        /// </value>        
-        string ItemsSourceProperty { get; set; }
+        /// </value>  
+        /// <remarks>
+        /// Name changed due to naming conflict with <see cref="System.Windows.Controls.ItemsControl.ItemsSourceProperty"/> dependency property.
+        /// </remarks>
+        string ItemsSourcePropertyName { get; set; }
 
         /// <summary>
         /// Gets or sets the items source.

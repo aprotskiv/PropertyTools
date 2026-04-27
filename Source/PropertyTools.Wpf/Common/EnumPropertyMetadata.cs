@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace PropertyTools.Wpf.Common
 {
@@ -24,5 +25,7 @@ namespace PropertyTools.Wpf.Common
         /// Enum type (non-nullable)
         /// </summary>
         public Type EnumType { get;  set; }
+
+        public bool Flags => EnumType.GetCustomAttribute<FlagsAttribute>() != null;
     }
 }

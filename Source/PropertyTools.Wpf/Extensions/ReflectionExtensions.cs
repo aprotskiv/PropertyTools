@@ -12,6 +12,7 @@ namespace PropertyTools.Wpf
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
     using System.Reflection;
 
@@ -207,7 +208,7 @@ namespace PropertyTools.Wpf
         {
             value = null;
 
-            if (target != null)
+            if (target != null && memberName != null)
             {
                 var targetType = target.GetType();
 
@@ -232,5 +233,44 @@ namespace PropertyTools.Wpf
 
             return false;
         }
+
+        public static T GetEnumDefaultValue<T>()
+            where T : struct, Enum
+        {
+            return (T)GetEnumDefaultValue(typeof(T));
+        }
+
+        public static object GetEnumDefaultValue(Type enumType)
+        {
+            var attribute = enumType.GetCustomAttribute<DefaultValueAttribute>(inherit: false);
+            if (attribute != null)
+                return attribute.Value;
+
+            var innerType = enumType.GetEnumUnderlyingType();
+            var zero = Activator.CreateInstance(innerType);
+            if (enumType.IsEnumDefined(zero))
+                return zero;
+
+            var values = enumType.GetEnumValues();
+            return values.GetValue(0);
+        }
+
+        public static void SetFlag<T>(ref T value, T flag) where T : Enum
+        {
+            // 'long' can hold all possible values, except those which 'ulong' can hold.
+            if (Enum.GetUnderlyingType(typeof(T)) == typeof(ulong))
+            {
+                ulong numericValue = Convert.ToUInt64(value);
+                numericValue |= Convert.ToUInt64(flag);
+                value = (T)Enum.ToObject(typeof(T), numericValue);
+            }
+            else
+            {
+                long numericValue = Convert.ToInt64(value);
+                numericValue |= Convert.ToInt64(flag);
+                value = (T)Enum.ToObject(typeof(T), numericValue);
+            }
+        }
+
     }
 }

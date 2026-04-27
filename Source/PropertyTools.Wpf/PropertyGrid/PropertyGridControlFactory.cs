@@ -9,7 +9,7 @@
 
 namespace PropertyTools.Wpf
 {
-    using PropertyTools.Wpf.Common;
+    using PropertyTools.Wpf.Common;    
     using PropertyTools.Wpf.Extensions;
     using PropertyTools.Wpf.Operators;
     using System;
@@ -761,20 +761,29 @@ namespace PropertyTools.Wpf
             {
                 case DataAnnotations.SelectorStyle.RadioButtons:
                     {
-                        var c = new RadioButtonList 
-                        { 
-                            EnumType = property.Descriptor.PropertyType, 
-                            EnumMetadata = property.EnumMetadata,
-                            EnumValues = values,
-                        };
-                        c.SetBinding(RadioButtonList.ValueProperty, property.CreateBinding());
+                        RadioButtonSelector c;
+
+                        if (property.EnumMetadata.Flags || values.Count(x => x != null) == 1 && property.EnumMetadata.IsNullableEnum )
+                        {
+                            // use checkbox to render nullable
+                            values = values.Where(x => x != null).ToArray();
+                            c = new CheckBoxSelector();
+                            property.Converter = new EnumValueToMultiStateSelectorItemsConverter(property.EnumMetadata); // set converter before creating binding
+                        }
+                        else
+                        {
+                            c = new RadioButtonSelector();
+                        }                        
+                        InitEnumItemsControl(c, instance, property, values);
+                        
+                        c.SetBinding(RadioButtonList.ValueProperty, property.CreateBinding());                        
                         return c;
                     }
 
                 case DataAnnotations.SelectorStyle.ComboBox:
                     {
                         var c = new ComboBox();
-                        InitEnumSelector(c, instance, property, values);
+                        InitEnumItemsControl(c, instance, property, values);
                         c.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
                         return c;
                     }
@@ -782,7 +791,7 @@ namespace PropertyTools.Wpf
                 case DataAnnotations.SelectorStyle.ListBox:
                     {
                         var c = new ListBox();
-                        InitEnumSelector(c, instance, property, values);
+                        InitEnumItemsControl(c, instance, property, values);
                         c.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
                         return c;
                     }
@@ -792,9 +801,15 @@ namespace PropertyTools.Wpf
             }
         }
 
-        protected virtual void InitEnumSelector(Selector c, object instance, PropertyItem enumProperty, object[] enumValues)
+        protected virtual void InitEnumItemsControl(ItemsControl c, object instance, PropertyItem enumProperty, object[] enumValues)
         {
-            new SelectorWrapper(c, instance).ConfigureSelectorDefinitionForEnum(enumProperty, enumValues);
+            ISelectorDefinition sd = c is Selector selector
+                ? (ISelectorDefinition)new SelectorWrapper(selector, instance)
+                : (c is RadioButtonSelector radioButtonSelector)
+                    ? radioButtonSelector
+                    : throw new ArgumentException($"The corresponding ISelectorDefinition is not defined for '{c.GetType().FullName}' type.");
+
+            sd.ConfigureSelectorDefinitionForEnum(enumProperty, enumValues);
         }
 
         /// <summary>

@@ -9,23 +9,23 @@
 
 namespace PropertyTools.Wpf
 {
+    using PropertyTools.Wpf.Common;
     using System;
     using System.Collections;
     using System.Globalization;
     using System.Windows;
     using System.Windows.Data;
-    using PropertyTools.Wpf.Common;
 
     /// <summary>
     /// multi-select control item to selected state converter (for example, checkbox list)
     /// </summary>
     [ValueConversion(typeof(IList), typeof(bool))]
-    public class SelectorItemsToBooleanConverter : IValueConverter
+    public class MultiStateSelectorItemsToBooleanConverter : IValueConverter
     {
         private readonly IList _target;
         private readonly ISelectorDefinition _selectorDefinition;
 
-        public SelectorItemsToBooleanConverter(IList target, ISelectorDefinition selectorDefinition)
+        public MultiStateSelectorItemsToBooleanConverter(IList target, ISelectorDefinition selectorDefinition)
         {
             _target = target;
             _selectorDefinition = selectorDefinition;

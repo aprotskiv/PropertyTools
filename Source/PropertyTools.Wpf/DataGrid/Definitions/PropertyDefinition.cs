@@ -94,7 +94,7 @@ namespace PropertyTools.Wpf
         /// Gets or sets the property name of an items source (for ComboBox).
         /// </summary>
         /// <value>The items source property.</value>
-        public string ItemsSourceProperty { get; set; }
+        public string ItemsSourcePropertyName { get; set; }
 
         /// <summary>
         /// Gets or sets the selected value path (for ComboBox).

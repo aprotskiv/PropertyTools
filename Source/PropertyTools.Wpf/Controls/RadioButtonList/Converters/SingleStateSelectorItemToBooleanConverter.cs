@@ -17,11 +17,14 @@ namespace PropertyTools.Wpf
     using PropertyTools.Wpf.Common;
 
     /// <summary>
+    /// single-select control item to selected state converter (for example, radiobutton list)
+    /// </summary>
+    /// <summary>
     /// Enum to Boolean converter
     /// Usage 'Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static value...}'
     /// </summary>
     [ValueConversion(typeof(object), typeof(bool))]
-    public class SelectorItemToBooleanConverter : IValueConverter
+    public class SingleStateSelectorItemToBooleanConverter : IValueConverter
     {
         public ISelectorDefinition SelectorDefinition { get; set; }
 
