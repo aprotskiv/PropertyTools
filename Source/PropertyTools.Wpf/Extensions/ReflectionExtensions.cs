@@ -272,5 +272,17 @@ namespace PropertyTools.Wpf
             }
         }
 
+
+        public static void CopyProperties(object src, object target)
+        {
+            var t = src.GetType();
+
+            foreach (var pi in
+                t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(
+                    pi => pi.CanWrite && pi.GetIndexParameters().Length == 0))
+            {
+                pi.SetValue(target, pi.GetValue(src, null), null);
+            }
+        }
     }
 }

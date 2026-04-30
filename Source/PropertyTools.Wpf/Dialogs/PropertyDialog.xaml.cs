@@ -129,12 +129,8 @@ namespace PropertyTools.Wpf
         {
             var t = src.GetType();
             var clone = Activator.CreateInstance(t);
-            foreach (var pi in
-                t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(
-                    pi => pi.CanWrite && pi.GetIndexParameters().Length == 0))
-            {
-                pi.SetValue(clone, pi.GetValue(src, null), null);
-            }
+
+            ReflectionExtensions.CopyProperties(src, clone);
 
             return clone;
         }
