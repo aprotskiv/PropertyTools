@@ -86,7 +86,7 @@ namespace PropertyTools
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
         [Conditional("DEBUG")]
-        private void VerifyProperty(string propertyName)
+        protected virtual void VerifyProperty(string propertyName)
         {
             var originalType = this.GetType();
             var type = originalType;
