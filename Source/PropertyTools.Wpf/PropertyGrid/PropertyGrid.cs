@@ -150,10 +150,10 @@ namespace PropertyTools.Wpf
             new UIPropertyMetadata(true, AppearanceChanged));
 
         /// <summary>
-        /// Identifies the <see cref="EnumAsRadioButtonsLimit"/> dependency property.
+        /// Identifies the <see cref="RadioButtonsLimit"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty EnumAsRadioButtonsLimitProperty = DependencyProperty.Register(
-            nameof(EnumAsRadioButtonsLimit),
+        public static readonly DependencyProperty RadioButtonsLimitProperty = DependencyProperty.Register(
+            nameof(RadioButtonsLimit),
             typeof(int),
             typeof(PropertyGrid),
             new UIPropertyMetadata(4, AppearanceChanged));
@@ -597,16 +597,16 @@ namespace PropertyTools.Wpf
         /// Gets or sets the maximum number of values to show for radio buttons lists.
         /// </summary>
         /// <value>The limit.</value>
-        public int EnumAsRadioButtonsLimit
+        public int RadioButtonsLimit
         {
             get
             {
-                return (int)this.GetValue(EnumAsRadioButtonsLimitProperty);
+                return (int)this.GetValue(RadioButtonsLimitProperty);
             }
 
             set
             {
-                this.SetValue(EnumAsRadioButtonsLimitProperty, value);
+                this.SetValue(RadioButtonsLimitProperty, value);
             }
         }
 
@@ -1438,7 +1438,7 @@ namespace PropertyTools.Wpf
             propertyPanel.RowDefinitions.Add(rd);
 
             var propertyLabel = this.CreateLabel(pi);
-            var propertyControl = this.CreatePropertyControl(pi);
+            var propertyControl = this.CreatePropertyControl(pi, instance);
             ContentControl errorControl = null;
             PropertyControlFactoryOptions validationOptions = null;
             
@@ -1794,13 +1794,14 @@ namespace PropertyTools.Wpf
         /// Creates the property control.
         /// </summary>
         /// <param name="pi">The property item.</param>
+        /// <param name="instance">The instance.</param>
         /// <returns>
         /// An element.
         /// </returns>
-        private FrameworkElement CreatePropertyControl(PropertyItem pi)
+        private FrameworkElement CreatePropertyControl(PropertyItem pi, object instance)
         {
-            var options = new PropertyControlFactoryOptions { EnumAsRadioButtonsLimit = this.EnumAsRadioButtonsLimit };
-            var control = this.ControlFactory.CreateControl(pi, options);
+            var options = new PropertyControlFactoryOptions { RadioButtonsLimit = this.RadioButtonsLimit };
+            var control = this.ControlFactory.CreateControl(pi, options, instance);
             if (control != null)
             {
                 control.SetValue(AutomationProperties.AutomationIdProperty, pi.PropertyName);

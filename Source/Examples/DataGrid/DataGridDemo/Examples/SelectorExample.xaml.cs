@@ -13,7 +13,8 @@ namespace DataGridDemo
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;    
+    using System.Linq;
+
     using PropertyTools;
     using PropertyTools.DataAnnotations;
 
@@ -53,8 +54,8 @@ namespace DataGridDemo
                 private string fruit1;
                 private string fruit2;
 
-                private Fruit7? fruit7;
-                private Fruit7? fruit8;
+                private FruitT? fruit3;
+                private FruitT? fruit4;
 
                 private City city1;
                 private string city2;
@@ -96,28 +97,32 @@ namespace DataGridDemo
 
 
                 [Editable(true)]
-                public Fruit7? Fruit7
+                [Description("Editable + Localizable + Nullable / 'Banana' only ")]
+                [EnumFilter(EnumFilterAttribute.FilteringMode.Include, FruitT.Banana)]
+                public FruitT? Fruit3
                 {
                     get
                     {
-                        return this.fruit7;
+                        return this.fruit3;
                     }
                     set
                     {
-                        this.SetValue(ref this.fruit7, value);
+                        this.SetValue(ref this.fruit3, value);
                     }
                 }
 
                 [Editable(false)]
-                public Fruit7? Fruit8
+                [Description("Non-editable + Localizable + Nullable / without 'Banana' ")]
+                [EnumFilter(EnumFilterAttribute.FilteringMode.Exclude, FruitT.Banana)]
+                public FruitT? Fruit4
                 {
                     get
                     {
-                        return this.fruit8;
+                        return this.fruit4;
                     }
                     set
                     {
-                        this.SetValue(ref this.fruit8, value);
+                        this.SetValue(ref this.fruit4, value);
                     }
                 }
 
@@ -240,13 +245,18 @@ namespace DataGridDemo
                     }
                 }
             }
+        }
 
-            public enum Fruit7
-            {
-                [Description("Apple")] Apple,
-                [DisplayName("Pear")] Pear,
-                [System.ComponentModel.DescriptionAttribute("Banana")] Banana
-            }
+        public enum FruitT
+        {
+            [Description("Apple")]
+            Apple,
+
+            [DisplayName("Pear")]
+            Pear,
+
+            [System.ComponentModel.DescriptionAttribute("Banana")]
+            Banana
         }
     }
 }

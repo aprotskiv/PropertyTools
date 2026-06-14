@@ -9,7 +9,8 @@
 
 namespace PropertyTools.Wpf
 {
-    using System;
+	using PropertyTools.Wpf.Operators;
+	using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -45,6 +46,8 @@ namespace PropertyTools.Wpf
                 yield break;
             }
 
+            var itemType = this.GetItemType(list);
+
             // Strategy 1: get properties from IItemProperties
             var view = CollectionViewSource.GetDefaultView(list);
             var itemPropertiesView = view as IItemProperties;
@@ -61,7 +64,7 @@ namespace PropertyTools.Wpf
                     var cd = new ColumnDefinition
                     {
                         PropertyName = descriptor.Name,
-                        Header = this.GetLocalizedString(info.Name, declaringType: descriptor.ComponentType),
+                        Header = this.GetLocalizedString(info.Name, declaringType: descriptor.ComponentType, instanceType: itemType, LocalizableResourceKind.Name),
                         HorizontalAlignment = this.DefaultHorizontalAlignment,
                         Width = this.DefaultColumnWidth
                     };
@@ -73,7 +76,6 @@ namespace PropertyTools.Wpf
             }
 
             // Strategy 2: get properties from type descriptor
-            var itemType = this.GetItemType(list);
             var properties = TypeDescriptor.GetProperties(itemType);
             if (properties.Count == 0)
             {
@@ -93,7 +95,7 @@ namespace PropertyTools.Wpf
                     var cd = new ColumnDefinition
                     {
                         PropertyName = descriptor.Name,
-                        Header = this.GetLocalizedString(descriptor.Name, declaringType: descriptor.ComponentType),
+                        Header = this.GetLocalizedString(descriptor.Name, declaringType: descriptor.ComponentType, instanceType: itemType, LocalizableResourceKind.Name),
                         HorizontalAlignment = this.DefaultHorizontalAlignment,
                         Width = this.DefaultColumnWidth
                     };
@@ -109,7 +111,7 @@ namespace PropertyTools.Wpf
             yield return
                 new ColumnDefinition
                 {
-                    Header = this.GetLocalizedString(itemsType.Name, itemsType),
+                    Header = this.GetLocalizedString(itemsType.Name, itemsType, instanceType: itemsType, LocalizableResourceKind.Name),
                     HorizontalAlignment = this.DefaultHorizontalAlignment,
                     Width = this.DefaultColumnWidth
                 };

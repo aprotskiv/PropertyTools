@@ -9,6 +9,7 @@
 
 namespace PropertyTools.Wpf
 {
+    using PropertyTools.DataAnnotations;
     using PropertyTools.Wpf.Common;
     using System.Collections;
 
@@ -18,6 +19,10 @@ namespace PropertyTools.Wpf
     /// <seealso cref="PropertyTools.Wpf.CellDefinition" />
     public class SelectorCellDefinition : CellDefinition, ISelectorDefinition
     {
+        public SelectorCellDefinition()
+        { 
+        }
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is editable.
         /// </summary>
@@ -25,8 +30,6 @@ namespace PropertyTools.Wpf
         /// <c>true</c> if this instance is editable; otherwise, <c>false</c>.
         /// </value>
         public bool IsEditable { get; set; }
-
-        #region ISelectorDefinition
 
         /// <summary>
         /// Gets or sets the items source.
@@ -42,7 +45,7 @@ namespace PropertyTools.Wpf
         /// <value>
         /// The items source property.
         /// </value>
-        public string ItemsSourceProperty { get; set; }
+        public string ItemsSourcePropertyName { get; set; }
 
         /// <summary>
         /// Gets or sets the selected value path.
@@ -70,6 +73,14 @@ namespace PropertyTools.Wpf
         /// </summary>
         public bool DisplayTextForNullItem { get; set; }
 
-        #endregion
+        /// <summary>
+        /// Gets or sets the selector style
+        /// </summary>
+        public SelectorStyle Style { get; set; }
+
+        /// <summary>
+        /// Gets or sets the selector mode
+        /// </summary>
+        public SelectorMode Mode { get; set; }
     }
 }

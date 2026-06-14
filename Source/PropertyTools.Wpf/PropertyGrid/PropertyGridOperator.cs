@@ -9,380 +9,418 @@
 
 namespace PropertyTools.Wpf
 {
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
-	using System.ComponentModel;
-	using System.ComponentModel.DataAnnotations;
-	using System.Globalization;
-	using System.Linq;
-	using System.Windows;
-	using System.Windows.Data;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+    using System.Globalization;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Data;
 
-    using PropertyTools.DataAnnotations;    
+    using PropertyTools.DataAnnotations;
+    using PropertyTools.Wpf.Common;
     using PropertyTools.Wpf.Extensions;
     using PropertyTools.Wpf.Operators;
 
-	/// <summary>
-	/// Creates a model for the <see cref="PropertyGrid" /> control.
-	/// </summary>
-	public class PropertyGridOperator : DefaultLocalizableOperator, IPropertyGridOperator
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PropertyGridOperator" /> class.
-		/// </summary>
-		public PropertyGridOperator()
-		{
-			this.EnabledPattern = "Is{0}Enabled";
-			this.VisiblePattern = "Is{0}Visible";
-			this.OptionalPattern = "Use{0}";
-			this.ModifyCamelCaseDisplayNames = true;
-			this.InheritCategories = true;
-		}
+    /// <summary>
+    /// Creates a model for the <see cref="PropertyGrid" /> control.
+    /// </summary>
+    public class PropertyGridOperator : DefaultLocalizableOperator, IPropertyGridOperator
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyGridOperator" /> class.
+        /// </summary>
+        public PropertyGridOperator()
+        {
+            this.EnabledPattern = "Is{0}Enabled";
+            this.VisiblePattern = "Is{0}Visible";
+            this.OptionalPattern = "Use{0}";
+            this.ModifyCamelCaseDisplayNames = true;
+            this.InheritCategories = true;
+        }
 
-		/// <summary>
-		/// Gets or sets the default name of the category.
-		/// </summary>
-		/// <value>The default name of the category.</value>
-		public string DefaultCategoryName { get; set; }
+        /// <summary>
+        /// Gets or sets the default name of the category.
+        /// </summary>
+        /// <value>The default name of the category.</value>
+        public string DefaultCategoryName { get; set; }
 
-		/// <summary>
-		/// Gets or sets the default name of the tab.
-		/// </summary>
-		/// <value>The default name of the tab.</value>
-		public string DefaultTabName { get; set; }
+        /// <summary>
+        /// Gets or sets the default name of the tab.
+        /// </summary>
+        /// <value>The default name of the tab.</value>
+        public string DefaultTabName { get; set; }
 
-		/// <summary>
-		/// Gets or sets the enabled pattern.
-		/// </summary>
-		/// <value>The enabled pattern.</value>
-		public string EnabledPattern { get; set; }
+        /// <summary>
+        /// Gets or sets the enabled pattern.
+        /// </summary>
+        /// <value>The enabled pattern.</value>
+        public string EnabledPattern { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether each property should inherit the category attribute from the property declared before.
-		/// </summary>
-		public bool InheritCategories { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether each property should inherit the category attribute from the property declared before.
+        /// </summary>
+        public bool InheritCategories { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether to add spaces at the camel bumps of the display names.
-		/// </summary>
-		/// <value><c>true</c> if display names should be modified; otherwise, <c>false</c> .</value>
-		public bool ModifyCamelCaseDisplayNames { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether to add spaces at the camel bumps of the display names.
+        /// </summary>
+        /// <value><c>true</c> if display names should be modified; otherwise, <c>false</c> .</value>
+        public bool ModifyCamelCaseDisplayNames { get; set; }
 
-		/// <summary>
-		/// Gets or sets the optional pattern.
-		/// </summary>
-		/// <value>The optional pattern.</value>
-		public string OptionalPattern { get; set; }
+        /// <summary>
+        /// Gets or sets the optional pattern.
+        /// </summary>
+        /// <value>The optional pattern.</value>
+        public string OptionalPattern { get; set; }
 
-		/// <summary>
-		/// Gets or sets the visible pattern.
-		/// </summary>
-		/// <value>The visible pattern.</value>
-		public string VisiblePattern { get; set; }
+        /// <summary>
+        /// Gets or sets the visible pattern.
+        /// </summary>
+        /// <value>The visible pattern.</value>
+        public string VisiblePattern { get; set; }
 
-		/// <summary>
-		/// Gets or sets the current category.
-		/// </summary>
-		/// <value>The current category.</value>
-		protected string CurrentCategory { get; set; }
+        /// <summary>
+        /// Gets or sets the current category.
+        /// </summary>
+        /// <value>The current category.</value>
+        protected string CurrentCategory { get; set; }
 
-		/// <summary>
-		/// Gets or sets the declaring type of the current category.
-		/// </summary>
-		/// <value>The type of the current category.</value>
-		protected Type CurrentCategoryDeclaringType { get; set; }
+        /// <summary>
+        /// Gets or sets the declaring type of the current category.
+        /// </summary>
+        /// <value>The type of the current category.</value>
+        protected Type CurrentCategoryDeclaringType { get; set; }
 
-		/// <summary>
-		/// Gets or sets the type of the current component.
-		/// </summary>
-		/// <value>The type of the current component.</value>
-		/// <remarks>This is used to avoid that Category attributes are inherited from superclass to subclass.</remarks>
-		protected Type CurrentDeclaringType { get; set; }
+        /// <summary>
+        /// Gets or sets the type of the current component.
+        /// </summary>
+        /// <value>The type of the current component.</value>
+        /// <remarks>This is used to avoid that Category attributes are inherited from superclass to subclass.</remarks>
+        protected Type CurrentDeclaringType { get; set; }
 
-		/// <summary>
-		/// Creates the property model.
-		/// </summary>
-		/// <param name="instance">The instance.</param>
-		/// <param name="isEnumerable">if set to <c>true</c> [is enumerable].</param>
-		/// <param name="options">The options.</param>
-		/// <returns>
-		/// A sorted list of <see cref="Tab" /> .
-		/// </returns>
-		public virtual IEnumerable<Tab> CreateModel(object instance, bool isEnumerable, IPropertyGridOptions options)
-		{
-			if (instance == null)
-			{
-				return null;
-			}
+        /// <summary>
+        /// Creates the property model.
+        /// </summary>
+        /// <param name="instance">The instance.</param>
+        /// <param name="isEnumerable">if set to <c>true</c> [is enumerable].</param>
+        /// <param name="options">The options.</param>
+        /// <returns>
+        /// A sorted list of <see cref="Tab" /> .
+        /// </returns>
+        public virtual IEnumerable<Tab> CreateModel(object instance, bool isEnumerable, IPropertyGridOptions options)
+        {
+            if (instance == null)
+            {
+                return null;
+            }
 
-			this.Reset();
+            this.Reset();
 
-			var tabs = new Dictionary<string, Tab>();
-			foreach (var pi in this.CreatePropertyItems(instance, options).OrderBy(t => t.SortIndex))
-			{
-				var tabHeader = pi.Tab ?? string.Empty;
-				if (!tabs.ContainsKey(tabHeader))
-				{
-					tabs.Add(tabHeader, new Tab { Header = pi.Tab });
-				}
+            var tabs = new Dictionary<string, Tab>();
+            foreach (var pi in this.CreatePropertyItems(instance, options).OrderBy(t => t.SortIndex))
+            {
+                var tabHeader = pi.Tab ?? string.Empty;
+                if (!tabs.ContainsKey(tabHeader))
+                {
+                    tabs.Add(tabHeader, new Tab { Header = pi.Tab });
+                }
 
-				var tab = tabs[tabHeader];
-				var category = pi.Category;
-				var group = tab.Groups.FirstOrDefault(g => g.Header == category);
-				if (group == null)
-				{
-					group = new Group { Header = pi.Category, Name = pi.CategoryIdentifier };
-					tab.Groups.Add(group);
-				}
+                var tab = tabs[tabHeader];
+                var category = pi.Category;
+                var group = tab.Groups.FirstOrDefault(g => g.Header == category);
+                if (group == null)
+                {
+                    group = new Group { Header = pi.Category, Name = pi.CategoryIdentifier };
+                    tab.Groups.Add(group);
+                }
 
-				if (tab.TabIndex == null)
-				{
-					tab.TabIndex = pi.TabSortIndex;
-				}
-				else if (pi.TabSortIndex != null && pi.TabSortIndex != tab.TabIndex)
-				{
-					throw new ApplicationException(
-						String.Format("Two or more different tab indecies ({0} and {1}) are set for same tab '{2}'.",
-							tab.TabIndex, pi.TabSortIndex, tabHeader
-					));
-				}
+                if (tab.TabIndex == null)
+                {
+                    tab.TabIndex = pi.TabSortIndex;
+                }
+                else if (pi.TabSortIndex != null && pi.TabSortIndex != tab.TabIndex)
+                {
+                    throw new ApplicationException(
+                        String.Format("Two or more different tab indecies ({0} and {1}) are set for same tab '{2}'.",
+                            tab.TabIndex, pi.TabSortIndex, tabHeader
+                    ));
+                }
 
-				if (group.GroupSortIndex == null)
-				{
-					group.GroupSortIndex = pi.GroupSortIndex;
-				}
-				else if (pi.GroupSortIndex != null && pi.GroupSortIndex != group.GroupSortIndex)
-				{
-					throw new ApplicationException(
-						String.Format("Two or more different group indecies ({0} and {1}) are set for same group '{2}'.",
-							group.GroupSortIndex, pi.GroupSortIndex, group.Name
-					));
-				}
+                if (group.GroupSortIndex == null)
+                {
+                    group.GroupSortIndex = pi.GroupSortIndex;
+                }
+                else if (pi.GroupSortIndex != null && pi.GroupSortIndex != group.GroupSortIndex)
+                {
+                    throw new ApplicationException(
+                        String.Format("Two or more different group indecies ({0} and {1}) are set for same group '{2}'.",
+                            group.GroupSortIndex, pi.GroupSortIndex, group.Name
+                    ));
+                }
 
-				group.Properties.Add(pi);
-			}
+                group.Properties.Add(pi);
+            }
 
-			return tabs.Values
-				.OrderBy(t => t.TabIndex ?? 0) // sorting tabs
-				.Select(t => t.SortGroups()) // sorting groups inside tab
-				.ToList();
-		}
+            return tabs.Values
+                .OrderBy(t => t.TabIndex ?? 0) // sorting tabs
+                .Select(t => t.SortGroups()) // sorting groups inside tab
+                .ToList();
+        }
 
-		/// <summary>
-		/// Creates a property item.
-		/// </summary>
-		/// <param name="pd">The property descriptor.</param>
-		/// <param name="propertyDescriptors">The property descriptors.</param>
-		/// <param name="instance">The instance.</param>
-		/// <returns>
-		/// A property item.
-		/// </returns>
-		public virtual PropertyItem CreatePropertyItem(PropertyDescriptor pd, PropertyDescriptorCollection propertyDescriptors, object instance)
-		{
-			var pi = this.CreateCore(pd, propertyDescriptors);
-			this.SetProperties(pi, instance);
-			return pi;
-		}
+        /// <summary>
+        /// Creates a property item.
+        /// </summary>
+        /// <param name="pd">The property descriptor.</param>
+        /// <param name="propertyDescriptors">The property descriptors.</param>
+        /// <param name="instance">The instance.</param>
+        /// <returns>
+        /// A property item.
+        /// </returns>
+        public virtual PropertyItem CreatePropertyItem(PropertyDescriptor pd, PropertyDescriptorCollection propertyDescriptors, object instance)
+        {
+            var pi = this.CreateCore(pd, propertyDescriptors);
+            this.SetProperties(pi, instance);
+            return pi;
+        }
 
-		/// <summary>
-		/// Resets this factory.
-		/// </summary>
-		public void Reset()
-		{
-			this.CurrentCategory = null;
-			this.CurrentDeclaringType = null;
-			this.CurrentCategoryDeclaringType = null;
-		}
+        /// <summary>
+        /// Resets this factory.
+        /// </summary>
+        public void Reset()
+        {
+            this.CurrentCategory = null;
+            this.CurrentDeclaringType = null;
+            this.CurrentCategoryDeclaringType = null;
+        }
 
-		/// <summary>
-		/// Creates property items for all properties in the specified object.
-		/// </summary>
-		/// <param name="instance">The object instance.</param>
-		/// <param name="options">The options.</param>
-		/// <returns>
-		/// Enumeration of PropertyItem.
-		/// </returns>
-		protected virtual IEnumerable<PropertyItem> CreatePropertyItems(object instance, IPropertyGridOptions options)
-		{
-			var properties = this.GetPropertyCollection(instance);
-			foreach (var pd in this.GetVisibleProperties(properties, instance, options))
-			{
-				yield return this.CreatePropertyItem(pd, properties, instance);
-			}
-		}
+        /// <summary>
+        /// Creates property items for all properties in the specified object.
+        /// </summary>
+        /// <param name="instance">The object instance.</param>
+        /// <param name="options">The options.</param>
+        /// <returns>
+        /// Enumeration of PropertyItem.
+        /// </returns>
+        protected virtual IEnumerable<PropertyItem> CreatePropertyItems(object instance, IPropertyGridOptions options)
+        {
+            var properties = this.GetPropertyCollection(instance);
+            foreach (var pd in this.GetVisibleProperties(properties, instance, options))
+            {
+                yield return this.CreatePropertyItem(pd, properties, instance);
+            }
+        }
 
-		/// <summary>
-		/// Gets the property descriptor collection for the specified object.
-		/// </summary>
-		/// <param name="instance">The object instance.</param>
-		/// <returns>The property collection</returns>
-		protected virtual PropertyDescriptorCollection GetPropertyCollection(object instance)
-		{
-			var instanceType = instance.GetType();
+        /// <summary>
+        /// Gets the property descriptor collection for the specified object.
+        /// </summary>
+        /// <param name="instance">The object instance.</param>
+        /// <returns>The property collection</returns>
+        protected virtual PropertyDescriptorCollection GetPropertyCollection(object instance)
+        {
+            var instanceType = instance.GetType();
 
-			// check if the MetadataTypeAttribute is set
-			var metadataTypeAttribute = instanceType.GetCustomAttributes(typeof(MetadataTypeAttribute), true)
-									 .OfType<MetadataTypeAttribute>().FirstOrDefault();
-			PropertyDescriptorCollection properties;
-			if (metadataTypeAttribute != null)
-			{
-				// use the metadata type for reflection
-				instanceType = metadataTypeAttribute.MetadataClassType;
-				properties = TypeDescriptor.GetProperties(instanceType);
-			}
-			else
-			{
-				properties = TypeDescriptor.GetProperties(instance);
-			}
+            // check if the MetadataTypeAttribute is set
+            var metadataTypeAttribute = instanceType.GetCustomAttributes(typeof(MetadataTypeAttribute), true)
+                                     .OfType<MetadataTypeAttribute>().FirstOrDefault();
+            PropertyDescriptorCollection properties;
+            if (metadataTypeAttribute != null)
+            {
+                // use the metadata type for reflection
+                instanceType = metadataTypeAttribute.MetadataClassType;
+                properties = TypeDescriptor.GetProperties(instanceType);
+            }
+            else
+            {
+                properties = TypeDescriptor.GetProperties(instance);
 
-			return properties;
-		}
+                // When the instance implements ICustomTypeDescriptor (e.g. DbConnectionStringBuilder),
+                // GetProperties() may return descriptors whose GetValue/SetValue read raw dictionary
+                // entries rather than delegating to the typed CLR property accessors.  WPF binding also
+                // routes through ICustomTypeDescriptor, so it receives null or a plain string instead of
+                // the expected bool / enum / byte[] value.  Replacing each such descriptor with the
+                // corresponding reflection-backed descriptor restores correct typed access (issue #288).
+                if (instance is ICustomTypeDescriptor)
+                {
+                    properties = ReplaceWithReflectionDescriptors(properties, instanceType);
+                }
+            }
 
-		/// <summary>
-		/// Gets the visible properties from the specified property descriptor collection.
-		/// </summary>
-		/// <param name="properties">The property descriptor collection.</param>
-		/// <param name="instance">The object instance.</param>
-		/// <param name="options">The options.</param>
-		/// <returns>A sequence of property descriptors.</returns>
-		protected IEnumerable<PropertyDescriptor> GetVisibleProperties(PropertyDescriptorCollection properties, object instance, IPropertyGridOptions options)
-		{
-			var instanceType = instance.GetType();
+            return properties;
+        }
 
-			foreach (PropertyDescriptor pd in this.GetBrowsableProperties(properties))
-			{
-				if (options.ShowDeclaredOnly && pd.ComponentType != instanceType)
-				{
-					continue;
-				}
+        /// <summary>
+        /// Replaces descriptors obtained from <see cref="ICustomTypeDescriptor" /> with the
+        /// corresponding reflection-based descriptors from <paramref name="instanceType" />.
+        /// Descriptors that have no matching CLR property (e.g. dynamic keys) are kept as-is.
+        /// </summary>
+        /// <param name="properties">The descriptor collection from ICustomTypeDescriptor.</param>
+        /// <param name="instanceType">The concrete type of the source object.</param>
+        /// <returns>A new collection where each descriptor uses CLR reflection for value access.</returns>
+        private static PropertyDescriptorCollection ReplaceWithReflectionDescriptors(
+            PropertyDescriptorCollection properties, Type instanceType)
+        {
+            var typeDescriptors = TypeDescriptor.GetProperties(instanceType);
+            var result = new List<PropertyDescriptor>(properties.Count);
 
-				// Read-only properties
-				if (!options.ShowReadOnlyProperties && pd.IsReadOnly())
-				{
-					continue;
-				}
+            foreach (PropertyDescriptor pd in properties)
+            {
+                // Prefer the reflection-backed descriptor so that GetValue/SetValue invoke the
+                // actual CLR property getter/setter instead of the ICustomTypeDescriptor override.
+                var reflectPd = typeDescriptors[pd.Name];
+                result.Add(reflectPd ?? pd);
+            }
 
-				// If RequiredAttribute is set, skip properties that don't have the given attribute
-				if (options.RequiredAttribute != null && pd.GetFirstAttributeOrDefault(options.RequiredAttribute) == null)
-				{
-					continue;
-				}
+            return new PropertyDescriptorCollection(result.ToArray());
+        }
 
-				yield return pd;
-			}
-		}
+        /// <summary>
+        /// Gets the visible properties from the specified property descriptor collection.
+        /// </summary>
+        /// <param name="properties">The property descriptor collection.</param>
+        /// <param name="instance">The object instance.</param>
+        /// <param name="options">The options.</param>
+        /// <returns>A sequence of property descriptors.</returns>
+        protected IEnumerable<PropertyDescriptor> GetVisibleProperties(PropertyDescriptorCollection properties, object instance, IPropertyGridOptions options)
+        {
+            var instanceType = instance.GetType();
 
-		/// <summary>
-		/// Gets the visible properties from the specified property descriptor collection.
-		/// </summary>
-		/// <param name="properties">The property descriptor collection.</param>
-		/// <returns>A sequence of property descriptors.</returns>
-		protected IEnumerable<PropertyDescriptor> GetBrowsableProperties(PropertyDescriptorCollection properties)
-		{
-			bool justTrue = AreBrowsableAttributesJustTrue(properties);
+            foreach (PropertyDescriptor pd in this.GetBrowsableProperties(properties))
+            {
+                if (options.ShowDeclaredOnly && pd.ComponentType != instanceType)
+                {
+                    continue;
+                }
 
-			foreach (PropertyDescriptor pd in properties)
-			{
-				var portableBrowsableAttribute = pd.GetFirstAttributeOrDefault<DataAnnotations.BrowsableAttribute>();
-				var systemBrowsableAttribute = pd.GetFirstAttributeOrDefault<System.ComponentModel.BrowsableAttribute>();
+                // Read-only properties
+                if (!options.ShowReadOnlyProperties && pd.IsReadOnly())
+                {
+                    continue;
+                }
 
-				// If all BrowsableAttributes in the properties are set to true, the default will be changed to false, e.g. you need to opt-in.
-				if (justTrue)
-				{
-					// Skip properties not marked with [Browsable()]
-					if (portableBrowsableAttribute == null && systemBrowsableAttribute == null)
-					{
-						continue;
-					}
+                // If RequiredAttribute is set, skip properties that don't have the given attribute
+                if (options.RequiredAttribute != null && pd.GetFirstAttributeOrDefault(options.RequiredAttribute) == null)
+                {
+                    continue;
+                }
 
-					// Skip properties not marked with [Browsable(true)]
-					if (portableBrowsableAttribute != null && !portableBrowsableAttribute.Browsable)
-					{
-						continue;
-					}
+                yield return pd;
+            }
+        }
 
-					// Skip properties not marked with [Browsable(true)]
-					if (systemBrowsableAttribute != null && !systemBrowsableAttribute.Browsable)
-					{
-						continue;
-					}
-				}
-				// if any BrowsableAttribute in the properties are set to false, the default is true, e.g. you need to opt-out.
-				else
-				{
-					// Skip properties marked with [PropertyTools.DataAnnotations.Browsable(false)]
-					if (portableBrowsableAttribute != null && !portableBrowsableAttribute.Browsable)
-					{
-						continue;
-					}
+        /// <summary>
+        /// Gets the visible properties from the specified property descriptor collection.
+        /// </summary>
+        /// <param name="properties">The property descriptor collection.</param>
+        /// <returns>A sequence of property descriptors.</returns>
+        protected IEnumerable<PropertyDescriptor> GetBrowsableProperties(PropertyDescriptorCollection properties)
+        {
+            bool justTrue = AreBrowsableAttributesJustTrue(properties);
 
-					// Skip properties marked with [System.ComponentModel.Browsable(false)]
-					if (!pd.IsBrowsable)
-					{
-						continue;
-					}
-				}
+            foreach (PropertyDescriptor pd in properties)
+            {
+                var portableBrowsableAttribute = pd.GetFirstAttributeOrDefault<DataAnnotations.BrowsableAttribute>();
+                var systemBrowsableAttribute = pd.GetFirstAttributeOrDefault<System.ComponentModel.BrowsableAttribute>();
 
-				yield return pd;
-			}
-		}
+                // If all BrowsableAttributes in the properties are set to true, the default will be changed to false, e.g. you need to opt-in.
+                if (justTrue)
+                {
+                    // Skip properties not marked with [Browsable()]
+                    if (portableBrowsableAttribute == null && systemBrowsableAttribute == null)
+                    {
+                        continue;
+                    }
 
-		/// <summary>
-		/// Iterates over <see cref="PropertyDescriptorCollection"/> and determines whether the value of <see cref="System.ComponentModel.BrowsableAttribute"/>
-		/// or <see cref="DataAnnotations.BrowsableAttribute"/>, for those <see cref="PropertyDescriptor"/>s with such Attributes, is exclusively <see cref="true"/>
-		/// </summary>
-		/// <param name="propertyDescriptors">The collection of property descriptors.</param>
-		/// <returns>
-		/// A boolean
-		/// </returns>
-		protected bool AreBrowsableAttributesJustTrue(PropertyDescriptorCollection propertyDescriptors)
-		{
-			var attributes = propertyDescriptors.OfType<PropertyDescriptor>()
-			  .Select(pd => Tuple.Create(pd.GetFirstAttributeOrDefault<DataAnnotations.BrowsableAttribute>(), pd.GetFirstAttributeOrDefault<System.ComponentModel.BrowsableAttribute>()))
-			  .ToArray();
+                    // Skip properties not marked with [Browsable(true)]
+                    if (portableBrowsableAttribute != null && !portableBrowsableAttribute.Browsable)
+                    {
+                        continue;
+                    }
 
-			bool isAnyFalse = attributes.Any(a => (a.Item1 != null && a.Item1.Browsable == false) || (a.Item2 != null && a.Item2.Browsable == false));
-			bool isAnyTrue = attributes.Any(a => (a.Item1 != null && a.Item1.Browsable) || (a.Item2 != null && a.Item2.Browsable));
+                    // Skip properties not marked with [Browsable(true)]
+                    if (systemBrowsableAttribute != null && !systemBrowsableAttribute.Browsable)
+                    {
+                        continue;
+                    }
+                }
+                // if any BrowsableAttribute in the properties are set to false, the default is true, e.g. you need to opt-out.
+                else
+                {
+                    // Skip properties marked with [PropertyTools.DataAnnotations.Browsable(false)]
+                    if (portableBrowsableAttribute != null && !portableBrowsableAttribute.Browsable)
+                    {
+                        continue;
+                    }
 
-			return isAnyTrue && !isAnyFalse;
-		}
+                    // Skip properties marked with [System.ComponentModel.Browsable(false)]
+                    if (!pd.IsBrowsable)
+                    {
+                        continue;
+                    }
+                }
 
-		/// <summary>
-		/// Creates the property item instance.
-		/// </summary>
-		/// <param name="pd">The property descriptor.</param>
-		/// <param name="propertyDescriptors">The collection of property descriptors.</param>
-		/// <returns>
-		/// A property item.
-		/// </returns>
-		protected virtual PropertyItem CreateCore(PropertyDescriptor pd, PropertyDescriptorCollection propertyDescriptors)
-		{
-			return new PropertyItem(pd, propertyDescriptors);
-		}
+                yield return pd;
+            }
+        }
 
-		/// <summary>
-		/// Gets the category for the specified property.
-		/// </summary>
-		/// <param name="pd">The property descriptor.</param>
-		/// <param name="declaringType">The declaring type.</param>
-		/// <returns>
-		/// A category string.
-		/// </returns>
-		protected virtual string GetCategory(PropertyDescriptor pd, Type declaringType)
-		{
-			return pd.GetCategory();
-		}
+        /// <summary>
+        /// Iterates over <see cref="PropertyDescriptorCollection"/> and determines whether the value of <see cref="System.ComponentModel.BrowsableAttribute"/>
+        /// or <see cref="DataAnnotations.BrowsableAttribute"/>, for those <see cref="PropertyDescriptor"/>s with such Attributes, is exclusively <see cref="true"/>
+        /// </summary>
+        /// <param name="propertyDescriptors">The collection of property descriptors.</param>
+        /// <returns>
+        /// A boolean
+        /// </returns>
+        protected bool AreBrowsableAttributesJustTrue(PropertyDescriptorCollection propertyDescriptors)
+        {
+            var attributes = propertyDescriptors.OfType<PropertyDescriptor>()
+              .Select(pd => Tuple.Create(pd.GetFirstAttributeOrDefault<DataAnnotations.BrowsableAttribute>(), pd.GetFirstAttributeOrDefault<System.ComponentModel.BrowsableAttribute>()))
+              .ToArray();
+
+            bool isAnyFalse = attributes.Any(a => (a.Item1 != null && a.Item1.Browsable == false) || (a.Item2 != null && a.Item2.Browsable == false));
+            bool isAnyTrue = attributes.Any(a => (a.Item1 != null && a.Item1.Browsable) || (a.Item2 != null && a.Item2.Browsable));
+
+            return isAnyTrue && !isAnyFalse;
+        }
+
+        /// <summary>
+        /// Creates the property item instance.
+        /// </summary>
+        /// <param name="pd">The property descriptor.</param>
+        /// <param name="propertyDescriptors">The collection of property descriptors.</param>
+        /// <returns>
+        /// A property item.
+        /// </returns>
+        protected virtual PropertyItem CreateCore(PropertyDescriptor pd, PropertyDescriptorCollection propertyDescriptors)
+        {
+            return new PropertyItem(pd, propertyDescriptors);
+        }
+
+        /// <summary>
+        /// Gets the category for the specified property.
+        /// </summary>
+        /// <param name="pd">The property descriptor.</param>
+        /// <param name="declaringType">The declaring type.</param>
+        /// <returns>
+        /// A category string.
+        /// </returns>
+        protected virtual string GetCategory(PropertyDescriptor pd, Type declaringType)
+        {
+            return pd.GetCategory();
+        }
 
         /// <summary>
         /// Gets the description for the specified property.
         /// </summary>
         /// <param name="pd">The property descriptor.</param>
         /// <param name="declaringType">The declaring type.</param>
+        /// <param name="instance">The instance.</param>
         /// <returns>
         /// A description string.
         /// </returns>
-        protected virtual string GetDescription(PropertyDescriptor pd, Type declaringType)
+        protected virtual string GetDescription(PropertyDescriptor pd, Type declaringType, object instance)
         {
             return pd.GetDescription();
         }
@@ -392,10 +430,11 @@ namespace PropertyTools.Wpf
         /// </summary>
         /// <param name="pd">The property descriptor.</param>
         /// <param name="declaringType">The declaring type.</param>
+        /// <param name="instance">The instance.</param>
         /// <returns>
         /// A display name string.
         /// </returns>
-        protected virtual string GetDisplayName(PropertyDescriptor pd, Type declaringType)
+        protected virtual string GetDisplayName(PropertyDescriptor pd, Type declaringType, object instance)
         {
             var displayName = pd.GetDisplayName();
 
@@ -408,13 +447,42 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
+        /// Gets the TabSortIndex for the specified property.
+        /// </summary>
+        /// <param name="pd">The property descriptor.</param>
+        /// <param name="declaringType">The declaring type.</param>
+        /// <param name="instance">The instance.</param>
+        /// <returns>
+        /// A TabSortIndex.
+        /// </returns>
+        protected virtual uint? GetTabSortIndex(PropertyDescriptor pd, Type declaringType, object instance)
+        {
+            return pd.GetAttributeValue<DataAnnotations.CategoryAttribute, uint?>((x) => x.TabSortIndex);
+        }
+
+        /// <summary>
+        /// Gets the GroupSortIndex for the specified property.
+        /// </summary>
+        /// <param name="pd">The property descriptor.</param>
+        /// <param name="declaringType">The declaring type.</param>
+        /// <param name="instance">The instance.</param>
+        /// <returns>
+        /// A GroupSortIndex.
+        /// </returns>
+        protected virtual uint? GetGroupSortIndex(PropertyDescriptor pd, Type declaringType, object instance)
+        {
+            return pd.GetAttributeValue<DataAnnotations.CategoryAttribute, uint?>((x) => x.GroupSortIndex);
+        }
+
+        /// <summary>
         /// Sets the properties.
         /// </summary>
         /// <param name="pi">The property item.</param>
         /// <param name="instance">The instance.</param>
         protected virtual void SetProperties(PropertyItem pi, object instance)
         {
-            var tabName = this.DefaultTabName ?? instance.GetType().Name;
+            var instanceType = instance.GetType();
+            var tabName = this.DefaultTabName ?? instanceType.Name;
             var categoryName = this.DefaultCategoryName;
 
             // find the declaring type
@@ -468,20 +536,20 @@ namespace PropertyTools.Wpf
                 }
             }
 
-            var displayName = this.GetDisplayName(pi.Descriptor, declaringType);
-            var description = this.GetDescription(pi.Descriptor, declaringType);
+            var displayName = this.GetDisplayName(pi.Descriptor, declaringType, instance);
+            var description = this.GetDescription(pi.Descriptor, declaringType, instance);
 
-			pi.CategoryIdentifier = categoryName;
-			
+            pi.CategoryIdentifier = categoryName;
+
             // set tab/group sort index
-			pi.TabSortIndex = ca2?.TabSortIndex;
-			pi.GroupSortIndex = ca2?.GroupSortIndex;
+            pi.TabSortIndex = this.GetTabSortIndex(pi.Descriptor, declaringType, instance);
+            pi.GroupSortIndex = this.GetGroupSortIndex(pi.Descriptor, declaringType, instance);
 
-			// Localize the strings
-			pi.DisplayName = this.GetLocalizedString(displayName, declaringType);
-            pi.Description = this.GetLocalizedDescription(description, declaringType);
-            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType);
-            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType);
+            // Localize the strings
+            pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instance.GetType(), LocalizableResourceKind.Name);
+            pi.Description = this.GetLocalizedDescription(description, declaringType, instance.GetType());
+            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Category);
+            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Tab);
 
             pi.IsReadOnly = pi.Descriptor.IsReadOnly();
 
@@ -509,6 +577,12 @@ namespace PropertyTools.Wpf
                 pi.ConverterParameter = pi.FormatString;
             }
 
+            if (pi.Descriptor.PropertyType == typeof(TimeSpan) && pi.Converter == null)
+            {
+                pi.Converter = new TimeSpanToStringConverter();
+                pi.ConverterParameter = pi.FormatString;
+            }
+
             var underlyingType = Nullable.GetUnderlyingType(pi.Descriptor.PropertyType);
             if ((pi.Descriptor.PropertyType == typeof(DateTime) || underlyingType == typeof(DateTime))
                 && pi.Converter == null
@@ -518,7 +592,7 @@ namespace PropertyTools.Wpf
                 pi.ConverterParameter = pi.FormatString;
             }
 
-			pi.TrySetEnumMetadata(this);            
+            pi.TrySetEnumMetadata(this, this, instance);
         }
 
         /// <summary>
@@ -533,6 +607,12 @@ namespace PropertyTools.Wpf
             if (ssa != null)
             {
                 pi.SelectorStyle = ssa.SelectorStyle;
+            }
+
+            var sma = attribute as SelectorModeAttribute;
+            if (sma != null)
+            {
+                pi.SelectorMode = sma.SelectorMode;
             }
 
             var svpa = attribute as SelectedValuePathAttribute;
@@ -610,9 +690,9 @@ namespace PropertyTools.Wpf
             var cpa = attribute as ColumnsPropertyAttribute;
             if (cpa != null)
             {
-                var descriptor = pi.GetDescriptor(cpa.PropertyName);
-                var columns = descriptor?.GetValue(instance) as IEnumerable<Column>;
-
+                // allow static and non-static properties
+                var instanceType = instance?.GetType();
+                var columns = instanceType?.GetProperty(cpa.PropertyName)?.GetValue(instance) as IEnumerable<Column>;
                 if (columns != null)
                 {
                     var glc = new GridLengthConverter();
@@ -638,7 +718,9 @@ namespace PropertyTools.Wpf
 
                         if (elementType != null)
                         {
-                            object[] converterAttributes = elementType.GetProperty(column.PropertyName)?.GetCustomAttributes(typeof(ConverterAttribute), true);
+                            var elementProperty = elementType.GetProperty(column.PropertyName);
+
+                            object[] converterAttributes = elementProperty?.GetCustomAttributes(typeof(ConverterAttribute), true);
                             if (converterAttributes != null && converterAttributes.Length > 0)
                             {
                                 Type converterType = ((ConverterAttribute)converterAttributes[0]).ConverterType;
@@ -648,24 +730,35 @@ namespace PropertyTools.Wpf
                                 }
                             }
 
-                            object[] descriptionAttributes = elementType.GetProperty(column.PropertyName)?.GetCustomAttributes(typeof(PropertyTools.DataAnnotations.DescriptionAttribute), true);
-                            if (descriptionAttributes != null && descriptionAttributes.Length > 0)
+                            string description =
+                                elementProperty?.GetCustomAttributes(typeof(PropertyTools.DataAnnotations.DescriptionAttribute), true)
+                                    .Cast<PropertyTools.DataAnnotations.DescriptionAttribute>().FirstOrDefault()?.Description
+                                ??
+                                elementProperty?.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), true)
+                                    .Cast<System.ComponentModel.DescriptionAttribute>().FirstOrDefault()?.Description
+                                ;
+
+                            if (!string.IsNullOrWhiteSpace(description))
                             {
-                                toolTip = ((DataAnnotations.DescriptionAttribute)descriptionAttributes[0]).Description;
+                                toolTip = this.GetLocalizedString(description, declaringType: column.GetType(), instanceType: instanceType, LocalizableResourceKind.Description);
                             }
                         }
 
                         var cd = new ColumnDefinition
                         {
                             PropertyName = column.PropertyName,
-                            Header = this.GetLocalizedString(column.Header, declaringType: elementType),
+                            Header = this.GetLocalizedString(column.Header, declaringType: elementType, instance.GetType(), LocalizableResourceKind.Name),
                             FormatString = column.FormatString,
                             Width = (GridLength)(glc.ConvertFromInvariantString(column.Width) ?? GridLength.Auto),
                             IsReadOnly = column.IsReadOnly,
                             HorizontalAlignment = StringUtilities.ToHorizontalAlignment(column.Alignment.ToString(CultureInfo.InvariantCulture)),
                             Converter = converter,
                             Tooltip = toolTip,
-                        };
+                            CanSort = column.IsSortable,
+                            SelectorStyle = column.SelectorStyle,
+                            SelectorMode = column.SelectorMode,
+                            AutoUpdateText = column.AutoUpdateText
+                        }.ConfigureSelectorDefinition(column);
 
                         if (column.ItemsSourcePropertyName != null)
                         {
@@ -884,6 +977,13 @@ namespace PropertyTools.Wpf
                 pi.AcceptsReturn = true;
             }
 
+            var dgdrha = attribute as DataGridDefaultRowHeightAttribute;
+            if (dgdrha != null)
+            {
+                pi.DataGridDefaultRowHeightInPixels = dgdrha.Pixels;
+                pi.DataGridDefaultRowHeightAuto = dgdrha.IsAuto();
+            }
+
             var fta = attribute as FillTabAttribute;
             if (fta != null)
             {
@@ -891,8 +991,17 @@ namespace PropertyTools.Wpf
                 pi.AcceptsReturn = true;
             }
         }
+
+        /// <inheritdoc/>
+        public virtual IEnumerable<Enum> GetEnumValues(IPropertyItem pi, object instance, bool browsableOnly = true)
+        {
+            return new DefaultEnumValuesFilterOperator().GetEnumValues(pi, instance, browsableOnly);
+        }
+
+        /// <inheritdoc/>
+        public virtual IEnumerable<object> GetEnumValuesWithNullEntry(IPropertyItem pi, object instance, bool nullAtStart, bool browsableOnly = true)
+        {
+            return new DefaultEnumValuesFilterOperator().GetEnumValuesWithNullEntry(pi, instance, nullAtStart, browsableOnly);
+        }
     }
-
-		
-
 }

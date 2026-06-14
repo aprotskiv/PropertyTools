@@ -117,16 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ExampleLibrary.Fruit7.-" xml:space="preserve">
+  <data name="PropertyGridDemo.Examples.EnumsWithOperatorsExample+Fruit2T.-" xml:space="preserve">
     <value>(no seleccionado)</value>
   </data>
-  <data name="ExampleLibrary.Fruit7.Apple" xml:space="preserve">
+  <data name="PropertyGridDemo.Examples.EnumsWithOperatorsExample+Fruit2T.Apple" xml:space="preserve">
     <value>Manzana</value>
   </data>
-  <data name="ExampleLibrary.Fruit7.Banana" xml:space="preserve">
+  <data name="PropertyGridDemo.Examples.EnumsWithOperatorsExample+Fruit2T.Banana" xml:space="preserve">
     <value>Plátano</value>
   </data>
-  <data name="ExampleLibrary.Fruit7.Pear" xml:space="preserve">
+  <data name="PropertyGridDemo.Examples.EnumsWithOperatorsExample+Fruit2T.Pear" xml:space="preserve">
     <value>Pera</value>
   </data>
 </root>

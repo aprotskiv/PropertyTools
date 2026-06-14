@@ -9,15 +9,13 @@
 
 namespace PropertyTools.Wpf
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Data;
     using System.Windows.Media;
     using System.Windows.Shapes;
-    using static PropertyTools.Wpf.Extensions.EnumPropertyExtensions;
+
     using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
     /// <summary>
@@ -29,12 +27,13 @@ namespace PropertyTools.Wpf
         /// Creates the display control with data binding.
         /// </summary>
         /// <param name="d">The cell definition.</param>
+        /// <param name="cell">The cell.</param>
         /// <returns>
         /// The control.
         /// </returns>
-        public FrameworkElement CreateDisplayControl(CellDefinition d)
+        public FrameworkElement CreateDisplayControl(CellDefinition d, CellRef cell)
         {
-            var element = this.CreateDisplayControlOverride(d);
+            var element = this.CreateDisplayControlOverride(d, cell);
             return element;
         }
 
@@ -42,17 +41,18 @@ namespace PropertyTools.Wpf
         /// Creates the edit control with data binding.
         /// </summary>
         /// <param name="d">The cell definition.</param>
+        /// <param name="cell">The cell.</param>
         /// <returns>
         /// The control.
         /// </returns>
-        public virtual FrameworkElement CreateEditControl(CellDefinition d)
+        public virtual FrameworkElement CreateEditControl(CellDefinition d, CellRef cell)
         {
             if (d.IsReadOnly)
             {
                 return null;
             }
 
-            var element = this.CreateEditControlOverride(d);
+            var element = this.CreateEditControlOverride(d, cell);
 
             if (element != null)
             {
@@ -69,7 +69,7 @@ namespace PropertyTools.Wpf
         /// </summary>
         /// <param name="d">The cell definition.</param>
         /// <returns>The display control.</returns>
-        protected virtual FrameworkElement CreateDisplayControlOverride(CellDefinition d)
+        protected virtual FrameworkElement CreateDisplayControlOverride(CellDefinition d, CellRef cell)
         {
             var scd = d as SelectorCellDefinition;
             if (scd != null)
@@ -108,10 +108,11 @@ namespace PropertyTools.Wpf
         /// Creates the edit control.
         /// </summary>
         /// <param name="d">The cell definition.</param>
+        /// <param name="cell">The cell.</param>
         /// <returns>
         /// The control.
         /// </returns>
-        protected virtual FrameworkElement CreateEditControlOverride(CellDefinition d)
+        protected virtual FrameworkElement CreateEditControlOverride(CellDefinition d, CellRef cell)
         {
             var co = d as SelectorCellDefinition;
             if (co != null)
@@ -143,7 +144,7 @@ namespace PropertyTools.Wpf
                 return this.CreateTextBox(te);
             }
 
-            return this.CreateDisplayControl(d);
+            return this.CreateDisplayControl(d, cell);
         }
 
         /// <summary>
@@ -373,9 +374,9 @@ namespace PropertyTools.Wpf
             }
             else
             {
-                if (d.ItemsSourceProperty != null)
+                if (d.ItemsSourcePropertyName != null)
                 {
-                    var itemsSourceBinding = new Binding(d.ItemsSourceProperty);
+                    var itemsSourceBinding = new Binding(d.ItemsSourcePropertyName);
                     c.SetBinding(ItemsControl.ItemsSourceProperty, itemsSourceBinding);
                 }
             }
@@ -464,17 +465,17 @@ namespace PropertyTools.Wpf
                 Padding = new Thickness(4, 0, 4, 0)
             };
 
-            var binding = this.CreateOneWayBinding(d);        
+            var binding = this.CreateOneWayBinding(d);
 
             if (!string.IsNullOrEmpty(d.DisplayMemberPath))
             {
                 if (string.IsNullOrEmpty(d.SelectedValuePath))
-            {
-                binding.Path.Path += "." + d.DisplayMemberPath;
+                {
+                    binding.Path.Path += "." + d.DisplayMemberPath;
                 }
                 else
                 {
-                    if (d.ItemsSource != null)
+                    if (d.ItemsSource != null && binding.Converter == null)
                     {
                         binding.Converter = new SelectorDefinitionTranslationConverter(d);
                     }

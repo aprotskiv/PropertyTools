@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies that the value contains content that should be handled by a ContentControl.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class ContentAttribute : Attribute
+    public class ContentAttribute : AbstractAttribute
     {
     }
 }

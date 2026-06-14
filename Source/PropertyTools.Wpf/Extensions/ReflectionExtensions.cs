@@ -12,6 +12,7 @@ namespace PropertyTools.Wpf
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
     using System.Reflection;
 
@@ -28,10 +29,10 @@ namespace PropertyTools.Wpf
         /// <returns>
         /// The filtered values.
         /// </returns>
-        public static List<object> FilterOnBrowsableAttribute<T>(this T arr) where T : IEnumerable
+        public static List<T> FilterOnBrowsableAttribute<T>(this IEnumerable<T> arr) where T : Enum
         {
             // Default empty list
-            var res = new List<object>();
+            var res = new List<T>();
 
             // Loop each item in the enumerable
             foreach (var o in arr)
@@ -207,7 +208,7 @@ namespace PropertyTools.Wpf
         {
             value = null;
 
-            if (target != null)
+            if (target != null && !string.IsNullOrEmpty(memberName))
             {
                 var targetType = target.GetType();
 
@@ -231,6 +232,130 @@ namespace PropertyTools.Wpf
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Gets the default enum value.
+        /// </summary>
+        /// <remarks>
+        /// Enum value is resolved in following order:<para/>
+        /// 1) enum member that corresponds to the <see cref="DefaultValueAttribute.Value"/> <para/>
+        /// 2) enum member that has explicitly assigned the 0 value <para/>
+        /// 3) first enum member
+        /// </remarks>
+        /// <typeparam name="T">defined enum type or 'Sytem.Enum' type</typeparam>
+        /// <returns>The default enum value</returns>
+        public static T GetEnumDefaultValue<T>()
+            where T : struct, Enum
+        {
+            return (T)GetEnumDefaultValue(typeof(T));
+        }
+
+        /// <summary>
+        /// Gets the default enum value.
+        /// </summary>
+        /// <remarks>
+        /// Enum value is resolved in following order:<para/>
+        /// 1) enum member that corresponds to the <see cref="DefaultValueAttribute.Value"/> <para/>
+        /// 2) enum member that has explicitly assigned the 0 value <para/>
+        /// 3) first enum member
+        /// </remarks>
+        /// <param name="enumType">The enum type</param>
+        /// <returns>The default enum value</returns>
+        /// <exception cref="ArgumentException">When <paramref name="enumType"/> is not an enum type</exception>
+        public static Enum GetEnumDefaultValue(this Type enumType)
+        {
+            if (!enumType.IsEnum)
+                throw new ArgumentException($"'{enumType.FullName}' must be an enum type", paramName: nameof(enumType));
+
+            var attribute = enumType.GetCustomAttribute<DefaultValueAttribute>(inherit: false);
+            if (attribute != null)
+                return (Enum)Enum.ToObject(enumType, attribute.Value);
+
+            var innerType = enumType.GetEnumUnderlyingType();
+            var zero = Activator.CreateInstance(innerType);
+            if (enumType.IsEnumDefined(zero))
+                return (Enum)Enum.ToObject(enumType, zero);
+
+            var values = enumType.GetEnumValues();
+            return (Enum)values.GetValue(0);
+        }
+
+        /// <summary>
+        /// Gets 0 number for enum type.
+        /// </summary>
+        /// <remarks>
+        /// The enum type may not have enum member with explicitly assigned the 0 value.
+        /// </remarks>
+        /// <param name="enumType">The enum type</param>
+        /// <returns> 0 number. The type may be one of integer types (<seealso cref="System.Int32"/>/<seealso cref="System.Int64"/>/<seealso cref="System.UInt64"/>)</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static object GetEnumZeroNumber(this Type enumType)
+        {
+            if (!enumType.IsEnum)
+                throw new ArgumentException($"'{enumType.FullName}' must be an enum type", paramName: nameof(enumType));
+
+            var innerType = enumType.GetEnumUnderlyingType();
+            var zero = Activator.CreateInstance(innerType);
+            return zero;
+        }
+
+        /// <summary>
+        /// Checks if enum member has explicitly assigned the 0 value.
+        /// </summary>
+        /// <typeparam name="T">defined enum type or 'Sytem.Enum' type</typeparam>
+        public static bool IsZeroFlag<T>(this T flag)
+             where T : Enum
+        {
+            var enumType = flag.GetType();
+
+            // 'long' can hold all possible values, except those which 'ulong' can hold.
+            if (Enum.GetUnderlyingType(enumType) == typeof(ulong))
+            {
+                return System.Convert.ToUInt64(flag) == 0UL;
+            }
+            else
+            {
+                return System.Convert.ToInt64(flag) == 0L;
+            }   
+        }
+        
+        /// <summary>
+        /// Sets flag in enum value
+        /// </summary>
+        /// <typeparam name="T">defined enum type or 'Sytem.Enum' type</typeparam>
+        /// <param name="value">the enum value to be changed</param>
+        /// <param name="flag">the flag to be set</param>        
+        public static void SetFlag<T>(ref T value, T flag) 
+            where T : Enum 
+        {
+            var enumType = value.GetType();
+
+            // 'long' can hold all possible values, except those which 'ulong' can hold.
+            if (Enum.GetUnderlyingType(enumType) == typeof(ulong))
+            {
+                ulong numericValue = Convert.ToUInt64(value);
+                numericValue |= Convert.ToUInt64(flag);
+                value = (T)Enum.ToObject(enumType, numericValue);
+            }
+            else
+            {
+                long numericValue = Convert.ToInt64(value);
+                numericValue |= Convert.ToInt64(flag);
+                value = (T)Enum.ToObject(enumType, numericValue);
+            }
+        }
+        
+        public static void CopyProperties(object src, object target)
+        {
+            var t = src.GetType();
+
+            foreach (var pi in
+                t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(
+                    pi => pi.CanWrite && pi.GetIndexParameters().Length == 0))
+            {
+                pi.SetValue(target, pi.GetValue(src, null), null);
+            }
         }
     }
 }

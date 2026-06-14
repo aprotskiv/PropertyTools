@@ -41,7 +41,16 @@ namespace PropertyTools
         /// <param name="propertyName">Name of the property.</param>
         protected void RaisePropertyChanged(string propertyName)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            this.RaisePropertyChanged(new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// Raises the property changed event.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        protected void RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            this.PropertyChanged?.Invoke(this, args);
         }
 
         /// <summary>
@@ -77,7 +86,7 @@ namespace PropertyTools
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
         [Conditional("DEBUG")]
-        private void VerifyProperty(string propertyName)
+        protected virtual void VerifyProperty(string propertyName)
         {
             var originalType = this.GetType();
             var type = originalType;

@@ -9,10 +9,10 @@
 
 namespace CustomFactoryDemo
 {
+    using PropertyTools.Wpf;
+    using PropertyTools.Wpf.Operators;
     using System;
     using System.ComponentModel;
-
-    using PropertyTools.Wpf;
 
     /// <summary>
     /// Provides a custom property item factory.
@@ -32,13 +32,13 @@ namespace CustomFactoryDemo
             return base.CreateCore(pd, properties);
         }
 
-        protected override string GetDisplayName(PropertyDescriptor pd, Type declaringType)
+        protected override string GetDisplayName(PropertyDescriptor pd, Type declaringType, object instance)
         {
             // Use the property name as display name - this will be passed to the GetLocalizedString later
             return pd.Name;
         }
 
-        public override string GetLocalizedString(string key, Type declaringType)
+        public override string GetLocalizedString(string key, Type declaringType, Type instanceType, LocalizableResourceKind resourceKind)
         {
             // Add a star to show that we have handled this
             // A localization mechanism can be used to localize the strings

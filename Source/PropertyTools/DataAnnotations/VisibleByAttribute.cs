@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the name of property that controls the visibility state of the attributed property.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class VisibleByAttribute : Attribute
+    public class VisibleByAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="VisibleByAttribute" /> class.

@@ -11,6 +11,7 @@ namespace PropertyTools.Wpf
 {
     using PropertyTools.DataAnnotations;
     using PropertyTools.Wpf.Extensions;
+    using PropertyTools.Wpf.Operators;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -85,31 +86,37 @@ namespace PropertyTools.Wpf
                 return new ColorCellDefinition();
             }
 
-            if (d.PropertyDefinition.ItemsSourceProperty != null || d.PropertyDefinition.ItemsSource != null)
+            if (d.PropertyDefinition.ItemsSourcePropertyName != null || d.PropertyDefinition.ItemsSource != null)
             {
                 return new SelectorCellDefinition
                 {
                     ItemsSource = d.PropertyDefinition.ItemsSource,
-                    ItemsSourceProperty = d.PropertyDefinition.ItemsSourceProperty,
+                    ItemsSourcePropertyName = d.PropertyDefinition.ItemsSourcePropertyName,
                     SelectedValuePath = d.PropertyDefinition.SelectedValuePath,
                     DisplayMemberPath = d.PropertyDefinition.DisplayMemberPath,
                     DisplayTextForNullItem = d.PropertyDefinition.DisplayTextForNullItem,
-                    IsEditable = d.PropertyDefinition.IsEditable
+                    IsEditable = d.PropertyDefinition.IsEditable,
+                    Style = d.PropertyDefinition.SelectorStyle,
+                    Mode = d.PropertyDefinition.SelectorMode,
                 };
             }
-            else if (d.PropertyType.IsEnumOrNullableEnum())
+			else if (d.PropertyType.IsEnumOrNullableEnum())
             {
-                var enumValues = d.GetEnumValues(nullAtStart: true);
-                var selectorCellDefinition = new SelectorCellDefinition()
+                var enumValues = new DefaultEnumValuesFilterOperator()
+                    .GetEnumValuesWithNullEntry(d, instance: null, nullAtStart: true);
+
+                return new SelectorCellDefinition()
                 {
                     IsEditable = d.PropertyDefinition.IsEditable,
                     DisplayTextForNullItem = d.PropertyDefinition.DisplayTextForNullItem,
-                };
-                d.ConfigureSelectorDefinition(selectorCellDefinition, enumValues);
-                return selectorCellDefinition;
+                }.ConfigureSelectorDefinitionForEnum(d, enumValues);                
             }
 
-            return new TextCellDefinition();
+            return new TextCellDefinition()
+            {
+                AutoUpdateText = d.PropertyDefinition.AutoUpdateText,
+                MaxLength = d.PropertyDefinition.MaxLength,
+            };
         }
 
         /// <summary>

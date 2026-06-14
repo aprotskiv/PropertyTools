@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the heights of the property control.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class HeightAttribute : Attribute
+    public class HeightAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="HeightAttribute" /> class.

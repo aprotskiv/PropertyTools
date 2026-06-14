@@ -14,7 +14,7 @@ namespace PropertyTools.DataAnnotations
     /// <summary>
     /// Specifies the name of a property that contains values for the items in the decorated list property.
     /// </summary>
-    public class ListItemItemsSourcePropertyAttribute : Attribute
+    public class ListItemItemsSourcePropertyAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ListItemItemsSourcePropertyAttribute" /> class.

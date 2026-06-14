@@ -16,7 +16,7 @@ namespace PropertyTools.DataAnnotations
     /// </summary>
     /// <remarks>This requires only one property on the tab page.</remarks>
     [AttributeUsage(AttributeTargets.Property)]
-    public class FillTabAttribute : Attribute
+    public class FillTabAttribute : AbstractAttribute
     {
     }
 }

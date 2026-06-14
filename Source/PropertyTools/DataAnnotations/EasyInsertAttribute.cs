@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies that it should be easy to insert new items in a List property. When the DataGrid control is used, the easy insert properties will be set.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class EasyInsertAttribute : Attribute
+    public class EasyInsertAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EasyInsertAttribute" /> class.

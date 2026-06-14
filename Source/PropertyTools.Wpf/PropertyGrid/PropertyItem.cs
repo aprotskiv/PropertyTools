@@ -154,8 +154,6 @@ namespace PropertyTools.Wpf
         /// <value>The tool tip.</value>
         public string Description { get; set; }
 
-        #region IPropertyItem implementation
-
         /// <summary>
         /// Gets or sets the property descriptor.
         /// </summary>
@@ -188,15 +186,13 @@ namespace PropertyTools.Wpf
             }
         }
 
-        /// <summary>
+		/// <summary>
         /// Enum property's metadata
         /// </summary>
         /// <remarks>
         /// Available only when <see cref="PropertyType"/> is Enum or Nullable enum
         /// </remarks>
         public EnumPropertyMetadata EnumMetadata { get; private set; }
-
-        #endregion
 
         /// <summary>
         /// Gets or sets a value indicating whether this property is read only.
@@ -209,8 +205,6 @@ namespace PropertyTools.Wpf
         /// </summary>
         /// <value>The display name.</value>
         public string DisplayName { get; set; }
-
-       
 
         /// <summary>
         /// Gets or sets the file path default extension.
@@ -608,6 +602,11 @@ namespace PropertyTools.Wpf
         public SelectorStyle SelectorStyle { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the property should use single or multiple selection mode.
+        /// </summary>
+        public SelectorMode SelectorMode { get; set; }
+
+        /// <summary>
         /// Gets or sets the width.
         /// </summary>
         /// <value>The width.</value>
@@ -622,6 +621,20 @@ namespace PropertyTools.Wpf
         /// Gets or sets the name of the IsChecked property for a property of checkable items.
         /// </summary>
         public string CheckableItemsIsCheckedPropertyName { get; set; }
+
+
+        /// <summary>
+        /// Default row height in pixels
+        /// </summary>
+        public double? DataGridDefaultRowHeightInPixels { get; set; }
+
+        /// <summary>
+        /// Determines whether default row height is set automatically or not.
+        /// </summary>
+        /// <remarks>
+        /// Ignored when <see cref="DataGridDefaultRowHeightInPixels"/> is set
+        /// </remarks>
+        public bool? DataGridDefaultRowHeightAuto { get; set; }
 
         /// <summary>
         /// Creates a binding.
@@ -640,16 +653,17 @@ namespace PropertyTools.Wpf
                 formatString = "{0:" + formatString + "}";
             }
 
-            var binding = new Binding(this.PropertyName)
-                {
-                    Mode = bindingMode,
-                    Converter = applyConverter ? this.Converter : null,
-                    ConverterParameter = this.ConverterParameter,
-                    StringFormat = formatString,
-                    UpdateSourceTrigger = trigger,
-                    ValidatesOnDataErrors = true,
-                    ValidatesOnExceptions = true
-                };
+            // Use PropertyPath(descriptor) so that WPF invokes GetValue/SetValue on the
+            // descriptor directly, bypassing any ICustomTypeDescriptor override on the
+            // source object (e.g. DbConnectionStringBuilder — issue #288).
+            var binding = new Binding { Path = new PropertyPath(this.Descriptor) };
+            binding.Mode = bindingMode;
+            binding.Converter = applyConverter ? this.Converter : null;
+            binding.ConverterParameter = this.ConverterParameter;
+            binding.StringFormat = formatString;
+            binding.UpdateSourceTrigger = trigger;
+            binding.ValidatesOnDataErrors = true;
+            binding.ValidatesOnExceptions = true;
             if (this.ConverterCulture != null)
             {
                 binding.ConverterCulture = this.ConverterCulture;

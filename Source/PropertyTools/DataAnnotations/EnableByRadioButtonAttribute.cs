@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the name of a property that controls the enabled/disabled state of the attributed property.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class EnableByRadioButtonAttribute : Attribute
+    public class EnableByRadioButtonAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EnableByRadioButtonAttribute" /> class.

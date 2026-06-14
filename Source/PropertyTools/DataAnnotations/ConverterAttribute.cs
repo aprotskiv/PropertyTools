@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies a converter that should be used for the property.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class ConverterAttribute : Attribute
+    public class ConverterAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConverterAttribute" /> class.

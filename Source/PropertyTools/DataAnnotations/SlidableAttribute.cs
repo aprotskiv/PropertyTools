@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies that the property can be edited by a slider.
     /// </summary>
     [AttributeUsage(AttributeTargets.All)]
-    public class SlidableAttribute : Attribute
+    public class SlidableAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref = "SlidableAttribute" /> class.
