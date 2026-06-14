@@ -445,6 +445,34 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
+        /// Gets the TabSortIndex for the specified property.
+        /// </summary>
+        /// <param name="pd">The property descriptor.</param>
+        /// <param name="declaringType">The declaring type.</param>
+        /// <param name="instance">The instance.</param>
+        /// <returns>
+        /// A TabSortIndex.
+        /// </returns>
+        protected virtual uint? GetTabSortIndex(PropertyDescriptor pd, Type declaringType, object instance)
+        {
+            return pd.GetAttributeValue<DataAnnotations.CategoryAttribute, uint?>((x) => x.TabSortIndex);
+        }
+
+        /// <summary>
+        /// Gets the GroupSortIndex for the specified property.
+        /// </summary>
+        /// <param name="pd">The property descriptor.</param>
+        /// <param name="declaringType">The declaring type.</param>
+        /// <param name="instance">The instance.</param>
+        /// <returns>
+        /// A GroupSortIndex.
+        /// </returns>
+        protected virtual uint? GetGroupSortIndex(PropertyDescriptor pd, Type declaringType, object instance)
+        {
+            return pd.GetAttributeValue<DataAnnotations.CategoryAttribute, uint?>((x) => x.GroupSortIndex);
+        }
+
+        /// <summary>
         /// Sets the properties.
         /// </summary>
         /// <param name="pi">The property item.</param>
@@ -511,8 +539,8 @@ namespace PropertyTools.Wpf
             pi.CategoryIdentifier = categoryName;
 
             // set tab/group sort index
-            pi.TabSortIndex = ca2?.TabSortIndex;
-            pi.GroupSortIndex = ca2?.GroupSortIndex;
+            pi.TabSortIndex = this.GetTabSortIndex(pi.Descriptor, declaringType, instance);
+            pi.GroupSortIndex = this.GetGroupSortIndex(pi.Descriptor, declaringType, instance);
 
             // Localize the strings
             pi.DisplayName = this.GetLocalizedString(displayName, declaringType);
