@@ -1,4 +1,10 @@
-﻿using PropertyTools.Wpf.Common;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="EnumPropertyExtensions.cs" company="PropertyTools">
+//   Copyright (c) 2026 PropertyTools contributors
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+using PropertyTools.DataAnnotations;
+using PropertyTools.Wpf.Common;
 using PropertyTools.Wpf.Operators;
 using System;
 using System.Linq;
@@ -8,7 +14,15 @@ namespace PropertyTools.Wpf.Extensions
 {
     public static class EnumPropertyExtensions
     {
-        public static void TrySetEnumMetadata(this IPropertyItem pi, ILocalizableOperator localizedPropertyOperator, 
+        /// <summary>
+        /// Tries to initialize the <see cref="IPropertyItem.EnumMetadata"/>.
+        /// </summary>
+        /// <param name="pi">The property item</param>
+        /// <param name="localizedPropertyOperator">The localizable operator</param>
+        /// <param name="enumValuesFilterOperator">The enum values filter operator</param>
+        /// <param name="instance">The instance being edited (in PropertyGrid, DataGrid row, etc.)</param>
+        public static void TrySetEnumMetadata(this IPropertyItem pi, 
+            ILocalizableOperator localizedPropertyOperator, 
             IEnumValuesFilterOperator enumValuesFilterOperator,
             object instance)
         {
@@ -17,6 +31,10 @@ namespace PropertyTools.Wpf.Extensions
             {
                 var enumType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
                 var enumValues = enumValuesFilterOperator.GetEnumValues(pi, instance, browsableOnly: true);
+
+                var enumMissingZeroBehaviorAttribute = pi.Descriptor.GetFirstAttributeOrDefault<EnumMissingZeroBehaviorAttribute>();
+                pi.EnumMetadata.InitializeWithDefault = enumMissingZeroBehaviorAttribute?.InitializeWithDefault;
+                pi.EnumMetadata.ResetToDefault = enumMissingZeroBehaviorAttribute?.ResetToDefault;
 
                 pi.EnumMetadata.EnumType = enumType;
 
@@ -28,26 +46,28 @@ namespace PropertyTools.Wpf.Extensions
                             .FirstOrDefault(f => f.GetValue(null).Equals(x));
 
                         // System.ComponentModel.DisplayNameAttribute is not supported for fields (enum members)                           
-                        var displayNameAttribute = fieldInfo.GetCustomAttribute(typeof(PropertyTools.DataAnnotations.DisplayNameAttribute))
-                               as PropertyTools.DataAnnotations.DisplayNameAttribute;
+                        var displayNameAttribute = fieldInfo.GetCustomAttribute<PropertyTools.DataAnnotations.DisplayNameAttribute>();
 
-                        var descriptionAttribute1 = fieldInfo.GetCustomAttribute(typeof(System.ComponentModel.DescriptionAttribute))
-                               as System.ComponentModel.DescriptionAttribute;
-                        var descriptionAttribute2 = fieldInfo.GetCustomAttribute(typeof(PropertyTools.DataAnnotations.DescriptionAttribute))
-                               as PropertyTools.DataAnnotations.DescriptionAttribute;
+                        var descriptionAttribute1 = fieldInfo.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>();
+                        var descriptionAttribute2 = fieldInfo.GetCustomAttribute<PropertyTools.DataAnnotations.DescriptionAttribute>();
 
                         var enumMemberDisplayName = displayNameAttribute?.DisplayName
                            ?? descriptionAttribute1?.Description
                            ?? descriptionAttribute2?.Description
                            ?? x.ToString();
 
-                        return localizedPropertyOperator.GetLocalizedString(enumMemberDisplayName, enumType, instanceType: instance?.GetType(), LocalizableResourceKind.Name);
+                        return localizedPropertyOperator.GetLocalizedString(enumMemberDisplayName, enumType, 
+                        	instanceType: instance?.GetType(), 
+                        	LocalizableResourceKind.Name);
+
                     });
 
                 if (propertyType.IsNullableEnum())
                 {
                     pi.EnumMetadata.IsNullableEnum = true;
-                    pi.EnumMetadata.EnumDisplayNull = localizedPropertyOperator.GetLocalizedString(null, enumType, instanceType: instance?.GetType(), LocalizableResourceKind.Name);
+                    pi.EnumMetadata.EnumDisplayNull = localizedPropertyOperator.GetLocalizedString(null, enumType, 
+                    	instanceType: instance?.GetType(), 
+                    	LocalizableResourceKind.Name);
                 }
             }
         }

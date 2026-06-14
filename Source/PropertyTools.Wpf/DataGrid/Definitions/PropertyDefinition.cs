@@ -82,8 +82,6 @@ namespace PropertyTools.Wpf
         /// </summary>
         public bool IsReadOnly { get; set; }
 
-        #region ISelectorDefinition
-
         /// <summary>
         /// Gets or sets the items source (for ComboBox).
         /// </summary>
@@ -112,15 +110,15 @@ namespace PropertyTools.Wpf
         /// </value>
         public string DisplayMemberPath { get; set; }
 
-        /// <inheritdoc/>        
+ 		/// <inheritdoc/>
         public bool DisplayTextForNullItem { get; set; }
 
-        #endregion
-
+		/// <inheritdoc/>
         public SelectorStyle SelectorStyle { get; set; }
 
+		/// <inheritdoc/>
         public SelectorMode SelectorMode { get; set; }
-
+        
         /// <summary>
         /// Gets or sets the max length (for TextBox).
         /// </summary>

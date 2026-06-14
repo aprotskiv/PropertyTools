@@ -28,7 +28,8 @@ namespace PropertyGridDemo
         }
 
         /// <inheritdoc />
-        public override FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options, object instance)
+        public override FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options, 
+            object instance)
         {
             if (property.Is(typeof(DateTime)))
             {

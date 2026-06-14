@@ -3,7 +3,7 @@
 //   Copyright (c) 2025 PropertyTools contributors
 // </copyright>
 // <summary>
-//  Converts a object to its representation in mapping dictionary. <para/>
+//  Converts an object to its representation in mapping dictionary. <para/>
 //  The mapping dictionary (<see cref="ISelectorDefinition.SelectedValuePath"/> -> <see cref="ISelectorDefinition.DisplayMemberPath"/>)
 //  is created from <see cref="ISelectorDefinition.ItemsSource"/> items    
 // </summary>
@@ -18,7 +18,7 @@ namespace PropertyTools.Wpf
     using System.Windows.Data;
 
     /// <summary>
-    /// Converts a object to its representation in mapping dictionary. <para/>
+    /// Converts an object to its representation in mapping dictionary. <para/>
     /// The mapping dictionary (<see cref="ISelectorDefinition.SelectedValuePath"/> -> <see cref="ISelectorDefinition.DisplayMemberPath"/>)
     /// is created from <see cref="ISelectorDefinition.ItemsSource"/> items    
     /// </summary>

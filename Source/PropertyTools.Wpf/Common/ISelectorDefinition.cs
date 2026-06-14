@@ -1,4 +1,9 @@
-﻿namespace PropertyTools.Wpf.Common
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ISelectorDefinition.cs" company="PropertyTools">
+//   Copyright (c) 2026 PropertyTools contributors
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+namespace PropertyTools.Wpf.Common
 {
     using System.Collections;
 
@@ -9,10 +14,7 @@
         /// </summary>
         /// <value>
         /// The items source property.
-        /// </value>  
-        /// <remarks>
-        /// Name changed due to naming conflict with <see cref="System.Windows.Controls.ItemsControl.ItemsSourceProperty"/> dependency property.
-        /// </remarks>
+        /// </value>
         string ItemsSourcePropertyName { get; set; }
 
         /// <summary>

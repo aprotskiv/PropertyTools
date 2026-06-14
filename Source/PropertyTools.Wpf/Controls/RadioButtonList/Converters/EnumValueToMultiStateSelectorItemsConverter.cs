@@ -13,6 +13,7 @@ namespace PropertyTools.Wpf
     using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Windows.Data;
     using PropertyTools.Wpf.Common;
     using PropertyTools.Wpf.Extensions;
@@ -44,13 +45,38 @@ namespace PropertyTools.Wpf
 
                 if (_enumPropertyMetadata.Flags)
                 {
-                    foreach (var i in _enumPropertyMetadata.EnumDisplayNames.Keys) // only prefiltered from EnumPropertyMetadata
+                    var enumDefaultValue = ReflectionExtensions.GetEnumDefaultValue(_enumPropertyMetadata.EnumType);
+
+                    if (enumValue.Equals(enumDefaultValue)) // use 'Equals' instead of '=='
                     {
-                        if (enumValue.HasFlag(i))
+                        // set zero flag or default (non-zero) flag
+                        result.Add(
+                            SelectorDefinitionExtensions.BuildItemsControlItem(_enumPropertyMetadata, enumDefaultValue)
+                        );
+                    }
+                    else if (enumValue.IsZeroFlag())
+                    {
+                        if (_enumPropertyMetadata.InitializeWithDefault == true)
                         {
                             result.Add(
-                                SelectorDefinitionExtensions.BuildItemsControlItem(_enumPropertyMetadata, i)
+                                SelectorDefinitionExtensions.BuildItemsControlItem(_enumPropertyMetadata, enumDefaultValue)
                             );
+                        }
+                    }
+                    else
+                    {
+                        foreach (var i in _enumPropertyMetadata.EnumDisplayNames.Keys) // only prefiltered from EnumPropertyMetadata
+                        {
+                            if (i.IsZeroFlag())
+                            {
+                                // skip zero
+                            }
+                            else if (enumValue.HasFlag(i))
+                            {
+                                result.Add(
+                                    SelectorDefinitionExtensions.BuildItemsControlItem(_enumPropertyMetadata, i)
+                                );
+                            }
                         }
                     }
                 }
@@ -86,9 +112,9 @@ namespace PropertyTools.Wpf
                     }
                     return enumValue;
                 }
-                else 
+                else
                 {
-                   // two or more value are not allowed without Flags
+                    // two or more values are not allowed without Flags
                 }
             }
 
@@ -99,7 +125,25 @@ namespace PropertyTools.Wpf
             else
             {
                 // enum default value
-                return ReflectionExtensions.GetEnumDefaultValue(_enumPropertyMetadata.EnumType);
+                var enumDefaultValue = ReflectionExtensions.GetEnumDefaultValue(_enumPropertyMetadata.EnumType);
+
+                if (!enumDefaultValue.IsZeroFlag())
+                {
+                    // default value is not a zero 
+                    if (_enumPropertyMetadata.ResetToDefault == true)
+                    {
+                        return enumDefaultValue;
+                    }
+                    else
+                    {
+                        return ReflectionExtensions.GetEnumZeroNumber(_enumPropertyMetadata.EnumType);
+                    }
+                }
+                else
+                {
+                    // default value is zero 
+                    return enumDefaultValue;
+                }
             }
         }
     }

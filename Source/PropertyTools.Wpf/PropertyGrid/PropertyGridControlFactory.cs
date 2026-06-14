@@ -9,7 +9,9 @@
 
 namespace PropertyTools.Wpf
 {
-    using PropertyTools.Wpf.Common;    
+
+    using PropertyTools.Wpf.Common;
+    using PropertyTools.Wpf.Controls;
     using PropertyTools.Wpf.Extensions;
     using PropertyTools.Wpf.Operators;
     using System;
@@ -27,6 +29,8 @@ namespace PropertyTools.Wpf
     using System.Windows.Data;
     using System.Windows.Input;
     using System.Windows.Media;
+
+    using SelectorMode = PropertyTools.DataAnnotations.SelectorMode;
 
     /// <summary>
     /// Provides a control factory for the <see cref="PropertyGrid" /> control.
@@ -88,6 +92,7 @@ namespace PropertyTools.Wpf
         /// </summary>
         /// <param name="property">The property item.</param>
         /// <param name="options">The options.</param>
+        /// <param name="instance">The instance.</param>
         /// <returns>
         /// A element.
         /// </returns>
@@ -103,7 +108,6 @@ namespace PropertyTools.Wpf
                     return this.CreateEditorControl(property, editor);
                 }
             }
-
 
             if (property.ItemsSourceDescriptor != null || property.ItemsSource != null)
             {
@@ -451,7 +455,8 @@ namespace PropertyTools.Wpf
         /// <returns>
         /// The control.
         /// </returns>
-        protected virtual FrameworkElement CreateSelectorControl(PropertyItem property, PropertyControlFactoryOptions options, object instance)
+        protected virtual FrameworkElement CreateSelectorControl(PropertyItem property, PropertyControlFactoryOptions options,
+             object instance)
         {
             var style = property.SelectorStyle;
             var mode = property.SelectorMode;
@@ -510,18 +515,8 @@ namespace PropertyTools.Wpf
 
                 case DataAnnotations.SelectorStyle.ListBox:
                     {
-                        var listBox = new ListBox()
-                        {
-                            SelectionMode = mode == DataAnnotations.SelectorMode.Multiple
-                               ? SelectionMode.Multiple
-                               : (mode == DataAnnotations.SelectorMode.Extended
-                                       ? SelectionMode.Extended
-                                       : SelectionMode.Single
-                                  )
-                        };
-                        c = listBox;
-                        new SelectorWrapper(listBox, instance).ConfigureSelectorDefinition(property);
-                        c.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
+                        c = CreateListBox(property, instance, mode, out ISelectorDefinition selectorDefinition);
+                        selectorDefinition.ConfigureSelectorDefinition(property);
                         break;
                     }
             }
@@ -529,6 +524,44 @@ namespace PropertyTools.Wpf
             if (c != null)
             {
                 c.VerticalContentAlignment = VerticalAlignment.Center;
+            }
+
+            return c;
+        }
+
+        /// <summary>
+        /// Creates the listbox control and setups its bindings
+        /// </summary>
+        /// <param name="property">The property.</param>
+        /// <returns>
+        /// The control.
+        /// </returns>
+        private ListBox CreateListBox(PropertyItem property, object instance, SelectorMode mode,
+            out ISelectorDefinition selectorDefinition)
+        {
+            ListBox c = mode == SelectorMode.Single
+                ? new ListBox()
+                : new MultipleSelectListBox()
+                {
+                    SelectionMode = mode == SelectorMode.Multiple
+                            ? SelectionMode.Multiple
+                            : SelectionMode.Extended
+                };
+
+            selectorDefinition = new SelectorWrapper(c, instance);
+
+            var binding = property.CreateBinding();
+            if (c.SelectionMode != SelectionMode.Single)
+            {
+                binding.Converter = property.EnumMetadata.Flags
+                    ? (IValueConverter)new EnumValueToMultiStateSelectorItemsConverter(property.EnumMetadata)
+                    : new MultipleSelectListBox.ListToBindableSelectedItemsConverter(selectorDefinition);
+
+                c.SetBinding(MultipleSelectListBox.BindableSelectedItemsProperty, binding);
+            }
+            else
+            {
+                c.SetBinding(Selector.SelectedValueProperty, binding);
             }
 
             return c;
@@ -727,18 +760,22 @@ namespace PropertyTools.Wpf
             }
             else
             {
-                result = new DefaultEnumValuesFilterOperator().GetEnumValuesWithNullEntry(property, instance: instance, nullAtStart: nullAtStart)
-                    .ToList();
+                result = new DefaultEnumValuesFilterOperator()
+	                .GetEnumValuesWithNullEntry(property,
+	                    instance: instance,
+	                    nullAtStart: nullAtStart
+	                ).ToList();
             }
 
             return result;
         }
 
         /// <summary>
-        /// Creates the select control.
+        /// Creates the enum control.
         /// </summary>
         /// <param name="property">The property.</param>
         /// <param name="options">The options.</param>
+        /// <param name="instance">The instance.</param>
         /// <returns>
         /// The control.
         /// </returns>
@@ -761,38 +798,45 @@ namespace PropertyTools.Wpf
             {
                 case DataAnnotations.SelectorStyle.RadioButtons:
                     {
+                        // SelectorMode is ignored.
                         RadioButtonSelector c;
 
-                        if (property.EnumMetadata.Flags || values.Count(x => x != null) == 1 && property.EnumMetadata.IsNullableEnum )
+                        // for Flags or nullable enum with single value use checkboxes
+                        if (property.EnumMetadata.Flags || values.Count(x => x != null) == 1 && property.EnumMetadata.IsNullableEnum)
                         {
-                            // use checkbox to render nullable
-                            values = values.Where(x => x != null).ToArray();
+                            values = values.Where(x => x != null).ToArray(); // exclude 'null'
                             c = new CheckBoxSelector();
                             property.Converter = new EnumValueToMultiStateSelectorItemsConverter(property.EnumMetadata); // set converter before creating binding
                         }
                         else
                         {
+                            // otherwise use radiobuttons
                             c = new RadioButtonSelector();
-                        }                        
-                        InitEnumItemsControl(c, instance, property, values);
-                        
-                        c.SetBinding(RadioButtonList.ValueProperty, property.CreateBinding());                        
+                        }
+
+                        c.EnumMetadata = property.EnumMetadata;
+
+                        // RadioButtonSelector already implements ISelectorDefinition. No need to create a wrapper
+                        c.ConfigureSelectorDefinitionForEnum(property, values);
+
+                        c.SetBinding(RadioButtonSelector.ValueProperty, property.CreateBinding());
                         return c;
                     }
 
                 case DataAnnotations.SelectorStyle.ComboBox:
                     {
+                        // SelectorMode is ignored
                         var c = new ComboBox();
-                        InitEnumItemsControl(c, instance, property, values);
+                        var selectorWrapper = new SelectorWrapper(c, instance);
+                        selectorWrapper.ConfigureSelectorDefinitionForEnum(property, values);
                         c.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
                         return c;
                     }
 
                 case DataAnnotations.SelectorStyle.ListBox:
                     {
-                        var c = new ListBox();
-                        InitEnumItemsControl(c, instance, property, values);
-                        c.SetBinding(Selector.SelectedValueProperty, property.CreateBinding());
+                        var c = CreateListBox(property, instance, property.SelectorMode, out ISelectorDefinition selectorDefinition);
+                        selectorDefinition.ConfigureSelectorDefinitionForEnum(property, values);
                         return c;
                     }
 
@@ -801,6 +845,13 @@ namespace PropertyTools.Wpf
             }
         }
 
+        /// <summary>
+        /// Configures the selector to display the enum values of enum property
+        /// </summary>
+        /// <param name="c">The selector control</param>
+        /// <param name="instance">The instance.</param>
+        /// <param name="enumProperty">The property item</param>
+        /// <param name="enumValues">The enum values to display in selector</param>
         protected virtual void InitEnumItemsControl(ItemsControl c, object instance, PropertyItem enumProperty, object[] enumValues)
         {
             ISelectorDefinition sd = c is Selector selector

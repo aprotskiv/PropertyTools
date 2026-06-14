@@ -4,11 +4,20 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 ### Added
+- PropertyGrid: added MultipleSelectListbox to support the case when SelectorStyle=ListBox and SelectorMode=Multiple #498
+- DataGrid/PropertyGrid: added EnumFilterAttribute for custom filtering with new EnumsWithOperatorsExample (PropertyGridDemo) and updated SelectorExample (DataGridDemo) #498
+- DataGrid/PropertyGrid: added new SelectorModeAttribute (Single | Multiple) and SelectorModeAttributeExample (PropertyGridDemo)  #498
+- DataGrid: added mode and style to Selector cell type #498
+- PropertyGrid: new CheckBoxSelector (inherits RadioButtonSelector) for multi select control (uses ISelectorDefinition) #498
+- PropertyGridDemos: Added ConnectionStringBuilderExample demonstrating the fix for issue #288 – PropertyGrid now works correctly when bound to a DbConnectionStringBuilder subclass (fixed: null checkboxes, broken enum radio-buttons, byte[] StringFormat exception) #288
+- TreeListBoxDemo: Added NonEnglishCultureExample demonstrating that the "Height must be non-negative" workaround works on non-English systems #290
 - PropertyGrid: Added CategoryAttribute .TabSortIndex and .GroupSortIndex properties including CategoryAttributeOrderedExample that demonstates expicit ordering of tabs & groups  #494
 - GitHub Copilot: Added path-specific custom instructions for tests, examples, WPF controls, and core library to provide contextual guidance based on file types #475
 - DemoLauncher: Created centralized demo launcher application that discovers and launches all example windows from any assembly, with text/tag filtering, command-line support, and screenshot capture functionality #468
+- TreeListBoxDemo: Added DragDropExample demonstrating drag-and-drop between and within folders, and that only the item under the cursor is highlighted as a drop target (fix for stale IsDropTarget state) #496
 - TreeListBoxDemo: Restructured to support multiple examples with a launcher window, added MultipleRootsExample demonstrating the fix for issue #282 #282
 - TreeListBoxDemo: Added TabControlExample demonstrating the fix for issue #312 - TreeListBox crash when used in TabControl #312
+- TreeListBoxDemo: Added CutPasteExample to reproduce cut/paste behavior when IsExpanded is bound and preserved on pasted nodes #292
 - DataGrid: Added FilteringExample demonstrating how to filter DataGrid items using CollectionViewSource with search text, enum, and boolean filters #392
 - DataGrid: Added DynamicBackgroundExample with dismissible explanation panel demonstrating BackgroundProperty for data-driven cell backgrounds #TBD
 - Created GitHub issue templates (bug report and feature request) and pull request template following best practices #448 #452
@@ -18,6 +27,9 @@ All notable changes to this project will be documented in this file.
 - DataGrid: Added `ClipboardSeparator` dependency property that controls the separator used by `Ctrl+Alt+C` (copy with headers). Defaults to the current culture's list separator (`CultureInfo.CurrentCulture.TextInfo.ListSeparator`). Can be set per-instance in XAML or overridden in a subclass #481
 
 ### Fixed
+- PropertyGrid: Fixed binding to DbConnectionStringBuilder subclasses (e.g. FirebirdSql FbConnectionStringBuilder) — bool properties no longer show indeterminate checkboxes, enum properties no longer lose their selection, and byte[] properties no longer throw a StringFormat exception. Root cause: ICustomTypeDescriptor descriptors are now replaced with reflection-backed ones so GetValue/SetValue use the actual typed CLR property accessors, and PropertyItem.CreateBinding uses PropertyPath(descriptor) to bypass the ICustomTypeDescriptor lookup path #288
+- TreeListBox: Fixed "Height must be non-negative" workaround not working on non-English systems — InsertItem now temporarily switches to InvariantCulture before Items.Insert so the ArgumentException message is always comparable in English, while retaining TargetSite checks as a fallback #38 #142
+- TreeListBox: Fixed drop target items remaining highlighted after drag-drop completes — clear `IsDropTarget` on the previous target at the start of `DecideDropTarget` #496
 - PropertyGrid: Fixed DateTime input parsing to honor `FormatString` (for example `dd/MM/yyyy`) and expanded the PropertyGridDemo example with format descriptions and `t`/`tt` DateTime format examples #58
 - PropertyGrid/DataGrid: Fixed ListItemItemsSourceProperty not saving changes - collections with empty PropertyName now correctly use index-based binding path and collection as binding source for two-way data updates #295
 - DataGrid: Fixed all cells being rebuilt when a single item is replaced in an ObservableCollection - Replace actions now only update the affected cell(s) #295
@@ -64,6 +76,7 @@ All notable changes to this project will be documented in this file.
 - TreeListBox: Catching the ArgumentException by message title, fails in non english regions #38 #142
 
 ### Changed
+- PropertyGrid: Added instance parameter to IPropertyGridControlFactory.CreateControl() method #498
 - Added EnableWindowsTargeting property to all WPF projects to support building on non-Windows platforms #474
 - Custom GitHub Copilot agent for updating package dependencies and target frameworks #422
 - GitHub Actions workflows: Support for building with .NET 10 SDK in all workflows #424

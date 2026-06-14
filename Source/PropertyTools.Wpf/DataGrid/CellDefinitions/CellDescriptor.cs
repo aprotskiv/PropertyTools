@@ -6,49 +6,6 @@
     using System.ComponentModel;
     using System.Linq;
 
-    public interface ICellPropertyItem : IPropertyItem
-    {
-        /// <summary>
-        /// Gets or sets the property definition.
-        /// </summary>
-        /// <value>
-        /// The property definition.
-        /// </value>
-        PropertyDefinition PropertyDefinition { get; set; }
-
-        /// <summary>
-        /// Gets or sets the item.
-        /// </summary>
-        /// <value>
-        /// The item.
-        /// </value>
-        object Item { get; set; }
-
-        /// <summary>
-        /// Gets or sets the binding path.
-        /// </summary>
-        /// <value>
-        /// The binding path.
-        /// </value>
-        string BindingPath { get; set; }
-
-        /// <summary>
-        /// Gets or sets the binding source.
-        /// </summary>
-        /// <value>
-        /// The binding source.
-        /// </value>
-        object BindingSource { get; set; }
-
-        /// <summary>
-        /// Gets the attributes.
-        /// </summary>
-        /// <value>
-        /// The attributes.
-        /// </value>
-        IEnumerable<Attribute> Attributes { get; }
-    }
-
     /// <summary>
     /// Contains all the data that can be used to create a <see cref="CellDefinition" /> in a <see cref="CellDefinitionFactory" />.
     /// </summary>
@@ -61,8 +18,6 @@
         /// The property definition.
         /// </value>
         public PropertyDefinition PropertyDefinition { get; set; }
-
-        #region IPropertyItem implementation
 
         /// <summary>
         /// Gets or sets the property descriptor.
@@ -117,8 +72,6 @@
         /// Available only when <see cref="PropertyType"/> is Enum or Nullable enum
         /// </remarks>
         public EnumPropertyMetadata EnumMetadata { get; private set; }
-
-        #endregion
 
         /// <summary>
         /// Gets or sets the item.

@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies what mode a selector property should use.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class SelectorModeAttribute : AbstractAttribute
+    public class SelectorModeAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SelectorModeAttribute" /> class.

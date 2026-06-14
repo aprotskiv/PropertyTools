@@ -9,19 +9,13 @@
 
 namespace PropertyTools.Wpf
 {
-    using PropertyTools.Wpf.Common;
-    using PropertyTools.Wpf.Extensions;
-    using System;
-    using System.Collections.Generic;
-    using System.Drawing.Printing;
-    using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Data;
     using System.Windows.Media;
     using System.Windows.Shapes;
-    using static PropertyTools.Wpf.Extensions.EnumPropertyExtensions;
+
     using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
     /// <summary>
@@ -33,7 +27,7 @@ namespace PropertyTools.Wpf
         /// Creates the display control with data binding.
         /// </summary>
         /// <param name="d">The cell definition.</param>
-        /// <param name="cell">The cell. Control may depend on cell object</param>
+        /// <param name="cell">The cell.</param>
         /// <returns>
         /// The control.
         /// </returns>
@@ -47,7 +41,7 @@ namespace PropertyTools.Wpf
         /// Creates the edit control with data binding.
         /// </summary>
         /// <param name="d">The cell definition.</param>
-        /// <param name="cell">The cell. Control may depend on cell object</param>
+        /// <param name="cell">The cell.</param>
         /// <returns>
         /// The control.
         /// </returns>
@@ -74,14 +68,13 @@ namespace PropertyTools.Wpf
         /// Creates the display control.
         /// </summary>
         /// <param name="d">The cell definition.</param>
-        /// <param name="cell">The cell. Control may depend on cell object</param>
         /// <returns>The display control.</returns>
         protected virtual FrameworkElement CreateDisplayControlOverride(CellDefinition d, CellRef cell)
         {
             var scd = d as SelectorCellDefinition;
             if (scd != null)
             {
-                return this.CreateDisplaySelectorControl(scd);
+                return this.CreateTextBlockControl(scd);
             }
 
             var pcd = d as ProgressCellDefinition;
@@ -111,16 +104,11 @@ namespace PropertyTools.Wpf
             return this.CreateTextBlockControl(d);
         }
 
-        protected virtual FrameworkElement CreateDisplaySelectorControl(SelectorCellDefinition scd)
-        {
-            return this.CreateTextBlockControl(scd);
-        }
-
         /// <summary>
         /// Creates the edit control.
         /// </summary>
         /// <param name="d">The cell definition.</param>
-        /// <param name="cell">The cell. Control may depend on cell object</param>
+        /// <param name="cell">The cell.</param>
         /// <returns>
         /// The control.
         /// </returns>
@@ -129,7 +117,7 @@ namespace PropertyTools.Wpf
             var co = d as SelectorCellDefinition;
             if (co != null)
             {
-                return this.CreateEditSelectorControl(co);
+                return this.CreateComboBox(co);
             }
 
             var cb = d as CheckCellDefinition;
@@ -157,11 +145,6 @@ namespace PropertyTools.Wpf
             }
 
             return this.CreateDisplayControl(d, cell);
-        }
-
-        protected virtual FrameworkElement CreateEditSelectorControl(SelectorCellDefinition scd)
-        {
-            return this.CreateComboBox(scd);
         }
 
         /// <summary>
@@ -482,7 +465,7 @@ namespace PropertyTools.Wpf
                 Padding = new Thickness(4, 0, 4, 0)
             };
 
-            var binding = this.CreateOneWayBinding(d);        
+            var binding = this.CreateOneWayBinding(d);
 
             if (!string.IsNullOrEmpty(d.DisplayMemberPath))
             {
@@ -492,7 +475,7 @@ namespace PropertyTools.Wpf
                 }
                 else
                 {
-                    if (d.ItemsSource != null)
+                    if (d.ItemsSource != null && binding.Converter == null)
                     {
                         binding.Converter = new SelectorDefinitionTranslationConverter(d);
                     }
@@ -531,8 +514,6 @@ namespace PropertyTools.Wpf
                 };
 
             var binding = this.CreateBinding(d);
-            binding.UpdateSourceTrigger = d.AutoUpdateText ? UpdateSourceTrigger.PropertyChanged : UpdateSourceTrigger.Default;
-
             c.SetBinding(TextBox.TextProperty, binding);
             this.SetIsEnabledBinding(d, c);
             this.SetBackgroundBinding(d, c);
@@ -631,7 +612,7 @@ namespace PropertyTools.Wpf
         /// Focuses on the parent data grid.
         /// </summary>
         /// <param name="obj">The <see cref="DependencyObject" />.</param>
-        protected static void FocusParentDataGrid(DependencyObject obj)
+        private static void FocusParentDataGrid(DependencyObject obj)
         {
             var parent = VisualTreeHelper.GetParent(obj);
             while (parent != null && !(parent is DataGrid))

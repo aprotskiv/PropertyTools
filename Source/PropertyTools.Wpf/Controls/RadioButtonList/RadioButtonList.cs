@@ -82,14 +82,6 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
-        /// Prepopulated Enum property's metadata
-        /// </summary>
-        /// <remarks>
-        /// Available only when <see cref="EnumType"/> is Enum or Nullable enum
-        /// </remarks>
-        public EnumPropertyMetadata EnumMetadata { get; set; }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <remarks>May contain NULL when <see cref="EnumType"/> is Nullable enum </remarks>
@@ -114,7 +106,7 @@ namespace PropertyTools.Wpf
             }
             else if (this.EnumType != null)
             {
-                enumType = Nullable.GetUnderlyingType(this.EnumType) ?? this.EnumType;                
+                enumType = Nullable.GetUnderlyingType(this.EnumType) ?? this.EnumType;
             }
             else if (this.Value != null)
             {
@@ -190,41 +182,6 @@ namespace PropertyTools.Wpf
 
                 this.panel.Children.Add(rb);
             }
-        }
-
-        /// <summary>
-        /// Creates a data binding for a WPF control based on the <see cref="OptionEnableByAttribute"/> applied to an enum value.
-        /// </summary>
-        /// <param name="itemValue">The value of the enum item to create the binding for.</param>
-        /// <param name="enumType">The type of the enum containing the item.</param>
-        /// <returns>
-        /// A data binding instance if the enum item has an <see cref="OptionEnableByAttribute"/>; otherwise, null.
-        /// </returns>
-        private Binding CreateBindingFromOptionEnableByAttribute(object itemValue, Type enumType)
-        {
-            var itemName = itemValue?.ToString();
-            if (itemName == null)
-            {
-                return null;
-            }
-
-            var fieldInfo = enumType.GetField(itemName);
-            if (fieldInfo == null)
-            {
-                return null;
-            }
-
-            var attribute = fieldInfo.GetCustomAttribute<OptionEnableByAttribute>();
-            if (attribute != null)
-            {
-                // Create and return the binding using the property name from the attribute
-                return new Binding(attribute.PropertyName)
-                {
-                    Source = this.DataContext
-                };
-            }
-
-            return null;
         }
     }
 }

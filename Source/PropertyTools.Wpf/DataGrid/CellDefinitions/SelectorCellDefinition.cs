@@ -31,8 +31,6 @@ namespace PropertyTools.Wpf
         /// </value>
         public bool IsEditable { get; set; }
 
-        #region ISelectorDefinition
-
         /// <summary>
         /// Gets or sets the items source.
         /// </summary>
@@ -75,10 +73,14 @@ namespace PropertyTools.Wpf
         /// </summary>
         public bool DisplayTextForNullItem { get; set; }
 
-        #endregion
-
+        /// <summary>
+        /// Gets or sets the selector style
+        /// </summary>
         public SelectorStyle Style { get; set; }
 
+        /// <summary>
+        /// Gets or sets the selector mode
+        /// </summary>
         public SelectorMode Mode { get; set; }
     }
 }

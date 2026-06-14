@@ -35,7 +35,9 @@ namespace PropertyTools.Wpf
 
         protected override IValueConverter CreateConverter()
         {
-            return new MultiStateSelectorItemsToBooleanConverter(this.Value as IList, selectorDefinition: this);
+            return (this.EnumMetadata != null)
+                ? (IValueConverter)new EnumFlagSelectorItemsToBooleanConverter(this.Value as IList, selectorDefinition: this, this.EnumMetadata)
+                : new MultiStateSelectorItemsToBooleanConverter(this.Value as IList, selectorDefinition: this);
         }
     }
 }

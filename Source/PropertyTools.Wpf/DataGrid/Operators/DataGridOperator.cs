@@ -12,7 +12,7 @@ namespace PropertyTools.Wpf
     using PropertyTools.DataAnnotations;
     using PropertyTools.Wpf.Common;
     using PropertyTools.Wpf.Extensions;
-	using PropertyTools.Wpf.Operators;
+    using PropertyTools.Wpf.Operators;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -858,20 +858,14 @@ namespace PropertyTools.Wpf
             this.customEnumValuesFilterOperator = value;
         }
 
-        /// <summary>
-        
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public virtual IEnumerable<Enum> GetEnumValues(IPropertyItem pi, object instance, bool browsableOnly = true)
         {
-            return (customEnumValuesFilterOperator ??  new DefaultEnumValuesFilterOperator())
-                .GetEnumValues(pi, instance, browsableOnly: true);
+            return (customEnumValuesFilterOperator ?? new DefaultEnumValuesFilterOperator())
+                .GetEnumValues(pi, instance, browsableOnly: browsableOnly);
         }
 
-        /// <summary>
-        
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public virtual IEnumerable<object> GetEnumValuesWithNullEntry(IPropertyItem pi, object instance, bool nullAtStart, bool browsableOnly = true)
         {
             return (customEnumValuesFilterOperator ?? new DefaultEnumValuesFilterOperator())

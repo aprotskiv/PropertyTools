@@ -100,7 +100,7 @@ namespace PropertyTools.Wpf
                     Mode = d.PropertyDefinition.SelectorMode,
                 };
             }
-            else if (d.PropertyType.IsEnumOrNullableEnum())
+			else if (d.PropertyType.IsEnumOrNullableEnum())
             {
                 var enumValues = new DefaultEnumValuesFilterOperator()
                     .GetEnumValuesWithNullEntry(d, instance: null, nullAtStart: true);

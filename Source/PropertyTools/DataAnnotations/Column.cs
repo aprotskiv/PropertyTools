@@ -40,7 +40,7 @@ namespace PropertyTools.DataAnnotations
             : this(propertyName)
         {
             this.Header = header;
-            this.ItemsSourcePropertyName_ColumnsPropertyOwner = itemsSourcePropertyName;
+            this.ItemsSourcePropertyName = itemsSourcePropertyName;
         }
 
         /// <summary>
@@ -126,15 +126,13 @@ namespace PropertyTools.DataAnnotations
         /// Gets or sets the name of the items source property (ColumnsProperty owner instance)
         /// </summary>
         /// <value>The name of the item source property (ColumnsProperty owner context).</value>
-        public string ItemsSourcePropertyName_ColumnsPropertyOwner { get; set; }
+        public string ItemsSourcePropertyName { get; set; }
 
         /// <summary>
         /// Gets or sets the width ("Auto", "0.5*" etc. are ok).
         /// </summary>
         /// <value>The width.</value>
         public string Width { get; set; }
-
-        #region  IColumnSelectorDefinition properties
 
         /// <inheritdoc/>
         public string ItemsSourceProperty_DataGridItem { get; set; }
@@ -151,8 +149,6 @@ namespace PropertyTools.DataAnnotations
         /// <inheritdoc/>
         public bool DisplayTextForNullItem { get; set; }
 
-        #endregion
-
         public SelectorStyle SelectorStyle { get; set; }
 
         public SelectorMode SelectorMode { get; set; }
@@ -161,54 +157,5 @@ namespace PropertyTools.DataAnnotations
         /// Specifies that the text binding should be triggered at every change.
         /// </summary>
         public bool AutoUpdateText { get; set; }
-    }
-
-    /// <remarks>
-    ///  Similar to PropertyTools.Wpf.Common.ISelectorDefinition    
-    /// </remarks>    
-    public interface IColumnSelectorDefinition
-    {
-        /// <summary>
-        /// Gets or sets the items source property (DataGrid item instance)
-        /// </summary>
-        /// <value>
-        /// The items source property (DataGrid item context)
-        /// </value>        
-        string ItemsSourceProperty_DataGridItem { get; set; }
-
-
-        /// <summary>
-        /// Gets or sets the items source.
-        /// </summary>
-        /// <value>
-        /// The items source.
-        /// </value>
-        IEnumerable ItemsSource { get; set; }
-
-        /// <summary>
-        /// Gets or sets the display member path.
-        /// </summary>
-        /// <value>
-        /// The display member path.
-        /// </value>
-        string DisplayMemberPath { get; set; }
-
-        /// <summary>
-        /// Gets or sets the selected value path.
-        /// </summary>
-        /// <value>
-        /// The selected value path.
-        /// </value>
-        string SelectedValuePath { get; set; }
-
-        /// <summary>
-        /// Indicates whether to display or not the display member text (from <see cref="DisplayMemberPath"/>) in cases:<para/> 
-        /// 1) when NULL item selected. <para/>
-        ///     For example, <see cref="System.Windows.Controls.Primitives.Selector.SelectedValue"/> is NULL, 
-        ///     but <see cref="System.Windows.Controls.Primitives.Selector.SelectedItem"/> is NOT null <para/> 
-        /// 2) no item selected <para/>
-        ///     For example, <see cref="System.Windows.Controls.Primitives.Selector.SelectedItem"/> is NULL<para/>         
-        /// </summary>
-        bool DisplayTextForNullItem { get; set; }
     }
 }

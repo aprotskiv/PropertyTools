@@ -70,11 +70,6 @@ namespace PropertyTools.Wpf.Common
         }
 
         /// <inheritdoc/>
-        public bool DisplayTextForNullItem
-        {
-            get => throw new System.NotImplementedException();
-            set => throw new System.NotImplementedException();
-        }
-
+        public bool DisplayTextForNullItem { get; set; }
     }
 }

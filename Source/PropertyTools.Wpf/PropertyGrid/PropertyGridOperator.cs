@@ -137,8 +137,6 @@ namespace PropertyTools.Wpf
                     tab.Groups.Add(group);
                 }
 
-                #region Set tab sort index
-
                 if (tab.TabIndex == null)
                 {
                     tab.TabIndex = pi.TabSortIndex;
@@ -151,10 +149,6 @@ namespace PropertyTools.Wpf
                     ));
                 }
 
-                #endregion
-
-                #region Set group sort index
-
                 if (group.GroupSortIndex == null)
                 {
                     group.GroupSortIndex = pi.GroupSortIndex;
@@ -166,8 +160,6 @@ namespace PropertyTools.Wpf
                             group.GroupSortIndex, pi.GroupSortIndex, group.Name
                     ));
                 }
-
-                #endregion
 
                 group.Properties.Add(pi);
             }
@@ -243,9 +235,45 @@ namespace PropertyTools.Wpf
             else
             {
                 properties = TypeDescriptor.GetProperties(instance);
+
+                // When the instance implements ICustomTypeDescriptor (e.g. DbConnectionStringBuilder),
+                // GetProperties() may return descriptors whose GetValue/SetValue read raw dictionary
+                // entries rather than delegating to the typed CLR property accessors.  WPF binding also
+                // routes through ICustomTypeDescriptor, so it receives null or a plain string instead of
+                // the expected bool / enum / byte[] value.  Replacing each such descriptor with the
+                // corresponding reflection-backed descriptor restores correct typed access (issue #288).
+                if (instance is ICustomTypeDescriptor)
+                {
+                    properties = ReplaceWithReflectionDescriptors(properties, instanceType);
+                }
             }
 
             return properties;
+        }
+
+        /// <summary>
+        /// Replaces descriptors obtained from <see cref="ICustomTypeDescriptor" /> with the
+        /// corresponding reflection-based descriptors from <paramref name="instanceType" />.
+        /// Descriptors that have no matching CLR property (e.g. dynamic keys) are kept as-is.
+        /// </summary>
+        /// <param name="properties">The descriptor collection from ICustomTypeDescriptor.</param>
+        /// <param name="instanceType">The concrete type of the source object.</param>
+        /// <returns>A new collection where each descriptor uses CLR reflection for value access.</returns>
+        private static PropertyDescriptorCollection ReplaceWithReflectionDescriptors(
+            PropertyDescriptorCollection properties, Type instanceType)
+        {
+            var typeDescriptors = TypeDescriptor.GetProperties(instanceType);
+            var result = new List<PropertyDescriptor>(properties.Count);
+
+            foreach (PropertyDescriptor pd in properties)
+            {
+                // Prefer the reflection-backed descriptor so that GetValue/SetValue invoke the
+                // actual CLR property getter/setter instead of the ICustomTypeDescriptor override.
+                var reflectPd = typeDescriptors[pd.Name];
+                result.Add(reflectPd ?? pd);
+            }
+
+            return new PropertyDescriptorCollection(result.ToArray());
         }
 
         /// <summary>
@@ -446,8 +474,6 @@ namespace PropertyTools.Wpf
             return pd.GetAttributeValue<DataAnnotations.CategoryAttribute, uint?>((x) => x.GroupSortIndex);
         }
 
-        
-
         /// <summary>
         /// Sets the properties.
         /// </summary>
@@ -520,10 +546,10 @@ namespace PropertyTools.Wpf
             pi.GroupSortIndex = this.GetGroupSortIndex(pi.Descriptor, declaringType, instance);
 
             // Localize the strings
-            pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instanceType, LocalizableResourceKind.Name);
-            pi.Description = this.GetLocalizedDescription(description, declaringType, instanceType);
-            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instanceType, LocalizableResourceKind.Category);
-            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType, instanceType, LocalizableResourceKind.Tab);
+            pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instance.GetType(), LocalizableResourceKind.Name);
+            pi.Description = this.GetLocalizedDescription(description, declaringType, instance.GetType());
+            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Category);
+            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Tab);
 
             pi.IsReadOnly = pi.Descriptor.IsReadOnly();
 
@@ -721,10 +747,7 @@ namespace PropertyTools.Wpf
                         var cd = new ColumnDefinition
                         {
                             PropertyName = column.PropertyName,
-                            Header = this.GetLocalizedString(column.Header,
-                                    declaringType: null,  // TODO: or elementType ???
-                                    instanceType: instanceType,
-                                    resourceKind: LocalizableResourceKind.Name),
+                            Header = this.GetLocalizedString(column.Header, declaringType: elementType, instance.GetType(), LocalizableResourceKind.Name),
                             FormatString = column.FormatString,
                             Width = (GridLength)(glc.ConvertFromInvariantString(column.Width) ?? GridLength.Auto),
                             IsReadOnly = column.IsReadOnly,
@@ -737,11 +760,10 @@ namespace PropertyTools.Wpf
                             AutoUpdateText = column.AutoUpdateText
                         }.ConfigureSelectorDefinition(column);
 
-
-                        if (column.ItemsSourcePropertyName_ColumnsPropertyOwner != null)
+                        if (column.ItemsSourcePropertyName != null)
                         {
                             // use instance.GetType to be able to fetch static properties also
-                            var p = instance.GetType().GetProperties().FirstOrDefault(x => x.Name == column.ItemsSourcePropertyName_ColumnsPropertyOwner);
+                            var p = instance.GetType().GetProperties().FirstOrDefault(x => x.Name == column.ItemsSourcePropertyName);
                             cd.ItemsSource = p?.GetValue(instance) as IEnumerable;
                         }
 
@@ -970,19 +992,13 @@ namespace PropertyTools.Wpf
             }
         }
 
-        /// <summary>
-        /// <see cref="IEnumValuesFilterOperator.GetEnumValues(IPropertyItem, object, bool)"/>
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public virtual IEnumerable<Enum> GetEnumValues(IPropertyItem pi, object instance, bool browsableOnly = true)
         {
             return new DefaultEnumValuesFilterOperator().GetEnumValues(pi, instance, browsableOnly);
         }
 
-        /// <summary>
-
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public virtual IEnumerable<object> GetEnumValuesWithNullEntry(IPropertyItem pi, object instance, bool nullAtStart, bool browsableOnly = true)
         {
             return new DefaultEnumValuesFilterOperator().GetEnumValuesWithNullEntry(pi, instance, nullAtStart, browsableOnly);
