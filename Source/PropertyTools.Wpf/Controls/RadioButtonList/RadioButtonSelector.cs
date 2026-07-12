@@ -315,7 +315,9 @@ namespace PropertyTools.Wpf
                 enumMember = itemValue.ToString();
             }
             else if (ReflectionExtensions.TryGetFieldOrPropertyValue(itemValue, this.SelectedValuePath, out object enumValue)
-                && enumType.IsEnumDefined(enumValue))
+                && enumValue != null 
+                && enumType.IsEnumDefined(enumValue)
+                )
             {
                 enumMember = enumValue.ToString();
             }

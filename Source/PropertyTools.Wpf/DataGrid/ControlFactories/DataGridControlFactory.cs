@@ -612,7 +612,7 @@ namespace PropertyTools.Wpf
         /// Focuses on the parent data grid.
         /// </summary>
         /// <param name="obj">The <see cref="DependencyObject" />.</param>
-        private static void FocusParentDataGrid(DependencyObject obj)
+        protected void FocusParentDataGrid(DependencyObject obj)
         {
             var parent = VisualTreeHelper.GetParent(obj);
             while (parent != null && !(parent is DataGrid))

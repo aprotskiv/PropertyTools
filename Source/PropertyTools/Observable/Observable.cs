@@ -39,7 +39,7 @@ namespace PropertyTools
         /// Raises the property changed event.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        protected void RaisePropertyChanged(string propertyName)
+        protected void RaisePropertyChanged(string propertyName = "")
         {
             this.RaisePropertyChanged(new PropertyChangedEventArgs(propertyName));
         }

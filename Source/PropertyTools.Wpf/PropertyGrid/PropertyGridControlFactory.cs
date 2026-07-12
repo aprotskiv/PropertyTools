@@ -1166,6 +1166,7 @@ namespace PropertyTools.Wpf
         /// </returns>
         protected virtual FrameworkElement CreateSpinControl(PropertyItem property)
         {
+            var trigger = property.AutoUpdateText ? UpdateSourceTrigger.PropertyChanged : UpdateSourceTrigger.Default;
             var tb = new TextBoxEx
             {
                 IsReadOnly = property.IsReadOnly,
@@ -1184,7 +1185,7 @@ namespace PropertyTools.Wpf
             };
 
             // Note: Do not apply the converter to the SpinControl
-            c.SetBinding(SpinControl.ValueProperty, property.CreateBinding(UpdateSourceTrigger.Default, false));
+            c.SetBinding(SpinControl.ValueProperty, property.CreateBinding(trigger, false));
             return c;
         }
 
