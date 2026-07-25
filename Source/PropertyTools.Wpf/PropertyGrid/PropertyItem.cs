@@ -597,9 +597,15 @@ namespace PropertyTools.Wpf
 		public TextWrapping TextWrapping { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the property should use radio buttons.
+        /// Gets or sets a value indicating whether the property should use radio buttons (checkboxes), comboBoxes or listboxes.
         /// </summary>
         public SelectorStyle SelectorStyle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the limiting number of values if the property can be shown with radio buttons (<see cref="SelectorStyle"/>)
+        /// </summary>
+        /// <value>The limit. If the number of values exceeds the limit, a multiselect listbox will be used.</value>
+        public int? RadioButtonsLimit { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the property should use single or multiple selection mode.

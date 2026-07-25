@@ -607,6 +607,7 @@ namespace PropertyTools.Wpf
             if (ssa != null)
             {
                 pi.SelectorStyle = ssa.SelectorStyle;
+                pi.RadioButtonsLimit = ssa.RadioButtonsLimit;
             }
 
             var sma = attribute as SelectorModeAttribute;

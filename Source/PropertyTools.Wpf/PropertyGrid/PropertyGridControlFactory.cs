@@ -476,7 +476,7 @@ namespace PropertyTools.Wpf
             }
 
             if (style == DataAnnotations.SelectorStyle.RadioButtons
-                && property.GetItemsSourceCount(instance) > options.RadioButtonsLimit)
+                && property.GetItemsSourceCount(instance) > (property.RadioButtonsLimit ?? options.RadioButtonsLimit))
             {
                 style = (mode == DataAnnotations.SelectorMode.Single)
                     ? DataAnnotations.SelectorStyle.ComboBox
@@ -553,7 +553,7 @@ namespace PropertyTools.Wpf
             var binding = property.CreateBinding();
             if (c.SelectionMode != SelectionMode.Single)
             {
-                binding.Converter = property.EnumMetadata.Flags
+                binding.Converter = property.EnumMetadata?.Flags == true
                     ? (IValueConverter)new EnumValueToMultiStateSelectorItemsConverter(property.EnumMetadata)
                     : new MultipleSelectListBox.ListToBindableSelectedItemsConverter(selectorDefinition);
 
@@ -789,7 +789,7 @@ namespace PropertyTools.Wpf
             var style = property.SelectorStyle;
             if (style == DataAnnotations.SelectorStyle.Auto)
             {
-                style = values.Length > options.RadioButtonsLimit
+                style = values.Length > (property.RadioButtonsLimit ?? options.RadioButtonsLimit)
                             ? DataAnnotations.SelectorStyle.ComboBox
                             : DataAnnotations.SelectorStyle.RadioButtons;
             }
