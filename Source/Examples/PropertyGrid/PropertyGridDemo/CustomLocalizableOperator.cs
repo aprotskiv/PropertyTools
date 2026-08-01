@@ -8,7 +8,9 @@ namespace PropertyGridDemo
 
     public class CustomLocalizableOperator : DefaultLocalizableOperator
     {
-		public override string GetLocalizedString(string key, Type declaringType, Type instanceType, LocalizableResourceKind resourceKind)
+		public override string GetLocalizedString(string key, Type declaringType, Type instanceType, 
+            LocalizableResourceKind resourceKind, 
+            Type resourceClass)
 		{			
             var value = key;
 

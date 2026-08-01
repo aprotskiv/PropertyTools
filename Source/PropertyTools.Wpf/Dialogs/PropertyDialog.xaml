@@ -14,13 +14,13 @@
   </Window.Resources>
   <DockPanel>
     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="8">
-      <Button Name="OkButton" IsDefault="True" Click="OkButtonClick" Content="OK" />
-	  <!-- Click="CancelButtonClick" is not needed when IsCancel="True"  -->
-      <Button Name="CancelButton" IsCancel="True" Content="Cancel" />
-      <Button Name="ApplyButton" Click="ApplyButtonClick" Content="Apply" />
-      <Button Name="CloseButton" Click="CloseButtonClick" Content="Close" />
-      <Button Name="HelpButton" Click="HelpButtonClick" Content="Help" />
-    </StackPanel>
+		<Button Name="OkButton" IsDefault="True" Click="OkButtonClick" Content="{Binding Path=OKButtonText, RelativeSource={RelativeSource AncestorType=Window}}" />
+		<!-- Click="CancelButtonClick" is not needed when IsCancel="True"  -->
+		<Button Name="CancelButton" IsCancel="True" Content="{Binding Path=CancelButtonText, RelativeSource={RelativeSource AncestorType=Window}}" />
+		<Button Name="ApplyButton" Click="ApplyButtonClick" Content="{Binding Path=ApplyButtonText, RelativeSource={RelativeSource AncestorType=Window}}" />
+		<Button Name="CloseButton" Click="CloseButtonClick" Content="{Binding Path=CloseButtonText, RelativeSource={RelativeSource AncestorType=Window}}" />
+		<Button Name="HelpButton" Click="HelpButtonClick" Content="{Binding Path=HelpButtonText, RelativeSource={RelativeSource AncestorType=Window}}" />
+	</StackPanel>
     <pt:PropertyGrid x:Name="PropertyGrid1" SelectedObject="{Binding}" Margin="8" />
   </DockPanel>
 </Window>

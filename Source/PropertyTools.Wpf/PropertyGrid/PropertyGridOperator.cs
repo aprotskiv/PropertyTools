@@ -438,7 +438,7 @@ namespace PropertyTools.Wpf
         {
             var displayName = pd.GetDisplayName();
 
-            if (this.ModifyCamelCaseDisplayNames && displayName == pd.Name)
+            if (!HasLocalizableOperator() && ModifyCamelCaseDisplayNames && displayName == pd.Name)
             {
                 displayName = StringUtilities.FromCamelCase(displayName);
             }
@@ -546,10 +546,21 @@ namespace PropertyTools.Wpf
             pi.GroupSortIndex = this.GetGroupSortIndex(pi.Descriptor, declaringType, instance);
 
             // Localize the strings
-            pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instance.GetType(), LocalizableResourceKind.Name);
-            pi.Description = this.GetLocalizedDescription(description, declaringType, instance.GetType());
-            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Category);
-            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Tab);
+            pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instance.GetType(), LocalizableResourceKind.Name,
+                pi.Descriptor.GetFirstAttributeOrDefault<DataAnnotations.DisplayNameAttribute>()?.ResourceClass
+            );            
+            
+            pi.Description = this.GetLocalizedDescription(description, declaringType, instance.GetType(),
+                pi.Descriptor.GetFirstAttributeOrDefault<DataAnnotations.DescriptionAttribute>()?.ResourceClass
+            );
+            
+            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Category,
+                ca2?.ResourceClass
+            );
+            
+            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Tab,
+                ca2?.ResourceClass
+            );
 
             pi.IsReadOnly = pi.Descriptor.IsReadOnly();
 

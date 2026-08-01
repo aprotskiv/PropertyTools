@@ -323,5 +323,50 @@ namespace PropertyTools.Wpf
                 this.ApplyButton.IsEnabled = !this.ApplyButtonDataErrorAware || !nde.HasErrors;
             }
         }
+
+        public static DependencyProperty OKButtonTextProperty { get; } = DependencyProperty.Register(nameof(OKButtonText),
+            typeof(string), typeof(PropertyDialog), new PropertyMetadata("OK"));
+
+        public static DependencyProperty CancelButtonTextProperty { get; } = DependencyProperty.Register(nameof(CancelButtonText),
+            typeof(string), typeof(PropertyDialog), new PropertyMetadata("Cancel"));
+
+        public static DependencyProperty ApplyButtonTextProperty { get; } = DependencyProperty.Register(nameof(ApplyButtonText),
+            typeof(string), typeof(PropertyDialog), new PropertyMetadata("Apply"));
+
+        public static DependencyProperty HelpButtonTextProperty { get; } = DependencyProperty.Register(nameof(HelpButtonText),
+            typeof(string), typeof(PropertyDialog), new PropertyMetadata("Help"));
+
+        public static DependencyProperty CloseButtonTextProperty { get; } = DependencyProperty.Register(nameof(CloseButtonText),
+            typeof(string), typeof(PropertyDialog), new PropertyMetadata("Close"));
+
+        public string OKButtonText
+        {
+            get => (string)GetValue(OKButtonTextProperty);
+            set => SetValue(OKButtonTextProperty, value);
+        }
+
+        public string CancelButtonText
+        {
+            get => (string)GetValue(CancelButtonTextProperty);
+            set => SetValue(CancelButtonTextProperty, value);
+        }
+
+        public string ApplyButtonText
+        {
+            get => (string)GetValue(ApplyButtonTextProperty);
+            set => SetValue(ApplyButtonTextProperty, value);
+        }
+
+        public string HelpButtonText
+        {
+            get => (string)GetValue(HelpButtonTextProperty);
+            set => SetValue(HelpButtonTextProperty, value);
+        }
+
+        public string CloseButtonText
+        {
+            get => (string)GetValue(CloseButtonTextProperty);
+            set => SetValue(CloseButtonTextProperty, value);
+        }
     }
 }

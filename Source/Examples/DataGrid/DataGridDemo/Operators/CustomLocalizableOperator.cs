@@ -17,7 +17,7 @@ namespace DataGridDemo.Operators
 
     public class CustomLocalizableOperator : DefaultLocalizableOperator
     {
-        public override string GetLocalizedDescription(string key, Type declaringType, Type instanceType)
+        public override string GetLocalizedDescription(string key, Type declaringType, Type instanceType, Type resourceClass)
         {
             var value = key;
 

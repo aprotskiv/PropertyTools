@@ -235,6 +235,44 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
+        /// Tries to get value matching static field or property for target type.
+        /// </summary>
+        /// <param name="target">The target type</param>
+        /// <param name="memberName">Static field or property name</param>
+        /// <param name="value">The output value of matching static field or property</param>
+        /// <returns>TRUE if matching static field or property has been found. Otherwise returns FALSE</returns>
+        public static bool TryGetStaticFieldOrPropertyValue<T>(Type targetType, string memberName, out T value)
+            where T: class
+        {
+            value = null;
+
+            if (targetType != null && !string.IsNullOrEmpty(memberName))
+            {
+                var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
+                if (targetType.GetProperty(memberName, flags) is PropertyInfo propertyInfo)
+                {
+                    value = (T)propertyInfo.GetValue(null, null);
+                    return true;
+                }
+                else if (targetType.GetField(memberName, flags) is FieldInfo fieldInfo)
+                {
+                    value = (T)fieldInfo.GetValue(null);
+                    return true;
+                }
+                else if (targetType.GetMethod(memberName, flags) is MethodInfo methodInfo 
+                    && methodInfo.ReturnType == typeof(T)) 
+                {
+                    // property was obfuscated as method
+                    value = (T)methodInfo.Invoke(null, null);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Gets the default enum value.
         /// </summary>
         /// <remarks>

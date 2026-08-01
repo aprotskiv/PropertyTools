@@ -51,6 +51,18 @@ namespace PropertyTools.Wpf.Extensions
                         var descriptionAttribute1 = fieldInfo.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>();
                         var descriptionAttribute2 = fieldInfo.GetCustomAttribute<PropertyTools.DataAnnotations.DescriptionAttribute>();
 
+                        var attributes = new System.Attribute[] { displayNameAttribute, descriptionAttribute1, descriptionAttribute2 }
+                            .Where(z => z != null).ToArray();
+
+                        foreach (var attribute in attributes)
+                        {
+                            if (attribute is IResourceStringAttribute rcAttr
+                                && ReflectionExtensions.TryGetStaticFieldOrPropertyValue(rcAttr.ResourceClass, rcAttr.GetStaticProperty(), out string resourceValue))
+                            {
+                                return resourceValue;
+                            }
+                        }
+
                         var enumMemberDisplayName = displayNameAttribute?.DisplayName
                            ?? descriptionAttribute1?.Description
                            ?? descriptionAttribute2?.Description
@@ -58,8 +70,8 @@ namespace PropertyTools.Wpf.Extensions
 
                         return localizedPropertyOperator.GetLocalizedString(enumMemberDisplayName, enumType, 
                         	instanceType: instance?.GetType(), 
-                        	LocalizableResourceKind.Name);
-
+                        	LocalizableResourceKind.Name,
+                            resourceClass: null);
                     });
 
                 if (propertyType.IsNullableEnum())
@@ -67,7 +79,8 @@ namespace PropertyTools.Wpf.Extensions
                     pi.EnumMetadata.IsNullableEnum = true;
                     pi.EnumMetadata.EnumDisplayNull = localizedPropertyOperator.GetLocalizedString(null, enumType, 
                     	instanceType: instance?.GetType(), 
-                    	LocalizableResourceKind.Name);
+                    	LocalizableResourceKind.Name,
+                        resourceClass: null);
                 }
             }
         }
