@@ -425,16 +425,27 @@ namespace PropertyTools.Wpf
             return pd.GetDescription();
         }
 
-        /// <summary>
-        /// Gets the display name for the specified property.
-        /// </summary>
-        /// <param name="pd">The property descriptor.</param>
-        /// <param name="declaringType">The declaring type.</param>
-        /// <param name="instance">The instance.</param>
-        /// <returns>
-        /// A display name string.
-        /// </returns>
-        protected virtual string GetDisplayName(PropertyDescriptor pd, Type declaringType, object instance)
+		/// <summary>
+		/// Determines whether the description property already contains localized string or not.
+		/// </summary>
+		/// <param name="pd">The property descriptor.</param>
+		/// <param name="declaringType">The declaring type.</param>
+		/// <param name="instance">The instance.</param>
+		protected virtual bool IsDescriptionLocalizedAlready(PropertyDescriptor pd, Type declaringType, object instance)
+		{
+			return pd.IsDescriptionLocalizedAlready();
+		}
+
+		/// <summary>
+		/// Gets the display name for the specified property.
+		/// </summary>
+		/// <param name="pd">The property descriptor.</param>
+		/// <param name="declaringType">The declaring type.</param>
+		/// <param name="instance">The instance.</param>
+		/// <returns>
+		/// A display name string.
+		/// </returns>
+		protected virtual string GetDisplayName(PropertyDescriptor pd, Type declaringType, object instance)
         {
             var displayName = pd.GetDisplayName();
 
@@ -536,7 +547,9 @@ namespace PropertyTools.Wpf
                 }
             }
 
-            var displayName = this.GetDisplayName(pi.Descriptor, declaringType, instance);
+			var da = pi.Descriptor.GetFirstAttributeOrDefault<DataAnnotations.DescriptionAttribute>();
+
+			var displayName = this.GetDisplayName(pi.Descriptor, declaringType, instance);
             var description = this.GetDescription(pi.Descriptor, declaringType, instance);
 
             pi.CategoryIdentifier = categoryName;
@@ -548,11 +561,18 @@ namespace PropertyTools.Wpf
             // Localize the strings
             pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instance.GetType(), LocalizableResourceKind.Name,
                 pi.Descriptor.GetFirstAttributeOrDefault<DataAnnotations.DisplayNameAttribute>()?.ResourceClass
-            );            
-            
-            pi.Description = this.GetLocalizedDescription(description, declaringType, instance.GetType(),
-                pi.Descriptor.GetFirstAttributeOrDefault<DataAnnotations.DescriptionAttribute>()?.ResourceClass
             );
+
+			if (IsDescriptionLocalizedAlready(pi.Descriptor, declaringType, instance))
+			{
+				pi.Description = description;
+			}
+			else
+			{ 
+				pi.Description = this.GetLocalizedDescription(description, declaringType, instance.GetType(),
+					da?.ResourceClass
+				);
+			}
             
             pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Category,
                 ca2?.ResourceClass

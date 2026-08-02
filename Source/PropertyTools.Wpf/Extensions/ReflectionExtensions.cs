@@ -181,12 +181,26 @@ namespace PropertyTools.Wpf
             return pd.Description;
         }
 
-        /// <summary>
-        /// Gets the display name for the specified property.
-        /// </summary>
-        /// <param name="pd">The property descriptor.</param>
-        /// <returns>The display name.</returns>
-        public static string GetDisplayName(this System.ComponentModel.PropertyDescriptor pd)
+		/// <summary>
+		/// Determines whether the description property already contains localized string or not.
+		/// </summary>
+		public static bool IsDescriptionLocalizedAlready(this System.ComponentModel.PropertyDescriptor pd)
+		{
+			var a = pd.GetFirstAttributeOrDefault<DataAnnotations.DescriptionAttribute>();
+			if (a != null)
+			{
+				return a.IsLocalizedAlready == true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Gets the display name for the specified property.
+		/// </summary>
+		/// <param name="pd">The property descriptor.</param>
+		/// <returns>The display name.</returns>
+		public static string GetDisplayName(this System.ComponentModel.PropertyDescriptor pd)
         {
             var a = pd.GetFirstAttributeOrDefault<DataAnnotations.DisplayNameAttribute>();
             if (a != null)

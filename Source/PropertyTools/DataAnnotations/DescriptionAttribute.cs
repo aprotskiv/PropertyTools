@@ -49,9 +49,14 @@ namespace PropertyTools.DataAnnotations
         /// <value>The resource class type.</value>
         public Type ResourceClass { get; }
 
-        public string GetStaticProperty()
+		public string GetStaticProperty()
         {
             return Description;
         }
-    }
+
+		/// <summary>
+		/// Determines whether the <see cref="Description"/> property already contains localized string or not.
+		/// </summary>
+		public bool IsLocalizedAlready { get; set; }
+	}
 }
