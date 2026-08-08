@@ -594,7 +594,7 @@ namespace PropertyTools.Wpf
 		/// Gets or sets the text wrapping.
 		/// </summary>
 		/// <value>The text wrapping.</value>
-		public TextWrapping TextWrapping { get; set; }
+		public System.Windows.TextWrapping TextWrapping { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the property should use radio buttons (checkboxes), comboBoxes or listboxes.

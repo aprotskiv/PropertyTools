@@ -895,7 +895,13 @@ namespace PropertyTools.Wpf
                 pi.AutoUpdateText = true;
             }
 
-            var ispa = attribute as ItemsSourcePropertyAttribute;
+			if (attribute is TextWrappingAttribute twa 
+				&& Enum.TryParse<System.Windows.TextWrapping>(twa.TextWrapping.ToString(), out var textWrapping))
+			{
+				pi.TextWrapping = textWrapping;
+			}
+
+			var ispa = attribute as ItemsSourcePropertyAttribute;
             if (ispa != null)
             {
                 pi.ItemsSourceDescriptor = pi.GetDescriptor(ispa.PropertyName);
