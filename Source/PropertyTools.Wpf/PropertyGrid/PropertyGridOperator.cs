@@ -699,7 +699,12 @@ namespace PropertyTools.Wpf
                 pi.FilePathDefaultExtension = ofpa.DefaultExtension;
             }
 
-            if (attribute is DirectoryPathAttribute)
+			if (attribute is CopyToClipboardTextAttribute)
+			{
+				pi.IsCopyToClipboardText = true;
+			}
+
+			if (attribute is DirectoryPathAttribute)
             {
                 pi.IsDirectoryPath = true;
             }

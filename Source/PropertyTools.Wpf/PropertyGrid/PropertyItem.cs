@@ -293,10 +293,15 @@ namespace PropertyTools.Wpf
         /// </summary>
         public bool IsContent { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the property is a directory path.
-        /// </summary>
-        public bool IsDirectoryPath { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether the property is a Copy to Clipboard text.
+		/// </summary>
+		public bool IsCopyToClipboardText { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the property is a directory path.
+		/// </summary>
+		public bool IsDirectoryPath { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the property is editable.

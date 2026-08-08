@@ -169,7 +169,12 @@ namespace PropertyTools.Wpf
                 return this.CreateDateTimeControl(property);
             }
 
-            if (property.IsFilePath)
+			if (property.IsCopyToClipboardText)
+			{
+				return this.CreateCopyToClipboardTextControl(property);
+			}
+
+			if (property.IsFilePath)
             {
                 return this.CreateFilePathControl(property);
             }
@@ -639,14 +644,33 @@ namespace PropertyTools.Wpf
             return b;
         }
 
-        /// <summary>
-        /// Creates the date time control.
-        /// </summary>
-        /// <param name="property">The property.</param>
-        /// <returns>
-        /// The control.
-        /// </returns>
-        protected virtual FrameworkElement CreateDateTimeControl(PropertyItem property)
+		/// <summary>
+		/// Creates the Copy To Clipboard Text control.
+		/// </summary>
+		/// <param name="property">The property.</param>
+		/// <returns>
+		/// The control.
+		/// </returns>
+		protected virtual FrameworkElement CreateCopyToClipboardTextControl(PropertyItem property)
+		{
+			var c = new CopyToClipboardText()
+			{
+				IsReadOnly = property.IsReadOnly,
+				TextWrapping = property.TextWrapping,
+			};
+			var trigger = property.AutoUpdateText ? UpdateSourceTrigger.PropertyChanged : UpdateSourceTrigger.Default;
+			c.SetBinding(CopyToClipboardText.TextProperty, property.CreateBinding(trigger));
+			return c;
+		}
+
+		/// <summary>
+		/// Creates the date time control.
+		/// </summary>
+		/// <param name="property">The property.</param>
+		/// <returns>
+		/// The control.
+		/// </returns>
+		protected virtual FrameworkElement CreateDateTimeControl(PropertyItem property)
         {
             var c = new DatePicker();
             c.SetBinding(DatePicker.SelectedDateProperty, property.CreateBinding());
