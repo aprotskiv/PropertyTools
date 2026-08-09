@@ -18,7 +18,9 @@ namespace PropertyTools.Wpf
     /// <summary>
     /// Represents a control that lets the user pick a color.
     /// </summary>
-    [TemplatePart(Name = PartColorPickerPanel, Type = typeof(ColorPickerPanel))]
+    [TemplatePart(Name = PartColorPickerPanel
+		//, Type = typeof(ColorPickerPanel)
+	)]
     public class ColorPicker : ComboBox
     {
         /// <summary>
@@ -42,7 +44,10 @@ namespace PropertyTools.Wpf
         /// <summary>
         /// The color picker panel.
         /// </summary>
-        private ColorPickerPanel colorPickerPanel;
+        private 
+			//ColorPickerPanel 
+			UserControl
+			colorPickerPanel;
 
         /// <summary>
         /// Initializes static members of the <see cref="ColorPicker" /> class.
@@ -83,11 +88,14 @@ namespace PropertyTools.Wpf
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
+			
+			/*
             this.colorPickerPanel = this.GetTemplateChild(PartColorPickerPanel) as ColorPickerPanel;
             if (this.colorPickerPanel != null)
             {
                 this.colorPickerPanel.PredefinedColorPanelSelectionChangedEvent += this.OnPredefinedColorPanelSelectionChanged;
             }
+			*/
         }
 
         /// <summary>
@@ -155,7 +163,9 @@ namespace PropertyTools.Wpf
         /// <param name="args">The <see cref="SelectionChangedEventArgs" /> instance containing the event data.</param>
         private void OnPredefinedColorPanelSelectionChanged(object sender, SelectionChangedEventArgs args)
         {
-            if (this.IsDropDownOpen && !this.colorPickerPanel.IsPickingColor())
+            if (this.IsDropDownOpen 
+					// && !this.colorPickerPanel.IsPickingColor()
+				)
             {
                 this.IsDropDownOpen = false;
             }

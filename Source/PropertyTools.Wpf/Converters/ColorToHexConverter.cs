@@ -10,14 +10,25 @@
 namespace PropertyTools.Wpf
 {
     using System;
-    using System.Globalization;
-    using System.Windows.Data;
-    using System.Windows.Media;
+    using System.Globalization;    
 
-    /// <summary>
-    /// Converts <see cref="Color" /> instances to hex <see cref="string" /> instances.
-    /// </summary>
-    [ValueConversion(typeof(Color), typeof(string))]
+#if AVALONIA
+	using Avalonia.Media;
+	using Avalonia.Data.Converters;
+	using DependencyProperty = Avalonia.AvaloniaProperty;
+#else
+	using System.Windows;   	
+	using System.Windows.Data;
+	using System.Windows.Media;
+	using System.Windows.Media.Imaging;	
+#endif
+
+	/// <summary>
+	/// Converts <see cref="Color" /> instances to hex <see cref="string" /> instances.
+	/// </summary>
+#if !AVALONIA
+	[ValueConversion(typeof(Color), typeof(string))]
+#endif
     public class ColorToHexConverter : IValueConverter
     {
         /// <summary>

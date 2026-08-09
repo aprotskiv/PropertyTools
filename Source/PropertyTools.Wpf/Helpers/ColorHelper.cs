@@ -8,15 +8,19 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace PropertyTools.Wpf
-{
-    using System;
+{	
+	using System;
     using System.Globalization;
-    using System.Windows.Media;
+#if AVALONIA
+	using Avalonia.Media;
+#else
+	using System.Windows.Media;
+#endif
 
-    /// <summary>
-    /// Static <see cref="Color" /> helper methods.
-    /// </summary>
-    public static class ColorHelper
+	/// <summary>
+	/// Static <see cref="Color" /> helper methods.
+	/// </summary>
+	public static class ColorHelper
     {
         /// <summary>
         /// Initializes static members of the <see cref="ColorHelper" /> class.

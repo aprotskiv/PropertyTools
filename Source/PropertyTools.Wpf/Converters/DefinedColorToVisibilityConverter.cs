@@ -11,14 +11,24 @@ namespace PropertyTools.Wpf
 {
     using System;
     using System.Globalization;
-    using System.Windows;
-    using System.Windows.Data;
-    using System.Windows.Media;
 
-    /// <summary>
-    /// Converts <see cref="Color" /> instances to <see cref="Visibility" /> instances.
-    /// </summary>
-    [ValueConversion(typeof(Color), typeof(bool))]
+#if AVALONIA
+	using Avalonia.Media;
+	using Avalonia.Data.Converters;
+	using DependencyProperty = Avalonia.AvaloniaProperty;
+#else
+	using System.Windows;   	
+	using System.Windows.Data;
+	using System.Windows.Media;
+	using System.Windows.Media.Imaging;	
+#endif
+
+	/// <summary>
+	/// Converts <see cref="Color" /> instances to <see cref="Visibility" /> instances.
+	/// </summary>
+#if !AVALONIA
+	[ValueConversion(typeof(Color), typeof(bool))]
+#endif
     public class DefinedColorToVisibilityConverter : IValueConverter
     {
         /// <summary>
@@ -38,13 +48,20 @@ namespace PropertyTools.Wpf
                 var c = (Color)value;
                 if (c == ColorHelper.Automatic || c == ColorHelper.UndefinedColor)
                 {
+#if !AVALONIA
                     return Visibility.Collapsed;
+#else
+					return false;
+#endif
                 }
-
+#if !AVALONIA
                 return Visibility.Visible;
-            }
+#else
+				return true;
+#endif
+			}
 
-            return DependencyProperty.UnsetValue;
+			return DependencyProperty.UnsetValue;
         }
 
         /// <summary>

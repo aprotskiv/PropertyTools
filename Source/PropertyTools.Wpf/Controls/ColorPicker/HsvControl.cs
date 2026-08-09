@@ -9,59 +9,136 @@
 
 namespace PropertyTools.Wpf
 {
-    using System.ComponentModel;
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Controls.Primitives;
-    using System.Windows.Input;
-    using System.Windows.Media;
+	using System.ComponentModel;
 
-    /// <summary>
-    /// The hsv control.
-    /// </summary>
-    /// <remarks>Original code by Ury Jamshy, 21 July 2011.
-    /// The Code Project Open License (CPOL)</remarks>
-    [TemplatePart(Name = PartThumb, Type = typeof(Thumb))]
-    public class HsvControl : Control
-    {
-        /// <summary>
-        /// Identifies the <see cref="Hue"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty HueProperty = DependencyProperty.Register(
-            nameof(Hue),
-            typeof(double),
-            typeof(HsvControl),
-            new FrameworkPropertyMetadata(
-                (double)0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnHueChanged));
+#if AVALONIA
+	using Avalonia.Media;
+	using Avalonia.Controls;
+	using DependencyPropertyChangedEventArgs = Avalonia.AvaloniaPropertyChangedEventArgs;
+	using DependencyProperty = Avalonia.AvaloniaProperty;
+	using DependencyObject = Avalonia.AvaloniaObject;
+	using Point = Avalonia.Point;
+	using Avalonia.Controls.Primitives;
+	using Avalonia.Input;
+	using Avalonia.Styling;
+#else
+	using System.Windows;   
+	using System.Windows.Controls;
+	using System.Windows.Input;    
+	using System.Windows.Media;
+	using System.Windows.Media.Imaging;
+	using System.Windows.Threading;
+	using DependencyProperty = System.Windows.DependencyProperty;
+	using RoutedEventArgs = System.Windows.RoutedEventArgs;
+	using Rect = System.Windows.Rect;
+	using Point = System.Windows.Point;
+	using Size = System.Windows.Size;
+#endif
+	/// <summary>
+	/// The hsv control.
+	/// </summary>
+	/// <remarks>Original code by Ury Jamshy, 21 July 2011.
+	/// The Code Project Open License (CPOL)</remarks>
+#if !AVALONIA
+	[TemplatePart(Name = PartThumb, Type = typeof(Thumb))]
+#endif
+	public class HsvControl :
+#if AVALONIA
+		TemplatedControl
+#else
+		Control
+#endif
+	{
 
-        /// <summary>
-        /// Identifies the <see cref="Saturation"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty SaturationProperty = DependencyProperty.Register(
-            nameof(Saturation),
-            typeof(double),
-            typeof(HsvControl),
-            new FrameworkPropertyMetadata(
-                (double)0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSaturationChanged));
+#if AVALONIA
+		// TODO: make AttachedProperty
+		public bool SnapsToDevicePixels
+		{
+			get
+			{
+				return UseLayoutRounding;
+			}
+			set
+			{
+				UseLayoutRounding = value;
+			}
+		}
+#endif
+
+		/// <summary>
+		/// Identifies the <see cref="Hue"/> dependency property.
+		/// </summary>
+		public static readonly DependencyProperty HueProperty = 
+#if AVALONIA
+			DependencyProperty.Register<HsvControl, double>(
+				nameof(Hue),
+				0, // default value
+				defaultBindingMode: Avalonia.Data.BindingMode.TwoWay
+#else
+			DependencyProperty.Register(
+				nameof(Hue),
+				typeof(double),
+				typeof(HsvControl),
+				new FrameworkPropertyMetadata(
+					(double)0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnHueChanged)
+#endif
+		);
+
+		/// <summary>
+		/// Identifies the <see cref="Saturation"/> dependency property.
+		/// </summary>
+		public static readonly DependencyProperty SaturationProperty =
+#if AVALONIA
+			DependencyProperty.Register<HsvControl, double>(
+				nameof(Saturation),
+				0, // default value
+				defaultBindingMode: Avalonia.Data.BindingMode.TwoWay
+#else
+			DependencyProperty.Register(
+				nameof(Saturation),
+				typeof(double),
+				typeof(HsvControl),
+				new FrameworkPropertyMetadata(
+					(double)0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSaturationChanged)
+#endif
+			);
 
         /// <summary>
         /// Identifies the <see cref="SelectedColor"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty SelectedColorProperty = DependencyProperty.Register(
-            nameof(SelectedColor),
-            typeof(Color?),
-            typeof(HsvControl),
-            new FrameworkPropertyMetadata(Colors.Transparent, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty SelectedColorProperty =
+#if AVALONIA
+			DependencyProperty.Register<HsvControl, Color?>(
+				nameof(SelectedColor),
+				Colors.Transparent, // default value
+				defaultBindingMode: Avalonia.Data.BindingMode.TwoWay
+#else
+			DependencyProperty.Register(
+				nameof(SelectedColor),
+				typeof(Color?),
+				typeof(HsvControl),
+				new FrameworkPropertyMetadata(Colors.Transparent, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
+#endif
+			);
 
         /// <summary>
         /// Identifies the <see cref="Value"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
-            nameof(Value),
-            typeof(double),
-            typeof(HsvControl),
-            new FrameworkPropertyMetadata(
-                (double)0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
+        public static readonly DependencyProperty ValueProperty =
+#if AVALONIA
+			DependencyProperty.Register<HsvControl, double>(
+				nameof(Value),
+				0, // default value
+				defaultBindingMode: Avalonia.Data.BindingMode.TwoWay
+#else
+			DependencyProperty.Register(
+				nameof(Value),
+				typeof(double),
+				typeof(HsvControl),
+				new FrameworkPropertyMetadata(
+					(double)0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged)
+#endif
+		);
 
         /// <summary>
         /// The thumb name.
@@ -91,22 +168,49 @@ namespace PropertyTools.Wpf
         /// </summary>
         static HsvControl()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(
-                typeof(HsvControl), new FrameworkPropertyMetadata(typeof(HsvControl)));
+#if AVALONIA
+			// Forces a brand new default ControlTheme for this control type
+			ThemeProperty.OverrideDefaultValue<HsvControl>(new ControlTheme(typeof(HsvControl)));
+#else
+			DefaultStyleKeyProperty.OverrideMetadata(
+				typeof(HsvControl), new FrameworkPropertyMetadata(typeof(HsvControl)));
+#endif
 
-            // Register Event Handler for the Thumb
+			// Register Event Handler for the Thumb
+#if AVALONIA
+			Thumb.DragDeltaEvent.AddClassHandler<HsvControl>(OnThumbDragDeltaStatic);
+#else
             EventManager.RegisterClassHandler(
                 typeof(HsvControl), Thumb.DragDeltaEvent, new DragDeltaEventHandler(OnThumbDragDelta));
+#endif
+
+#if AVALONIA
+			Thumb.DragCompletedEvent.AddClassHandler<HsvControl>(OnThumbDragCompletedStatic);
+#else
             EventManager.RegisterClassHandler(
                 typeof(HsvControl), Thumb.DragCompletedEvent, new DragCompletedEventHandler(OnThumbDragCompleted));
-        }
+#endif
+		}
 
-        /// <summary>
-        /// The on thumb drag completed.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The e.</param>
-        private static void OnThumbDragCompleted(object sender, DragCompletedEventArgs e)
+		public HsvControl()
+		{ 
+#if AVALONIA
+			this.PointerPressed += OnPointerPressed;
+#endif
+		}
+
+		/// <summary>
+		/// The on thumb drag completed.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The e.</param>
+		private static void OnThumbDragCompletedStatic(object sender,
+#if AVALONIA
+			VectorEventArgs
+#else
+			DragCompletedEventArgs 
+#endif
+			e)
         {
             ((HsvControl)sender).OnThumbDragCompleted(e);
         }
@@ -115,7 +219,13 @@ namespace PropertyTools.Wpf
         /// The on thumb drag completed.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        private void OnThumbDragCompleted(DragCompletedEventArgs sender)
+        private void OnThumbDragCompleted(
+#if AVALONIA
+			VectorEventArgs
+#else
+			DragCompletedEventArgs 
+#endif
+			sender)
         {
             var editableObject = this.DataContext as IEditableObject;
             if (editableObject != null)
@@ -123,6 +233,28 @@ namespace PropertyTools.Wpf
                 editableObject.EndEdit();
             }
         }
+
+		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs change)
+		{
+			base.OnPropertyChanged(change);
+
+			if (change.Property == HueProperty)
+			{
+				OnHueChanged(this, change);
+			}
+			else if (change.Property == SaturationProperty)
+			{
+				OnSaturationChanged(this, change);
+			}
+			else if (change.Property == ValueProperty)
+			{
+				OnValueChanged(this, change);
+			}
+			else if (change.Property == TopLevel.ClientSizeProperty)
+			{
+				this.UpdateThumbPosition();
+			}
+		}
 
         /// <summary>
         /// Gets or sets Hue.
@@ -181,21 +313,26 @@ namespace PropertyTools.Wpf
             {
                 return (double)this.GetValue(ValueProperty);
             }
-
             set
             {
                 this.SetValue(ValueProperty, value);
             }
-        }
+		}
 
-        /// <summary>
-        /// The on apply template.
-        /// </summary>
-        public override void OnApplyTemplate()
-        {
+		/// <summary>
+		/// The on apply template.
+		/// </summary>
+#if AVALONIA
+		protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+		{
+			base.OnApplyTemplate(e);
+			this.thumb = e.NameScope.Find(PartThumb) as Thumb;
+#else
+		public override void OnApplyTemplate()
+		{
             base.OnApplyTemplate();
-
-            this.thumb = this.GetTemplateChild(PartThumb) as Thumb;
+			this.thumb = this.GetTemplateChild(PartThumb) as Thumb;
+#endif
             if (this.thumb != null)
             {
                 this.UpdateThumbPosition();
@@ -203,13 +340,23 @@ namespace PropertyTools.Wpf
             }
         }
 
-        /// <summary>
-        /// Invoked when an unhandled <see cref="E:System.Windows.UIElement.MouseLeftButtonDown" />�routed event is raised on this element. Implement this method to add class handling for this event.
-        /// </summary>
-        /// <param name="e">The <see cref="T:System.Windows.Input.MouseButtonEventArgs" /> that contains the event data. The event data reports that the left mouse button was pressed.</param>
-        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-        {
-            var editableObject = this.DataContext as IEditableObject;
+
+				
+#if AVALONIA
+		private void OnPointerPressed(object sender, PointerPressedEventArgs e)
+		{
+			// must be Left Button 
+			if (!e.Properties.IsLeftButtonPressed)
+				return;
+#else
+		/// <summary>
+		/// Invoked when an unhandled <see cref="E:System.Windows.UIElement.MouseLeftButtonDown" />�routed event is raised on this element. Implement this method to add class handling for this event.
+		/// </summary>
+		/// <param name="e">The <see cref="T:System.Windows.Input.MouseButtonEventArgs" /> that contains the event data. The event data reports that the left mouse button was pressed.</param>
+		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+		{
+#endif
+			var editableObject = this.DataContext as IEditableObject;
             if (editableObject != null)
             {
                 editableObject.BeginEdit();
@@ -225,26 +372,34 @@ namespace PropertyTools.Wpf
                 this.thumb.RaiseEvent(e);
             }
 
-            base.OnMouseLeftButtonDown(e);
+#if !AVALONIA
+			base.OnMouseLeftButtonDown(e);
+#endif
         }
 
-        /// <summary>
-        /// The on render size changed.
-        /// </summary>
-        /// <param name="sizeInfo">The size info.</param>
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+
+#if !AVALONIA
+		/// <summary>
+		/// The on render size changed.
+		/// </summary>
+		/// <param name="sizeInfo">The size info.</param>
+		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
             this.UpdateThumbPosition();
 
             base.OnRenderSizeChanged(sizeInfo);
         }
+#endif
 
-        /// <summary>
-        /// The on hue changed.
-        /// </summary>
-        /// <param name="relatedObject">The related object.</param>
-        /// <param name="e">The e.</param>
-        private static void OnHueChanged(DependencyObject relatedObject, DependencyPropertyChangedEventArgs e)
+
+
+
+		/// <summary>
+		/// The on hue changed.
+		/// </summary>
+		/// <param name="relatedObject">The related object.</param>
+		/// <param name="e">The e.</param>
+		private static void OnHueChanged(DependencyObject relatedObject, DependencyPropertyChangedEventArgs e)
         {
             var hsvControl = relatedObject as HsvControl;
             if (hsvControl != null && !hsvControl.withinUpdate)
@@ -272,7 +427,13 @@ namespace PropertyTools.Wpf
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The e.</param>
-        private static void OnThumbDragDelta(object sender, DragDeltaEventArgs e)
+        private static void OnThumbDragDeltaStatic(object sender,
+#if AVALONIA
+		VectorEventArgs
+#else
+		DragDeltaEventArgs 
+#endif
+		e)
         {
             var hsvControl = sender as HsvControl;
             if (hsvControl != null)
@@ -322,20 +483,44 @@ namespace PropertyTools.Wpf
         /// The on thumb drag delta.
         /// </summary>
         /// <param name="e">The e.</param>
-        private void OnThumbDragDelta(DragDeltaEventArgs e)
+        private void OnThumbDragDelta(
+#if AVALONIA
+			VectorEventArgs
+#else
+			DragDeltaEventArgs 
+#endif
+			e)
         {
-            double offsetX = this.thumbTransform.X + e.HorizontalChange;
-            double offsetY = this.thumbTransform.Y + e.VerticalChange;
+            double offsetX = this.thumbTransform.X +
+#if AVALONIA
+				e.Vector.X
+#else
+				e.HorizontalChange
+#endif
+			;
+
+			double offsetY = this.thumbTransform.Y +
+#if AVALONIA
+				e.Vector.Y
+#else
+				e.VerticalChange
+#endif
+			;
 
             this.UpdatePositionAndSaturationAndValue(offsetX, offsetY);
         }
 
-        /// <summary>
-        /// The update position and saturation and value.
-        /// </summary>
-        /// <param name="positionX">The position x.</param>
-        /// <param name="positionY">The position y.</param>
-        private void UpdatePositionAndSaturationAndValue(double positionX, double positionY)
+#if AVALONIA
+		private double ActualWidth => this.Width;
+		private double ActualHeight => this.Height;
+#endif
+
+		/// <summary>
+		/// The update position and saturation and value.
+		/// </summary>
+		/// <param name="positionX">The position x.</param>
+		/// <param name="positionY">The position y.</param>
+		private void UpdatePositionAndSaturationAndValue(double positionX, double positionY)
         {
             positionX = this.LimitValue(positionX, this.ActualWidth);
             positionY = this.LimitValue(positionY, this.ActualHeight);
@@ -369,5 +554,7 @@ namespace PropertyTools.Wpf
 
             this.SelectedColor = ColorHelper.HsvToColor(this.Hue / 360.0, this.Saturation / 100.0, this.Value / 100.0);
         }
-    }
+
+		
+	}
 }

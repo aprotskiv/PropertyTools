@@ -17,6 +17,18 @@
 
     <Version>0.0.1</Version>
   </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AvaloniaDebug|AnyCPU' OR '$(Configuration)|$(Platform)'=='Debug|AnyCPU' OR '$(Configuration)|$(Platform)'=='Debug_VLC_off|AnyCPU'">
+		<DefineConstants>TRACE;DEBUG;AVALONIA;</DefineConstants>
+		<LangVersion>default</LangVersion>
+		<UseAvalonia>true</UseAvalonia>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AvaloniaRelease|AnyCPU' OR '$(Configuration)|$(Platform)'=='Release|AnyCPU' OR '$(Configuration)|$(Platform)'=='Release_VLC_off|AnyCPU'">
+		<DefineConstants>TRACE;AVALONIA;</DefineConstants>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<UseAvalonia>true</UseAvalonia>
+	</PropertyGroup>
+
   <ItemGroup>
     <None Include="..\..\Images\icon.png" Pack="true" PackagePath="\" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
@@ -31,6 +43,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
   <ItemGroup>
+	<PackageReference Include="Avalonia" Version="12.1.0" Condition=" '$(UseAvalonia)'=='true' " />
     <PackageReference Include="TextCopy" Version="6.2.1" />
   </ItemGroup>
   <ItemGroup>

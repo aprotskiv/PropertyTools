@@ -13,14 +13,24 @@ namespace PropertyTools.Wpf
     using System.Collections.Generic;
     using System.Globalization;
     using System.Reflection;
-    using System.Windows;
-    using System.Windows.Data;
-    using System.Windows.Media;
 
-    /// <summary>
-    /// Converts <see cref="Color" /> instances to <see cref="string" /> instances..
-    /// </summary>
-    [ValueConversion(typeof(Color), typeof(string))]
+#if AVALONIA
+	using Avalonia.Media;
+	using Avalonia.Data.Converters;
+	using DependencyProperty = Avalonia.AvaloniaProperty;
+#else
+	using System.Windows;   	
+	using System.Windows.Data;
+	using System.Windows.Media;
+	using System.Windows.Media.Imaging;	
+#endif
+
+	/// <summary>
+	/// Converts <see cref="Color" /> instances to <see cref="string" /> instances..
+	/// </summary>
+#if !AVALONIA
+	[ValueConversion(typeof(Color), typeof(string))]
+#endif
     public class ColorToStringConverter : IValueConverter
     {
         /// <summary>

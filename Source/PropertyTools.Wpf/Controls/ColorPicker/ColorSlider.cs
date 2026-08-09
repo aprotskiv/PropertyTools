@@ -9,47 +9,96 @@
 
 namespace PropertyTools.Wpf
 {
-    using System.Windows;
-    using System.Windows.Media;
+#if AVALONIA
+	using Avalonia.Media;
+	using Avalonia.Styling;	
+	using DependencyProperty = Avalonia.AvaloniaProperty;
 
-    /// <summary>
-    /// Represents a color slider.
-    /// </summary>
-    /// <remarks>Original code by Ury Jamshy, 21 July 2011.
-    /// The Code Project Open License (CPOL)</remarks>
-    public class ColorSlider : SliderEx
+#else
+	using System.Windows;
+	using System.Windows.Data;
+    using System.Windows.Media;
+	using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
+#endif
+
+	/// <summary>
+	/// Represents a color slider.
+	/// </summary>
+	/// <remarks>Original code by Ury Jamshy, 21 July 2011.
+	/// The Code Project Open License (CPOL)</remarks>
+	public class ColorSlider : SliderEx
     {
-        /// <summary>
-        /// Identifies the <see cref="LeftColor"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty LeftColorProperty = DependencyProperty.Register(
-            nameof(LeftColor),
-            typeof(Color?),
-            typeof(ColorSlider),
-            new UIPropertyMetadata(Colors.Black));
+#if AVALONIA
+		// TODO: make AttachedProperty
+		public bool SnapsToDevicePixels 
+		{
+			get
+			{
+				return UseLayoutRounding;
+			}
+			set
+			{
+				UseLayoutRounding = value;
+			} 
+		}
+#endif
+
+		/// <summary>
+		/// Identifies the <see cref="LeftColor"/> dependency property.
+		/// </summary>
+		public static readonly DependencyProperty LeftColorProperty =
+#if AVALONIA
+			DependencyProperty.Register<ColorSlider, Color?>(
+				nameof(LeftColor),
+				Colors.Black // default value				
+#else
+			DependencyProperty.Register(
+				nameof(LeftColor),
+				typeof(Color?),
+				typeof(ColorSlider),
+				new UIPropertyMetadata(Colors.Black)
+#endif
+		);
 
         /// <summary>
         /// Identifies the <see cref="RightColor"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty RightColorProperty = DependencyProperty.Register(
-            nameof(RightColor),
-            typeof(Color?),
-            typeof(ColorSlider),
-            new UIPropertyMetadata(Colors.White));
+        public static readonly DependencyProperty RightColorProperty =
+#if AVALONIA
+			DependencyProperty.Register<ColorSlider, Color?>(
+				nameof(RightColor),
+				Colors.White // default value				
+#else
+			DependencyProperty.Register(
+				nameof(RightColor),
+				typeof(Color?),
+				typeof(ColorSlider),
+				new UIPropertyMetadata(Colors.White)
+#endif
+		);
 
         /// <summary>
         /// Initializes static members of the <see cref="ColorSlider" /> class.
         /// </summary>
         static ColorSlider()
         {
+            
+
+#if AVALONIA
+			// Forces a brand new default ControlTheme for this control type
+			ThemeProperty.OverrideDefaultValue<ColorSlider>(new ControlTheme(typeof(ColorSlider)));
+#else
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(ColorSlider), new FrameworkPropertyMetadata(typeof(ColorSlider)));
-        }
+#endif
 
-        /// <summary>
-        /// Gets or sets the left color.
-        /// </summary>
-        public Color? LeftColor
+		}
+
+		/// <summary>
+		/// Gets or sets the left color.
+		/// </summary>
+		public Color? LeftColor
         {
             get
             {
