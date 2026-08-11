@@ -1,22 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <LanguageTargets>$(MSBuildToolsPath)\Microsoft.CSharp.targets</LanguageTargets>
-    <TargetFrameworks>net462;net8.0-windows;net9.0-windows</TargetFrameworks>
-    <UseWPF>true</UseWPF>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>PropertyTools.snk</AssemblyOriginatorKeyFile>
-    <Description>Custom controls for WPF: PropertyGrid, DataGrid, multi-select TreeView, ColorPicker and more</Description>
-
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/PropertyTools/PropertyTools/</PackageProjectUrl>
-    <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>wpf controls propertygrid dataform datagrid treeview colorpicker</PackageTags>
-
-    <Version>0.0.1</Version>
-  </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AvaloniaDebug|AnyCPU' OR '$(Configuration)|$(Platform)'=='Debug|AnyCPU' OR '$(Configuration)|$(Platform)'=='Debug_VLC_off|AnyCPU'">
 		<DefineConstants>TRACE;DEBUG;AVALONIA;</DefineConstants>
@@ -29,29 +11,52 @@
 		<UseAvalonia>true</UseAvalonia>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\..\Images\icon.png" Pack="true" PackagePath="\" />
-    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PropertyTools\PropertyTools.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="PropertyTools.snk" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-  </ItemGroup>
-  <ItemGroup>
-	<PackageReference Include="Avalonia" Version="12.1.0" Condition=" '$(UseAvalonia)'=='true' " />
-    <PackageReference Include="TextCopy" Version="6.2.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="DataGrid\Cursors\AutoFill.cur" />
-    <Resource Include="DataGrid\Cursors\Cross.cur" />
-    <Resource Include="DataGrid\Cursors\DownArrow.cur" />
-    <Resource Include="DataGrid\Cursors\RightArrow.cur" />
-    <Resource Include="Controls\ColorPicker\ColorPicker.png" />
-    <Resource Include="Controls\ColorPicker\Hsv.png" />
-  </ItemGroup>
+	<PropertyGroup>
+		<LanguageTargets>$(MSBuildToolsPath)\Microsoft.CSharp.targets</LanguageTargets>
+		<TargetFrameworks>net8.0-windows;net9.0-windows</TargetFrameworks>
+		<TargetFrameworks Condition=" '$(UseAvalonia)'!='true' ">$(TargetFrameworks);net462</TargetFrameworks>
+
+		<UseWPF>true</UseWPF>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>PropertyTools.snk</AssemblyOriginatorKeyFile>
+		<Description>Custom controls for WPF: PropertyGrid, DataGrid, multi-select TreeView, ColorPicker and more</Description>
+
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/PropertyTools/PropertyTools/</PackageProjectUrl>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>wpf controls propertygrid dataform datagrid treeview colorpicker</PackageTags>
+
+		<Version>0.0.1</Version>
+	</PropertyGroup>
+
+
+
+	<ItemGroup>
+		<None Include="..\..\Images\icon.png" Pack="true" PackagePath="\" />
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PropertyTools\PropertyTools.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="PropertyTools.snk" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
+		<Reference Include="System.ComponentModel.DataAnnotations" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="12.1.0" Condition=" '$(UseAvalonia)'=='true' " />
+		<PackageReference Include="TextCopy" Version="6.2.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="DataGrid\Cursors\AutoFill.cur" />
+		<Resource Include="DataGrid\Cursors\Cross.cur" />
+		<Resource Include="DataGrid\Cursors\DownArrow.cur" />
+		<Resource Include="DataGrid\Cursors\RightArrow.cur" />
+		<Resource Include="Controls\ColorPicker\ColorPicker.png" />
+		<Resource Include="Controls\ColorPicker\Hsv.png" />
+	</ItemGroup>
 </Project>
