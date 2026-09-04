@@ -560,7 +560,7 @@ namespace PropertyTools.Wpf
 
             // Localize the strings
             pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instance.GetType(), LocalizableResourceKind.Name,
-                pi.Descriptor.GetFirstAttributeOrDefault<DataAnnotations.DisplayNameAttribute>()?.ResourceClass
+                pi.Descriptor.GetFirstAttributeOrDefault<DataAnnotations.DisplayNameAttribute>()?.ResourceClasses
             );
 
 			if (IsDescriptionLocalizedAlready(pi.Descriptor, declaringType, instance))
@@ -570,16 +570,16 @@ namespace PropertyTools.Wpf
 			else
 			{ 
 				pi.Description = this.GetLocalizedDescription(description, declaringType, instance.GetType(),
-					da?.ResourceClass
+					da?.ResourceClasses
 				);
 			}
             
             pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Category,
-                ca2?.ResourceClass
+                ca2?.ResourceClasses
             );
             
             pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Tab,
-                ca2?.ResourceClass
+                ca2?.ResourceClasses
             );
 
             pi.IsReadOnly = pi.Descriptor.IsReadOnly();

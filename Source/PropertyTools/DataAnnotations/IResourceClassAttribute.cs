@@ -17,9 +17,9 @@ namespace PropertyTools.DataAnnotations
     public interface IResourceClassAttribute
     {
         /// <summary>
-        /// Gets the resource class.
+        /// Gets the array of resource classes.
         /// </summary>
-        /// <value>The resource class type.</value>
-        Type ResourceClass { get; }
+        /// <value>The array of resource class types.</value>
+        Type[] ResourceClasses { get; }
     }
 }

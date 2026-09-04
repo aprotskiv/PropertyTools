@@ -9,80 +9,90 @@ using PropertyTools.Wpf.Operators;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Input;
 
 namespace PropertyTools.Wpf.Extensions
 {
-    public static class EnumPropertyExtensions
-    {
-        /// <summary>
-        /// Tries to initialize the <see cref="IPropertyItem.EnumMetadata"/>.
-        /// </summary>
-        /// <param name="pi">The property item</param>
-        /// <param name="localizedPropertyOperator">The localizable operator</param>
-        /// <param name="enumValuesFilterOperator">The enum values filter operator</param>
-        /// <param name="instance">The instance being edited (in PropertyGrid, DataGrid row, etc.)</param>
-        public static void TrySetEnumMetadata(this IPropertyItem pi, 
-            ILocalizableOperator localizedPropertyOperator, 
-            IEnumValuesFilterOperator enumValuesFilterOperator,
-            object instance)
-        {
-            var propertyType = pi.PropertyType;
-            if (propertyType.IsEnumOrNullableEnum())
-            {
-                var enumType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-                var enumValues = enumValuesFilterOperator.GetEnumValues(pi, instance, browsableOnly: true);
+	public static class EnumPropertyExtensions
+	{
+		/// <summary>
+		/// Tries to initialize the <see cref="IPropertyItem.EnumMetadata"/>.
+		/// </summary>
+		/// <param name="pi">The property item</param>
+		/// <param name="localizedPropertyOperator">The localizable operator</param>
+		/// <param name="enumValuesFilterOperator">The enum values filter operator</param>
+		/// <param name="instance">The instance being edited (in PropertyGrid, DataGrid row, etc.)</param>
+		public static void TrySetEnumMetadata(this IPropertyItem pi,
+			ILocalizableOperator localizedPropertyOperator,
+			IEnumValuesFilterOperator enumValuesFilterOperator,
+			object instance)
+		{
+			var propertyType = pi.PropertyType;
+			if (propertyType.IsEnumOrNullableEnum())
+			{
+				var enumType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+				var enumValues = enumValuesFilterOperator.GetEnumValues(pi, instance, browsableOnly: true);
 
-                var enumMissingZeroBehaviorAttribute = pi.Descriptor.GetFirstAttributeOrDefault<EnumMissingZeroBehaviorAttribute>();
-                pi.EnumMetadata.InitializeWithDefault = enumMissingZeroBehaviorAttribute?.InitializeWithDefault;
-                pi.EnumMetadata.ResetToDefault = enumMissingZeroBehaviorAttribute?.ResetToDefault;
+				var enumMissingZeroBehaviorAttribute = pi.Descriptor.GetFirstAttributeOrDefault<EnumMissingZeroBehaviorAttribute>();
+				pi.EnumMetadata.InitializeWithDefault = enumMissingZeroBehaviorAttribute?.InitializeWithDefault;
+				pi.EnumMetadata.ResetToDefault = enumMissingZeroBehaviorAttribute?.ResetToDefault;
 
-                pi.EnumMetadata.EnumType = enumType;
+				pi.EnumMetadata.EnumType = enumType;
 
-                pi.EnumMetadata.EnumDisplayNames = enumValues
-                   .ToDictionary(x => x,
-                    x =>
-                    {
-                        var fieldInfo = enumType.GetFields(BindingFlags.Public | BindingFlags.Static)
-                            .FirstOrDefault(f => f.GetValue(null).Equals(x));
+				pi.EnumMetadata.EnumDisplayNames = enumValues
+				   .ToDictionary(x => x,
+					x =>
+					{
+						var fieldInfo = enumType.GetFields(BindingFlags.Public | BindingFlags.Static)
+							.FirstOrDefault(f => f.GetValue(null).Equals(x));
 
-                        // System.ComponentModel.DisplayNameAttribute is not supported for fields (enum members)                           
-                        var displayNameAttribute = fieldInfo.GetCustomAttribute<PropertyTools.DataAnnotations.DisplayNameAttribute>();
+						// System.ComponentModel.DisplayNameAttribute is not supported for fields (enum members)                           
+						var displayNameAttribute = fieldInfo.GetCustomAttribute<PropertyTools.DataAnnotations.DisplayNameAttribute>();
 
-                        var descriptionAttribute1 = fieldInfo.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>();
-                        var descriptionAttribute2 = fieldInfo.GetCustomAttribute<PropertyTools.DataAnnotations.DescriptionAttribute>();
+						var descriptionAttribute1 = fieldInfo.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>();
+						var descriptionAttribute2 = fieldInfo.GetCustomAttribute<PropertyTools.DataAnnotations.DescriptionAttribute>();
 
-                        var attributes = new System.Attribute[] { displayNameAttribute, descriptionAttribute1, descriptionAttribute2 }
-                            .Where(z => z != null).ToArray();
+						var attributes = new System.Attribute[] { displayNameAttribute, descriptionAttribute1, descriptionAttribute2 }
+							.Where(z => z != null).ToArray();
 
-                        foreach (var attribute in attributes)
-                        {
-                            if (attribute is IResourceStringAttribute rcAttr
-                                && ReflectionExtensions.TryGetStaticFieldOrPropertyValue(rcAttr.ResourceClass, rcAttr.GetStaticProperty(), out string resourceValue))
-                            {
-                                return resourceValue;
-                            }
-                        }
+						foreach (var attribute in attributes)
+						{
+							if (attribute is IResourceStringAttribute rcAttr)
+							{
+								var resourceValue2 = rcAttr.ResourceClasses.Select(resourceClass =>
+										ReflectionExtensions.TryGetStaticFieldOrPropertyValue(resourceClass, rcAttr.GetStaticProperty(), out string resourceValue1
+									)
+									? resourceValue1
+									: null
+								).FirstOrDefault(z => z != null);
 
-                        var enumMemberDisplayName = displayNameAttribute?.DisplayName
-                           ?? descriptionAttribute1?.Description
-                           ?? descriptionAttribute2?.Description
-                           ?? x.ToString();
+								if (resourceValue2 != null)
+								{
+									return resourceValue2;
+								}
+							}
+						}
 
-                        return localizedPropertyOperator.GetLocalizedString(enumMemberDisplayName, enumType, 
-                        	instanceType: instance?.GetType(), 
-                        	LocalizableResourceKind.Name,
-                            resourceClass: null);
-                    });
+						var enumMemberDisplayName = displayNameAttribute?.DisplayName
+						   ?? descriptionAttribute1?.Description
+						   ?? descriptionAttribute2?.Description
+						   ?? x.ToString();
 
-                if (propertyType.IsNullableEnum())
-                {
-                    pi.EnumMetadata.IsNullableEnum = true;
-                    pi.EnumMetadata.EnumDisplayNull = localizedPropertyOperator.GetLocalizedString(null, enumType, 
-                    	instanceType: instance?.GetType(), 
-                    	LocalizableResourceKind.Name,
-                        resourceClass: null);
-                }
-            }
-        }
-    }
+						return localizedPropertyOperator.GetLocalizedString(enumMemberDisplayName, enumType,
+							instanceType: instance?.GetType(),
+							LocalizableResourceKind.Name,
+							resourceClasses: null);
+					});
+
+				if (propertyType.IsNullableEnum())
+				{
+					pi.EnumMetadata.IsNullableEnum = true;
+					pi.EnumMetadata.EnumDisplayNull = localizedPropertyOperator.GetLocalizedString(null, enumType,
+						instanceType: instance?.GetType(),
+						LocalizableResourceKind.Name,
+						resourceClasses: null);
+				}
+			}
+		}
+	}
 }

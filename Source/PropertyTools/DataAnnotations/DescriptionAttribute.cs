@@ -33,7 +33,7 @@ namespace PropertyTools.DataAnnotations
         /// <param name="staticPropertyForDescription">The static property name of resource class.</param>
         public DescriptionAttribute(Type resourceClass, string staticPropertyForDescription)
         {
-            this.ResourceClass = resourceClass;
+            this.ResourceClasses = new[] { resourceClass };
             this.Description = staticPropertyForDescription;
         }
 
@@ -47,7 +47,7 @@ namespace PropertyTools.DataAnnotations
         /// Gets the resource class.
         /// </summary>
         /// <value>The resource class type.</value>
-        public Type ResourceClass { get; }
+        public Type[] ResourceClasses { get; }
 
 		public string GetStaticProperty()
         {

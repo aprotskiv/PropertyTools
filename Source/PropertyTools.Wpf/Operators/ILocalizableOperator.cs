@@ -23,24 +23,24 @@ namespace PropertyTools.Wpf.Operators
         /// <param name="key">The key.</param>
         /// <param name="declaringType">Type of the declaring.</param>
         /// <param name="instanceType">The type of instance what contains property item.</param>
-        /// <param name="resourceClass">The resource class.</param>
+        /// <param name="resourceClasses">The one or more resource classes.</param>
         /// <returns>
         /// The localized description.
         /// </returns>
-        string GetLocalizedDescription(string key, Type declaringType, Type instanceType, Type resourceClass);
+        string GetLocalizedDescription(string key, Type declaringType, Type instanceType, Type[] resourceClasses);
 
 
-        /// <summary>
-        /// Gets the localized string.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="declaringType">The declaring type.</param>
-        /// <param name="instanceType">The type of instance what contains property item.</param>
-        /// <param name="resourceKind">The kind of localizable resource.</param>
-        /// <param name="resourceClass">The resource class.</param>
-        /// <returns>
-        /// The localized string.
-        /// </returns>
-        string GetLocalizedString(string key, Type declaringType, Type instanceType, LocalizableResourceKind resourceKind, Type resourceClass);
+		/// <summary>
+		/// Gets the localized string.
+		/// </summary>
+		/// <param name="key">The key.</param>
+		/// <param name="declaringType">The declaring type.</param>
+		/// <param name="instanceType">The type of instance what contains property item.</param>
+		/// <param name="resourceKind">The kind of localizable resource.</param>
+		/// <param name="resourceClasses">The one or more resource classes.</param>
+		/// <returns>
+		/// The localized string.
+		/// </returns>
+		string GetLocalizedString(string key, Type declaringType, Type instanceType, LocalizableResourceKind resourceKind, Type[] resourceClasses);
     }
 }
