@@ -57,7 +57,7 @@ namespace PropertyTools.Wpf.Extensions
 
 						foreach (var attribute in attributes)
 						{
-							if (attribute is IResourceStringAttribute rcAttr)
+							if (attribute is IResourceStringAttribute rcAttr && rcAttr.ResourceClasses != null)
 							{
 								var resourceValue2 = rcAttr.ResourceClasses.Select(resourceClass =>
 										ReflectionExtensions.TryGetStaticFieldOrPropertyValue(resourceClass, rcAttr.GetStaticProperty(), out string resourceValue1
