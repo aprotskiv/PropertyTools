@@ -339,6 +339,15 @@ namespace PropertyTools.Wpf
             new UIPropertyMetadata(true, AppearanceChanged));
 
         /// <summary>
+        /// Identifies the <see cref="ReadOnlyControlStyle"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ReadOnlyControlStyleProperty = DependencyProperty.Register(
+            nameof(ReadOnlyControlStyle),
+            typeof(Style),
+            typeof(PropertyGrid),
+            new UIPropertyMetadata(null, AppearanceChanged));
+
+        /// <summary>
         /// Identifies the <see cref="TabHeaderTemplate"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty TabHeaderTemplateProperty = DependencyProperty.Register(
@@ -417,6 +426,24 @@ namespace PropertyTools.Wpf
             typeof(int),
             typeof(PropertyGrid),
             new UIPropertyMetadata(2, AppearanceChanged));
+
+        /// <summary>
+        /// Identifies the <see cref="PropertyPanelStyle"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty PropertyPanelStyleProperty = DependencyProperty.Register(
+            nameof(PropertyPanelStyle),
+            typeof(Style),
+            typeof(PropertyGrid),
+            new UIPropertyMetadata(null, AppearanceChanged));
+
+        /// <summary>
+        /// Identifies the <see cref="LabelPanelStyle"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty LabelPanelStyleProperty = DependencyProperty.Register(
+            nameof(LabelPanelStyle),
+            typeof(Style),
+            typeof(PropertyGrid),
+            new UIPropertyMetadata(null, AppearanceChanged));
 
         /// <summary>
         /// The panel part name.
@@ -1046,6 +1073,23 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
+        /// Gets or sets the style applied to read-only property controls.
+        /// </summary>
+        /// <value>The style for read-only controls, or <c>null</c> to leave the control unstyled.</value>
+        public Style ReadOnlyControlStyle
+        {
+            get
+            {
+                return (Style)this.GetValue(ReadOnlyControlStyleProperty);
+            }
+
+            set
+            {
+                this.SetValue(ReadOnlyControlStyleProperty, value);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value of the vertical spacing between property items.
         /// </summary>
         /// <value><c>true</c> if read only properties should be shown; otherwise, <c>false</c> .</value>
@@ -1059,6 +1103,41 @@ namespace PropertyTools.Wpf
             set
             {
                 this.SetValue(VerticalPropertySpacingProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the style applied to the <see cref="Grid"/> panel that wraps each property row.
+        /// Use this to customize the appearance (e.g. background, margin) of each property's container panel.
+        /// </summary>
+        public Style PropertyPanelStyle
+        {
+            get
+            {
+                return (Style)this.GetValue(PropertyPanelStyleProperty);
+            }
+
+            set
+            {
+                this.SetValue(PropertyPanelStyleProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the style applied to the <see cref="DockPanel"/> that contains the property label and description icon.
+        /// Use this to customize the appearance (e.g. background) of the label area within each property row.
+        /// To inherit text color, set <c>TextElement.Foreground</c> via a setter in this style.
+        /// </summary>
+        public Style LabelPanelStyle
+        {
+            get
+            {
+                return (Style)this.GetValue(LabelPanelStyleProperty);
+            }
+
+            set
+            {
+                this.SetValue(LabelPanelStyleProperty, value);
             }
         }
 
@@ -1416,6 +1495,11 @@ namespace PropertyTools.Wpf
         private void AddPropertyPanel(Panel panel, PropertyItem pi, object instance, Tab tab)
         {
             var propertyPanel = new Grid();
+            if (this.PropertyPanelStyle != null)
+            {
+                propertyPanel.Style = this.PropertyPanelStyle;
+            }
+
             if (!pi.FillTab)
             {
                 propertyPanel.Margin = new Thickness(VerticalPropertySpacing);
@@ -1610,6 +1694,11 @@ namespace PropertyTools.Wpf
                     {
                         // create the label panel
                         var labelPanel = new DockPanel();
+                        if (this.LabelPanelStyle != null)
+                        {
+                            labelPanel.Style = this.LabelPanelStyle;
+                        }
+
                         if (pi.HeaderPlacement == HeaderPlacement.Left)
                         {
                             DockPanel.SetDock(labelPanel, Dock.Left);
@@ -1800,7 +1889,11 @@ namespace PropertyTools.Wpf
         /// </returns>
         private FrameworkElement CreatePropertyControl(PropertyItem pi, object instance = null)
         {
-            var options = new PropertyControlFactoryOptions { EnumAsRadioButtonsLimit = this.EnumAsRadioButtonsLimit };
+            var options = new PropertyControlFactoryOptions
+            {
+                RadioButtonsLimit = this.RadioButtonsLimit,
+                ReadOnlyControlStyle = this.ReadOnlyControlStyle
+            };
             var control = this.ControlFactory.CreateControl(pi, options, instance);
             if (control != null)
             {

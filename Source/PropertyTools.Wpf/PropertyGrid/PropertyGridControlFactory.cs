@@ -48,6 +48,11 @@ namespace PropertyTools.Wpf
         private static FontFamily[] cachedFontFamilies;
 
         /// <summary>
+        /// The options for the current control creation call.
+        /// </summary>
+        private PropertyControlFactoryOptions currentOptions;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PropertyGridControlFactory" /> class.
         /// </summary>
         public PropertyGridControlFactory()
@@ -96,6 +101,7 @@ namespace PropertyTools.Wpf
         /// </returns>
         public virtual FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options, object instance = null)
         {
+            this.currentOptions = options;
             this.UpdateConverter(property);
 
             foreach (var editor in this.Editors)
@@ -308,6 +314,39 @@ namespace PropertyTools.Wpf
                 control.Style = options.ValidationErrorStyle;
             }
             //return control;
+        }
+
+        /// <summary>
+        /// Applies the read-only control style to the specified control.
+        /// </summary>
+        /// <param name="control">The control.</param>
+        /// <param name="options">The options.</param>
+        public virtual void SetReadOnlyControlStyle(FrameworkElement control, PropertyControlFactoryOptions options)
+        {
+            if (control.Style != null)
+            {
+                return;
+            }
+
+            var style = options?.ReadOnlyControlStyle ?? DefaultReadOnlyControlStyle;
+            if (style != null)
+            {
+                control.Style = style;
+            }
+        }
+
+        /// <summary>
+        /// Gets the default style applied to read-only controls when no <see cref="PropertyControlFactoryOptions.ReadOnlyControlStyle"/> is set.
+        /// The default sets the foreground to <see cref="Brushes.RoyalBlue"/> to match the original behavior.
+        /// </summary>
+        protected virtual Style DefaultReadOnlyControlStyle { get; } = CreateDefaultReadOnlyStyle();
+
+        private static Style CreateDefaultReadOnlyStyle()
+        {
+            var style = new Style();
+            style.Setters.Add(new Setter(Control.ForegroundProperty, Brushes.RoyalBlue));
+            style.Seal();
+            return style;
         }
 
         /// <summary>
@@ -683,7 +722,7 @@ namespace PropertyTools.Wpf
 
             if (property.IsReadOnly)
             {
-                c.Foreground = Brushes.RoyalBlue;
+                this.SetReadOnlyControlStyle(c, this.currentOptions);
             }
 
             var binding = property.CreateBinding(trigger);
@@ -704,7 +743,14 @@ namespace PropertyTools.Wpf
                         return;
                     }
 
-                    c.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+                    var bindingExpression = c.GetBindingExpression(TextBox.TextProperty);
+                    if (bindingExpression != null && bindingExpression.Status == BindingStatus.Active)
+                    {
+                        bindingExpression.UpdateSource();
+                        return;
+                    }
+
+                    UpdateFloatingPointPropertyFromText(c, property);
                 };
             }
 
@@ -743,9 +789,9 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
-        /// Gets the values for the specified enumeration type.
+        /// Gets the values for the specified enumeration property item.
         /// </summary>
-        /// <param name="enumType">The enumeration type.</param>
+        /// <param name="property">The property item.</param>
         /// <returns>A sequence of values.</returns>
         protected virtual IEnumerable<object> GetEnumValues(PropertyItem property, object instance)
         {
@@ -782,6 +828,40 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
+        /// Gets the values for the specified enumeration type.
+        /// </summary>
+        /// <param name="enumType">The enumeration type.</param>
+        /// <returns>A sequence of values.</returns>
+        protected virtual IEnumerable<object> GetEnumValues(Type enumType)
+        {
+            return this.GetEnumValues(enumType, null);
+        }
+
+        /// <summary>
+        /// Gets the values for the specified enumeration type, applying an optional <see cref="DataAnnotations.EnumFilterAttribute"/>.
+        /// </summary>
+        /// <param name="enumType">The enumeration type.</param>
+        /// <param name="enumFilter">The optional filter attribute.</param>
+        /// <returns>A sequence of values.</returns>
+        protected virtual IEnumerable<object> GetEnumValues(Type enumType, DataAnnotations.EnumFilterAttribute enumFilter)
+        {
+            var ult = Nullable.GetUnderlyingType(enumType);
+            var isNullable = ult != null;
+            if (isNullable)
+            {
+                enumType = ult;
+            }
+
+            var enumValues = Enum.GetValues(enumType).Cast<Enum>().FilterOnBrowsableAttribute().FilterOnEnumFilterAttribute(enumFilter).ToList();
+            if (isNullable)
+            {
+                enumValues.Add(null);
+            }
+
+            return enumValues;
+        }
+
+        /// <summary>
         /// Creates the enum control.
         /// </summary>
         /// <param name="property">The property.</param>
@@ -793,10 +873,25 @@ namespace PropertyTools.Wpf
         protected virtual FrameworkElement CreateEnumControl(
             PropertyItem property, PropertyControlFactoryOptions options, object instance)
         {
-            //// var isBitField = property.Descriptor.PropertyType.GetTypeInfo().GetCustomAttributes<FlagsAttribute>().Any();
+            var enumType = property.Descriptor.PropertyType;
+            var underlyingType = Nullable.GetUnderlyingType(enumType) ?? enumType;
+            var isFlagsEnum = underlyingType.GetCustomAttributes(typeof(FlagsAttribute), false).Length > 0;
 
             var values = this.GetEnumValues(property, instance).ToArray();
 
+			/* upstream/develop
+            var enumFilter = property.Descriptor.GetFirstAttributeOrDefault<DataAnnotations.EnumFilterAttribute>();
+
+            if (isFlagsEnum && property.SelectorStyle == DataAnnotations.SelectorStyle.Auto)
+            {
+                var c = new CheckBoxList { EnumType = enumType, EnumFilter = enumFilter, Margin = new Thickness(0, 4, 0, 4) };
+                c.SetBinding(CheckBoxList.ValueProperty, property.CreateBinding());
+                return c;
+            }
+
+            var values = this.GetEnumValues(property.Descriptor.PropertyType, enumFilter).ToArray();
+			*/
+			
             var style = property.SelectorStyle;
             if (style == DataAnnotations.SelectorStyle.Auto)
             {
@@ -831,6 +926,7 @@ namespace PropertyTools.Wpf
                         c.ConfigureSelectorDefinitionForEnum(property, values);
 
                         c.SetBinding(RadioButtonSelector.ValueProperty, property.CreateBinding());
+
                         return c;
                     }
 
@@ -1264,6 +1360,29 @@ namespace PropertyTools.Wpf
             }
 
             return trimmedText.EndsWith(".", StringComparison.Ordinal) || trimmedText.EndsWith(",", StringComparison.Ordinal);
+        }
+
+        private static void UpdateFloatingPointPropertyFromText(TextBox textBox, PropertyItem property)
+        {
+            if (textBox?.DataContext == null || property?.Descriptor == null)
+            {
+                return;
+            }
+
+            var typeConverter = TypeDescriptor.GetConverter(property.ActualPropertyType);
+            if (typeConverter == null || !typeConverter.CanConvertFrom(typeof(string)))
+            {
+                return;
+            }
+
+            try
+            {
+                var value = typeConverter.ConvertFrom(null, CultureInfo.CurrentCulture, textBox.Text);
+                property.Descriptor.SetValue(textBox.DataContext, value);
+            }
+            catch
+            {
+            }
         }
 
         /// <summary>

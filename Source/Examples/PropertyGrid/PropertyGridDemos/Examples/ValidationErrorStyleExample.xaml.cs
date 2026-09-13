@@ -59,8 +59,7 @@ namespace PropertyGridDemos
     {
         public Style ValidationErrorStyle { get; set; }
 
-        public override System.Windows.FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options,
-            object instance)
+        public override System.Windows.FrameworkElement CreateControl(PropertyItem property, PropertyControlFactoryOptions options, object instance = null)
         {
             var control = base.CreateControl(property, options, instance);
             

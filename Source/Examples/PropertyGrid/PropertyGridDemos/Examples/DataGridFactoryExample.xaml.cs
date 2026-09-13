@@ -57,8 +57,7 @@ namespace PropertyGridDemos
 
     public class CustomControlFactory : PropertyGridControlFactory
     {
-        public override FrameworkElement CreateControl(PropertyItem pi, PropertyControlFactoryOptions options, 
-            object instance)
+        public override FrameworkElement CreateControl(PropertyItem pi, PropertyControlFactoryOptions options, object instance = null)
         {
             if (pi is BigCollectionPropertyItem)
             {

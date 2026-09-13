@@ -86,6 +86,34 @@ namespace PropertyTools.Wpf
                 return new ColorCellDefinition();
             }
 
+			/* see  "else if (d.PropertyType.IsEnumOrNullableEnum())" below
+            if (d.PropertyType.Is(typeof(Enum)))
+            {
+                var enumType = Nullable.GetUnderlyingType(d.PropertyType) ?? d.PropertyType;
+                var enumFilter = d.Attributes.OfType<EnumFilterAttribute>().FirstOrDefault();
+
+                if (enumType.GetCustomAttributes(typeof(FlagsAttribute), false).Length > 0)
+                {
+                    return new FlagsCellDefinition
+                    {
+                        EnumType = enumType,
+                        EnumFilter = enumFilter
+                    };
+                }
+
+                var values = Enum.GetValues(enumType).FilterOnBrowsableAttribute().FilterOnEnumFilterAttribute(enumFilter).ToList();
+                if (Nullable.GetUnderlyingType(d.PropertyType) != null)
+                {
+                    values.Insert(0, null);
+                }
+
+                return new SelectorCellDefinition
+                {
+                    ItemsSource = values
+                };
+            }
+            */
+
             if (d.PropertyDefinition.ItemsSourcePropertyName != null || d.PropertyDefinition.ItemsSource != null)
             {
                 return new SelectorCellDefinition

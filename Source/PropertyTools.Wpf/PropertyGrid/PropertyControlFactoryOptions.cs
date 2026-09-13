@@ -24,6 +24,12 @@ namespace PropertyTools.Wpf
         public int RadioButtonsLimit { get; set; }
 
         /// <summary>
+        /// Gets or sets the style applied to read-only property controls.
+        /// </summary>
+        /// <value>The style for read-only controls, or <c>null</c> to leave the control unstyled.</value>
+        public Style ReadOnlyControlStyle { get; set; }
+
+        /// <summary>
         /// Gets or sets the validation error template.
         /// </summary>
         /// <value>

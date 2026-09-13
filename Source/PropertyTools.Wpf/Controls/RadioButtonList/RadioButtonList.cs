@@ -82,7 +82,13 @@ namespace PropertyTools.Wpf
         }
 
         /// <summary>
-        /// 
+        /// Gets or sets the enum filter that restricts which enum values are shown.
+        /// </summary>
+        /// <value>The enum filter, or <c>null</c> to show all values.</value>
+        public EnumFilterAttribute EnumFilter { get; set; }
+
+        /// <summary>
+        /// Gets or sets the enum values to be shown.
         /// </summary>
         /// <remarks>May contain NULL when <see cref="EnumType"/> is Nullable enum </remarks>
         public object[] EnumValues { get; set; }

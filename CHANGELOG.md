@@ -3,12 +3,23 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-### Added
+### Added (aproskiv's repository only)
+
 - PropertyGrid: added MultipleSelectListbox to support the case when SelectorStyle=ListBox and SelectorMode=Multiple #498
-- DataGrid/PropertyGrid: added EnumFilterAttribute for custom filtering with new EnumsWithOperatorsExample (PropertyGridDemo) and updated SelectorExample (DataGridDemo) #498
 - DataGrid/PropertyGrid: added new SelectorModeAttribute (Single | Multiple) and SelectorModeAttributeExample (PropertyGridDemo)  #498
 - DataGrid: added mode and style to Selector cell type #498
 - PropertyGrid: new CheckBoxSelector (inherits RadioButtonSelector) for multi select control (uses ISelectorDefinition) #498
+
+### Added
+
+- PropertyGridDemos: Added InheritedCategoryOrderingExample demonstrating category ordering across superclass and subclass properties with `PropertyTools.DataAnnotations.CategoryAttribute` sort indexes #194
+- PropertyTools.Wpf: Added `CheckBoxList` control for editing `[Flags]` enums; `PropertyGridControlFactory` now automatically uses `CheckBoxList` for flags enums in Auto mode #6
+- PropertyTools.Wpf: Added `Orientation` property to `FlagsCellDefinition`; DataGrid flags cells now use horizontal layout by default; added `FlagsEnumDropdownExample` showing vertical `CheckBoxList` inside a dropdown popup #6
+- PropertyGrid/DataGrid: Added `EnumFilterAttribute` to allow restricting which enum values are shown in RadioButtonList, ComboBox, and ListBox controls, with demo examples in PropertyGridDemos and DataGridDemo #498
+- PropertyGrid: Added `PropertyPanelStyle` and `LabelPanelStyle` dependency properties to allow full XAML styling of the inner property row `Grid` and label `DockPanel` (e.g. background color for dark themes or compact layouts) #275
+- PropertyGrid: Added `ReadOnlyControlStyle` dependency property (`Style`) to allow customizing the appearance of read-only property controls #307
+- PropertyGridDemos: Added ReadOnlyTextColorExample demonstrating how to use the new `ReadOnlyControlStyle` property #307
+- DataGridDemo: Added IListCommitOnTabExample to reproduce the IList cell edit/tab commit scenario using CollectionChanged(Replace) notifications #81
 - DataGrid: Added `DataViewOperator` — a dedicated operator for `DataView` ItemsSources that enables add/delete rows and copy using the DataTable's column metadata #169
 - PropertyGridDemos: Added ConnectionStringBuilderExample demonstrating the fix for issue #288 – PropertyGrid now works correctly when bound to a DbConnectionStringBuilder subclass (fixed: null checkboxes, broken enum radio-buttons, byte[] StringFormat exception) #288
 - TreeListBoxDemo: Added NonEnglishCultureExample demonstrating that the "Height must be non-negative" workaround works on non-English systems #290
@@ -31,6 +42,11 @@ All notable changes to this project will be documented in this file.
 - DataGrid: Added new examples for `List<bool>`, `bool[]`, `string[]`, `ObservableCollection<bool>`, `ObservableCollection<Fruit>`, `ObservableCollection<Color>`, and `ObservableCollection<Vector3D>` #157
 
 ### Fixed
+- PropertyGrid/TreeListBox/DataGrid: Fixed reflection-based attribute, sort, and tree-child lookups plus hardened TimeSpan parsing for invalid edit input #526 #527 #528 #529
+- DataGrid/PropertyGrid: Fixed disconnected or non-templated control state so DataView operators, dynamic list-of-lists columns, click handling, and floating-point auto-update work correctly in unit tests #89 #234 #510
+- DataGrid: Fixed both the edited cell and the navigation-target cell appearing in edit mode simultaneously when pressing Enter or an arrow key — `RemoveEditControl` no longer commits hidden (pre-created) text editors, only visible ones #520
+- DataGrid: Fixed first cell edit failing (validation error/reverted value) when `CellDefinitionFactory` or `ControlFactory` is set after the grid content was built (e.g. bound via DataContext) — the grid content is now rebuilt when these properties change #81
+- DataGrid: Fixed text cell edits being reverted when leaving a cell (TAB/ENTER/mouse navigation) by committing the active text editor binding before removing the editor control #81
 - PropertyGrid: Fixed `[AutoUpdateText]` on floating-point properties so decimal separators can be entered while typing; added `AutoUpdateFloatingPointExample` to PropertyGridDemo for manual verification #89
 - DataGrid: Fixed cells not refreshing after editing in non-observable collections (`double[]`, `int[][]`, `List<int>`, `List<string>`, `List<Vector3D>`, WrapItems variants) — `CurrentCellSourceUpdated` now calls `UpdateCellContent` for the changed cell when the source does not implement `INotifyCollectionChanged` #157
 - DataGrid: Fixed `List<string>` showing `Length` column instead of the string value — `GenerateColumnDefinitions` now skips Strategy 2 (property-based columns) for simple scalar types such as `string`, `bool`, numeric primitives, `DateTime`, `enum`, etc. #157
