@@ -40,11 +40,11 @@ namespace PropertyTools.Wpf.Operators
         /// <returns>
         /// The localized description.
         /// </returns>
-        public virtual string GetLocalizedDescription(string key, Type declaringType, Type instanceType, Type resourceClass)
+        public virtual string GetLocalizedDescription(string key, Type declaringType, Type instanceType, Type[] resourceClasses)
         {
             if (this.customLocalizableOperator != null)
             {
-                return this.customLocalizableOperator.GetLocalizedDescription(key, declaringType, instanceType, resourceClass);
+                return this.customLocalizableOperator.GetLocalizedDescription(key, declaringType, instanceType, resourceClasses);
             }
 
             return key;
@@ -57,16 +57,16 @@ namespace PropertyTools.Wpf.Operators
         /// <param name="declaringType">The declaring type.</param>
         /// <param name="instanceType">The type of instance what contains property item.</param>
         /// <param name="resourceKind">The kind of localizable resource.</param>
-        /// <param name="resourceClass">The resource class.</param>
+        /// <param name="resourceClasses">The resource class.</param>
         /// <returns>
         /// The localized string.
         /// </returns>
         public virtual string GetLocalizedString(string key, Type declaringType, Type instanceType, LocalizableResourceKind resourceKind,
-            Type resourceClass = null)
+            Type[] resourceClasses = null)
 		{
             if (this.customLocalizableOperator != null)
             {
-                return this.customLocalizableOperator.GetLocalizedString(key, declaringType, instanceType, resourceKind, resourceClass);
+                return this.customLocalizableOperator.GetLocalizedString(key, declaringType, instanceType, resourceKind, resourceClasses);
             }
 
             return key;

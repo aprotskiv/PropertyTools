@@ -40,14 +40,24 @@ namespace PropertyTools.DataAnnotations
 			this.GroupSortIndex = groupSortIndex;			
 		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DescriptionAttribute"/> class.
-        /// </summary>
-        /// <param name="resourceClass">The resource class.</param>
-        /// <param name="staticProperties">The array of static properties of resource class.</param>
-        public CategoryAttribute(Type resourceClass, uint tabSortIndex = 0, uint groupSortIndex = 0, params string[] categorySegments)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DescriptionAttribute"/> class.
+		/// </summary>
+		/// <param name="resourceClass">The resource class.</param>
+		/// <param name="staticProperties">The array of static properties of resource class.</param>
+		public CategoryAttribute(Type resourceClass, uint tabSortIndex = 0, uint groupSortIndex = 0, params string[] categorySegments)
+			: this(resourceClasses : new[] { resourceClass }, tabSortIndex, groupSortIndex, categorySegments)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DescriptionAttribute"/> class.
+		/// </summary>
+		/// <param name="resourceClasses">The array or resource classes.</param>
+		/// <param name="staticProperties">The array of static properties of resource class.</param>
+		public CategoryAttribute(Type[] resourceClasses, uint tabSortIndex = 0, uint groupSortIndex = 0, params string[] categorySegments)
         {
-            this.ResourceClass = resourceClass;
+            this.ResourceClasses = resourceClasses;
             this.Category = categorySegments.Length == 1 
                 ? categorySegments[0] + "|" // first segment must end with '|'
                 : string.Join("|", categorySegments);
@@ -78,6 +88,6 @@ namespace PropertyTools.DataAnnotations
         /// Gets the resource class.
         /// </summary>
         /// <value>The resource class type.</value>
-        public Type ResourceClass { get; }
+        public Type[] ResourceClasses { get; }
     }
 }
