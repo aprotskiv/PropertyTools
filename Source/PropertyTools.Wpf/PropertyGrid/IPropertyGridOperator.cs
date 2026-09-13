@@ -43,8 +43,9 @@ namespace PropertyTools.Wpf
     /// </remarks>
     /// <seealso cref="PropertyGridOperator"/>
     /// <seealso cref="IPropertyGridControlFactory"/>
-    public interface IPropertyGridOperator : ILocalizableOperator, ICustomLocalizableOperator
-    {
+    public interface IPropertyGridOperator : ILocalizableOperator, ICustomLocalizableOperator,
+		IEnumValuesFilterOperator
+	{
         /// <summary>
         /// Creates the model.
         /// </summary>

@@ -56,7 +56,7 @@ namespace PropertyTools.Wpf.Tests
         [Test]
         public void FilterOnEnumFilterAttribute_ExcludeMode_ExcludesSpecifiedValues()
         {
-            var values = Enum.GetValues(typeof(Enum1)).FilterOnBrowsableAttribute();
+            var values = Enum.GetValues(typeof(Enum1)).EnumFilterOnBrowsableAttribute();
             var filter = new DataAnnotations.EnumFilterAttribute(DataAnnotations.EnumFilterAttribute.FilteringMode.Exclude, Enum1.Value1);
             var result = values.FilterOnEnumFilterAttribute(filter);
             Assert.That(result, Does.Not.Contain(Enum1.Value1));
@@ -67,7 +67,7 @@ namespace PropertyTools.Wpf.Tests
         [Test]
         public void FilterOnEnumFilterAttribute_IncludeMode_IncludesOnlySpecifiedValues()
         {
-            var values = Enum.GetValues(typeof(Enum1)).FilterOnBrowsableAttribute();
+            var values = Enum.GetValues(typeof(Enum1)).EnumFilterOnBrowsableAttribute();
             var filter = new DataAnnotations.EnumFilterAttribute(DataAnnotations.EnumFilterAttribute.FilteringMode.Include, Enum1.Value1);
             var result = values.FilterOnEnumFilterAttribute(filter);
             Assert.That(result, Contains.Item(Enum1.Value1));
@@ -78,7 +78,7 @@ namespace PropertyTools.Wpf.Tests
         [Test]
         public void FilterOnEnumFilterAttribute_NullFilter_ReturnsAllValues()
         {
-            var values = Enum.GetValues(typeof(Enum1)).FilterOnBrowsableAttribute();
+            var values = Enum.GetValues(typeof(Enum1)).EnumFilterOnBrowsableAttribute();
             var result = values.FilterOnEnumFilterAttribute(null);
             Assert.That(result.Count, Is.EqualTo(values.Count));
         }

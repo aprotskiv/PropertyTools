@@ -63,7 +63,21 @@ namespace PropertyTools.Wpf
             }
 
             return res;
-        }
+		}
+
+		/// <summary>
+		/// Filters on the <see cref="System.ComponentModel.BrowsableAttribute" /> and <see cref="PropertyTools.DataAnnotations.BrowsableAttribute" />.
+		/// </summary>
+		/// <typeparam name="T">The IEnumerable.</typeparam>
+		/// <param name="arr">The IEnumerable.</param>
+		/// <returns>
+		/// The filtered values.
+		/// </returns>
+		public static List<object> EnumFilterOnBrowsableAttribute<T>(this T arr) where T : IEnumerable
+		{
+			return FilterOnBrowsableAttribute(arr.Cast<Enum>()).Cast<object>().ToList();
+		}
+			
 
         /// <summary>
         /// Filters on the <see cref="System.ComponentModel.BrowsableAttribute" /> and <see cref="PropertyTools.DataAnnotations.BrowsableAttribute" />.

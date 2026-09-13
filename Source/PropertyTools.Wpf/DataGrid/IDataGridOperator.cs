@@ -44,8 +44,9 @@ namespace PropertyTools.Wpf
     /// </remarks>
     /// <seealso cref="DataGridOperator"/>
     /// <seealso cref="IDataGridControlFactory"/>
-    public interface IDataGridOperator : ILocalizableOperator, ICustomLocalizableOperator
-    {
+    public interface IDataGridOperator : ILocalizableOperator, ICustomLocalizableOperator,
+		IEnumValuesFilterOperator
+	{
         /// <summary>
         /// Auto-generates the columns.
         /// </summary>
