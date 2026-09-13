@@ -27,12 +27,13 @@ namespace PropertyTools.Wpf
         /// Creates the display control with data binding.
         /// </summary>
         /// <param name="d">The cell definition.</param>
+        /// <param name="cell">The cell.</param>
         /// <returns>
         /// The control.
         /// </returns>
-        public FrameworkElement CreateDisplayControl(CellDefinition d)
+        public FrameworkElement CreateDisplayControl(CellDefinition d, CellRef cell)
         {
-            var element = this.CreateDisplayControlOverride(d);
+            var element = this.CreateDisplayControlOverride(d, cell);
             return element;
         }
 
@@ -40,17 +41,18 @@ namespace PropertyTools.Wpf
         /// Creates the edit control with data binding.
         /// </summary>
         /// <param name="d">The cell definition.</param>
+        /// <param name="cell">The cell.</param>
         /// <returns>
         /// The control.
         /// </returns>
-        public virtual FrameworkElement CreateEditControl(CellDefinition d)
+        public virtual FrameworkElement CreateEditControl(CellDefinition d, CellRef cell)
         {
             if (d.IsReadOnly)
             {
                 return null;
             }
 
-            var element = this.CreateEditControlOverride(d);
+            var element = this.CreateEditControlOverride(d, cell);
 
             if (element != null)
             {
@@ -67,7 +69,7 @@ namespace PropertyTools.Wpf
         /// </summary>
         /// <param name="d">The cell definition.</param>
         /// <returns>The display control.</returns>
-        protected virtual FrameworkElement CreateDisplayControlOverride(CellDefinition d)
+        protected virtual FrameworkElement CreateDisplayControlOverride(CellDefinition d, CellRef cell)
         {
             var fcd = d as FlagsCellDefinition;
             if (fcd != null)
@@ -112,10 +114,11 @@ namespace PropertyTools.Wpf
         /// Creates the edit control.
         /// </summary>
         /// <param name="d">The cell definition.</param>
+        /// <param name="cell">The cell.</param>
         /// <returns>
         /// The control.
         /// </returns>
-        protected virtual FrameworkElement CreateEditControlOverride(CellDefinition d)
+        protected virtual FrameworkElement CreateEditControlOverride(CellDefinition d, CellRef cell)
         {
             var fcd = d as FlagsCellDefinition;
             if (fcd != null)
@@ -153,7 +156,7 @@ namespace PropertyTools.Wpf
                 return this.CreateTextBox(te);
             }
 
-            return this.CreateDisplayControl(d);
+            return this.CreateDisplayControl(d, cell);
         }
 
         /// <summary>
@@ -654,7 +657,7 @@ namespace PropertyTools.Wpf
         /// Focuses on the parent data grid.
         /// </summary>
         /// <param name="obj">The <see cref="DependencyObject" />.</param>
-        protected static void FocusParentDataGrid(DependencyObject obj)
+        protected void FocusParentDataGrid(DependencyObject obj)
         {
             var parent = VisualTreeHelper.GetParent(obj);
             while (parent != null && !(parent is DataGrid))

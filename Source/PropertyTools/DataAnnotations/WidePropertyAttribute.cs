@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies that the property should be edited in wide mode.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class WidePropertyAttribute : Attribute
+    public class WidePropertyAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref = "WidePropertyAttribute" /> class.

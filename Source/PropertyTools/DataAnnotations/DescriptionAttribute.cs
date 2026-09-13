@@ -3,7 +3,7 @@
 //   Copyright (c) 2014 PropertyTools contributors
 // </copyright>
 // <summary>
-//   Specifies a description for a property or event.
+//   Specifies a description for a property, event or class.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -12,10 +12,10 @@ namespace PropertyTools.DataAnnotations
     using System;
 
     /// <summary>
-    /// Specifies a description for a property or event.
+    /// Specifies a description for a property, event or class.
     /// </summary>
     [AttributeUsage(AttributeTargets.All)]
-    public class DescriptionAttribute : Attribute
+    public class DescriptionAttribute : AbstractAttribute, IResourceStringAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DescriptionAttribute"/> class.
@@ -27,9 +27,36 @@ namespace PropertyTools.DataAnnotations
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="DescriptionAttribute"/> class.
+        /// </summary>
+        /// <param name="resourceClass">The resource class.</param>
+        /// <param name="staticPropertyForDescription">The static property name of resource class.</param>
+        public DescriptionAttribute(Type resourceClass, string staticPropertyForDescription)
+        {
+            this.ResourceClasses = new[] { resourceClass };
+            this.Description = staticPropertyForDescription;
+        }
+
+        /// <summary>
         /// Gets the description stored in this attribute.
         /// </summary>
         /// <value>The description.</value>
         public virtual string Description { get; private set; }
-    }
+
+        /// <summary>
+        /// Gets the resource class.
+        /// </summary>
+        /// <value>The resource class type.</value>
+        public Type[] ResourceClasses { get; }
+
+		public string GetStaticProperty()
+        {
+            return Description;
+        }
+
+		/// <summary>
+		/// Determines whether the <see cref="Description"/> property already contains localized string or not.
+		/// </summary>
+		public bool IsLocalizedAlready { get; set; }
+	}
 }

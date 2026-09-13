@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies that the property is a progress value.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class ProgressAttribute : Attribute
+    public class ProgressAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgressAttribute" /> class.

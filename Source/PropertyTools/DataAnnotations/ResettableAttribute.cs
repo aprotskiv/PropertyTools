@@ -20,7 +20,7 @@ namespace PropertyTools.DataAnnotations
     /// [Resettable]                  // Button label is "Reset"
     /// [Resettable("Default")]       // Button label is "Default"</remarks>
     [AttributeUsage(AttributeTargets.Property)]
-    public class ResettableAttribute : Attribute
+    public class ResettableAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref = "ResettableAttribute" /> class.

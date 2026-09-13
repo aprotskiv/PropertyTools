@@ -14,7 +14,7 @@ namespace PropertyTools.DataAnnotations
     /// <summary>
     /// Specifies that a font family selector should be used.
     /// </summary>
-    public class FontFamilySelectorAttribute : Attribute
+    public class FontFamilySelectorAttribute : AbstractAttribute
     {
     }
 }

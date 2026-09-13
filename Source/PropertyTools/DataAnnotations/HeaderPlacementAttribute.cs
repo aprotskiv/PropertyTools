@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the property header placement.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class HeaderPlacementAttribute : Attribute
+    public class HeaderPlacementAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="HeaderPlacementAttribute" /> class.

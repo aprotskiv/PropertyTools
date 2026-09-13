@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies that the property is a directory path.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class DirectoryPathAttribute : Attribute
+    public class DirectoryPathAttribute : AbstractAttribute
     {
     }
 }

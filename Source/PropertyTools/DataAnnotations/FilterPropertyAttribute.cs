@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the name of a property that contains a file path filter.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class FilterPropertyAttribute : Attribute
+    public class FilterPropertyAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FilterPropertyAttribute" /> class.

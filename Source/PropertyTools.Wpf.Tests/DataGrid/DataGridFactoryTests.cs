@@ -105,15 +105,15 @@ namespace PropertyTools.Wpf.Tests
 
             public int CreateDisplayControlCallCount { get; private set; }
 
-            public FrameworkElement CreateDisplayControl(CellDefinition cellDefinition)
+            public FrameworkElement CreateDisplayControl(CellDefinition cellDefinition, CellRef cell)
             {
                 this.CreateDisplayControlCallCount++;
-                return this.inner.CreateDisplayControl(cellDefinition);
+                return this.inner.CreateDisplayControl(cellDefinition, cell);
             }
 
-            public FrameworkElement CreateEditControl(CellDefinition cellDefinition)
-            {
-                return this.inner.CreateEditControl(cellDefinition);
+            public FrameworkElement CreateEditControl(CellDefinition cellDefinition, CellRef cell)
+			{
+                return this.inner.CreateEditControl(cellDefinition, cell);
             }
         }
     }

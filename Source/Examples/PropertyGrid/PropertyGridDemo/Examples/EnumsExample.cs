@@ -23,6 +23,8 @@ namespace ExampleLibrary
     [Flags]
     public enum Fruit6 { All = Apple | Pear | Banana, Apple = 1, Pear = 2, Banana = 4 }
 
+    public enum Fruit7 { [Description("Apple")] Apple, [DisplayName("Pear")] Pear, [System.ComponentModel.DescriptionAttribute("Banana")] Banana }
+
     [PropertyGridExample]
     public class EnumsExample : Example
     {
@@ -40,6 +42,7 @@ namespace ExampleLibrary
         private Fruit4 fruit4C;
         private Fruit5 fruit5C;
         private Fruit6 fruit6C;
+        private Fruit7? fruit7C;
         private Fruit1? nullableFruit1C;
         private Fruit1 fruit1L;
         private Fruit2 fruit2L;
@@ -48,6 +51,7 @@ namespace ExampleLibrary
         private Fruit5 fruit5L;
         private Fruit6 fruit6L;
         private Fruit1? nullableFruit1L;
+        private Fruit7? fruit7L;
 
         [Category("RadioButtonList|")]
         [Description("Normal enum")]
@@ -104,6 +108,9 @@ namespace ExampleLibrary
         [SelectorStyle(SelectorStyle.ComboBox)]
         public Fruit1? NullableFruit1C { get => this.nullableFruit1C; set { this.nullableFruit1C = value; this.RaisePropertyChanged(nameof(NullableFruit1C)); } }
 
+        [Description("With translations (see CustomLocalizableOperator)")]
+        [SelectorStyle(SelectorStyle.ComboBox)]
+        public Fruit7? Fruit7C { get => this.fruit7C; set { this.fruit7C = value; this.RaisePropertyChanged(nameof(Fruit7C)); } }
 
 
         [Category("ListBox|")]
@@ -134,5 +141,9 @@ namespace ExampleLibrary
         [Description("Nullable enum")]
         [SelectorStyle(SelectorStyle.ListBox)]
         public Fruit1? NullableFruit1L { get => this.nullableFruit1L; set { this.nullableFruit1L = value; this.RaisePropertyChanged(nameof(NullableFruit1L)); } }
+       
+        [Description("With translations (see CustomLocalizableOperator)")]
+        [SelectorStyle(SelectorStyle.ListBox)]
+        public Fruit7? Fruit7L { get => this.fruit7L; set { this.fruit7L = value; this.RaisePropertyChanged(nameof(Fruit7L)); } }
     }
 }

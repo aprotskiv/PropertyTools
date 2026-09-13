@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies whether the property this attribute is bound to is read-only or read/write.
     /// </summary>
     [AttributeUsage(AttributeTargets.All)]
-    public class ReadOnlyAttribute : Attribute
+    public class ReadOnlyAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ReadOnlyAttribute" /> class.

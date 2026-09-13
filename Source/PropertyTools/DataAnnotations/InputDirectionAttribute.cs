@@ -14,7 +14,7 @@ namespace PropertyTools.DataAnnotations
     /// <summary>
     /// Specifies the input direction for the decorated property.
     /// </summary>
-    public class InputDirectionAttribute : Attribute
+    public class InputDirectionAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InputDirectionAttribute" /> class.

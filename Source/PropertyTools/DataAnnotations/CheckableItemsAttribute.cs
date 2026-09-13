@@ -14,7 +14,7 @@ namespace PropertyTools.DataAnnotations
     /// <summary>
     /// Specifies the name of the properties that controls the IsChecked and Content of checkable items.
     /// </summary>
-    public class CheckableItemsAttribute : Attribute
+    public class CheckableItemsAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CheckableItemsAttribute" /> class.

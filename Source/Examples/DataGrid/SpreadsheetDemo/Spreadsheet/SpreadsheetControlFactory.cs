@@ -39,8 +39,8 @@ namespace SpreadsheetDemo.Spreadsheet
     public class SpreadsheetControlFactory : DataGridControlFactory
     {
         /// <inheritdoc />
-        protected override FrameworkElement CreateDisplayControlOverride(CellDefinition d)
-        {
+        protected override FrameworkElement CreateDisplayControlOverride(CellDefinition d, CellRef cell)
+		{
             var textBlock = new TextBlockEx
             {
                 Padding = new Thickness(4, 0, 4, 0),
@@ -70,8 +70,8 @@ namespace SpreadsheetDemo.Spreadsheet
         }
 
         /// <inheritdoc />
-        protected override FrameworkElement CreateEditControlOverride(CellDefinition d)
-        {
+        protected override FrameworkElement CreateEditControlOverride(CellDefinition d, CellRef cell)
+		{
             var textBox = new TextBox
             {
                 BorderThickness = new Thickness(0),

@@ -21,7 +21,7 @@ namespace PropertyTools.DataAnnotations
     /// [Optional]                    // requires a <see cref="Nullable" /> property type
     /// [Optional("HasSomething")]    // relates to other property HasSomething</remarks>
     [AttributeUsage(AttributeTargets.Property)]
-    public class OptionalAttribute : Attribute
+    public class OptionalAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref = "OptionalAttribute" /> class.

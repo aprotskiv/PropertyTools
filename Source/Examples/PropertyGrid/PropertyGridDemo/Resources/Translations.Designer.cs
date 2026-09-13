@@ -19,7 +19,7 @@ namespace PropertyGridDemo.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Translations {
@@ -63,36 +63,36 @@ namespace PropertyGridDemo.Resources {
         /// <summary>
         ///   Looks up a localized string similar to (no seleccionado).
         /// </summary>
-        internal static string ExampleLibrary_Fruit7__ {
+        internal static string PropertyGridDemo_Examples_EnumsWithOperatorsExample_Fruit2T__ {
             get {
-                return ResourceManager.GetString("ExampleLibrary.Fruit7.-", resourceCulture);
+                return ResourceManager.GetString("PropertyGridDemo.Examples.EnumsWithOperatorsExample+Fruit2T.-", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Manzana.
         /// </summary>
-        internal static string ExampleLibrary_Fruit7_Apple {
+        internal static string PropertyGridDemo_Examples_EnumsWithOperatorsExample_Fruit2T_Apple {
             get {
-                return ResourceManager.GetString("ExampleLibrary.Fruit7.Apple", resourceCulture);
+                return ResourceManager.GetString("PropertyGridDemo.Examples.EnumsWithOperatorsExample+Fruit2T.Apple", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Plátano.
         /// </summary>
-        internal static string ExampleLibrary_Fruit7_Banana {
+        internal static string PropertyGridDemo_Examples_EnumsWithOperatorsExample_Fruit2T_Banana {
             get {
-                return ResourceManager.GetString("ExampleLibrary.Fruit7.Banana", resourceCulture);
+                return ResourceManager.GetString("PropertyGridDemo.Examples.EnumsWithOperatorsExample+Fruit2T.Banana", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Pera.
         /// </summary>
-        internal static string ExampleLibrary_Fruit7_Pear {
+        internal static string PropertyGridDemo_Examples_EnumsWithOperatorsExample_Fruit2T_Pear {
             get {
-                return ResourceManager.GetString("ExampleLibrary.Fruit7.Pear", resourceCulture);
+                return ResourceManager.GetString("PropertyGridDemo.Examples.EnumsWithOperatorsExample+Fruit2T.Pear", resourceCulture);
             }
         }
     }

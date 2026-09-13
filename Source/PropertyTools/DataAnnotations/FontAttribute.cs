@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the font family, size and weight.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class FontAttribute : Attribute
+    public class FontAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FontAttribute" /> class.

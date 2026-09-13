@@ -16,7 +16,7 @@ namespace PropertyTools.DataAnnotations
     /// </summary>
     /// <remarks>The sort index is used to sort the tabs, categories and properties.</remarks>
     [AttributeUsage(AttributeTargets.Property)]
-    public class SortIndexAttribute : Attribute
+    public class SortIndexAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SortIndexAttribute" /> class.

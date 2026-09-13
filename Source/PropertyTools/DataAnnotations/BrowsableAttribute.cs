@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies whether a property or event should be displayed in a Properties window.
     /// </summary>
     [AttributeUsage(AttributeTargets.All)]
-    public class BrowsableAttribute : Attribute
+    public class BrowsableAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BrowsableAttribute"/> class.

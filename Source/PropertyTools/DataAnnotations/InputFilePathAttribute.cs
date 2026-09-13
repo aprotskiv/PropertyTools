@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies that the decorated property is an input file.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class InputFilePathAttribute : Attribute
+    public class InputFilePathAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InputFilePathAttribute" /> class.

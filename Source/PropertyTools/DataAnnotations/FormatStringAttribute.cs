@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies a format string.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class FormatStringAttribute : Attribute
+    public class FormatStringAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatStringAttribute" /> class.

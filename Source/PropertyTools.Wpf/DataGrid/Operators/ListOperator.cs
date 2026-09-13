@@ -9,7 +9,8 @@
 
 namespace PropertyTools.Wpf
 {
-    using System;
+	using PropertyTools.Wpf.Operators;
+	using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -46,8 +47,8 @@ namespace PropertyTools.Wpf
             }
 
             var itemType = this.GetItemType(list);
-
-            // For simple/scalar types (string, primitives, enums, etc.) skip property-based strategies
+            
+// For simple/scalar types (string, primitives, enums, etc.) skip property-based strategies
             // and go directly to Strategy 3. Strategies 1 and 2 would otherwise expose internal
             // properties as columns (e.g. string.Length appearing as a column header).
             if (!IsSimpleType(itemType))
@@ -68,7 +69,10 @@ namespace PropertyTools.Wpf
                     var cd = new ColumnDefinition
                     {
                         PropertyName = descriptor.Name,
-                        Header = this.GetLocalizedString(descriptor.GetDisplayName(), declaringType: descriptor.ComponentType),
+                        Header = this.GetLocalizedString(descriptor.GetDisplayName(), 
+                        	declaringType: descriptor.ComponentType, 
+                        	instanceType: itemType, 
+                        	LocalizableResourceKind.Name),
                         HorizontalAlignment = this.DefaultHorizontalAlignment,
                         Width = this.DefaultColumnWidth
                     };
@@ -99,7 +103,10 @@ namespace PropertyTools.Wpf
                     var cd = new ColumnDefinition
                     {
                         PropertyName = descriptor.Name,
-                        Header = this.GetLocalizedString(descriptor.GetDisplayName(), declaringType: descriptor.ComponentType),
+                        Header = this.GetLocalizedString(descriptor.GetDisplayName(), 
+                        	declaringType: descriptor.ComponentType, 
+                        	instanceType: itemType, 
+                        	LocalizableResourceKind.Name),
                         HorizontalAlignment = this.DefaultHorizontalAlignment,
                         Width = this.DefaultColumnWidth
                     };
@@ -115,7 +122,7 @@ namespace PropertyTools.Wpf
             yield return
                 new ColumnDefinition
                 {
-                    Header = this.GetLocalizedString(itemType.Name, itemType),
+                    Header = this.GetLocalizedString(itemType.Name, itemType, instanceType: itemType, LocalizableResourceKind.Name),
                     HorizontalAlignment = this.DefaultHorizontalAlignment,
                     Width = this.DefaultColumnWidth
                 };

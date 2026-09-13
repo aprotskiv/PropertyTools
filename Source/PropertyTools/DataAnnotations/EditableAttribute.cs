@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies whether the property this attribute is bound to is editable.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class EditableAttribute : Attribute
+    public class EditableAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ReadOnlyAttribute" /> class.

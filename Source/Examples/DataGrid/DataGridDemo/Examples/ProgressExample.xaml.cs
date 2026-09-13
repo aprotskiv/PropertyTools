@@ -123,14 +123,14 @@ namespace DataGridDemo
 
         public class MyProgressControlFactory : DataGridControlFactory
         {
-            protected override FrameworkElement CreateDisplayControlOverride(CellDefinition d)
+            protected override FrameworkElement CreateDisplayControlOverride(CellDefinition d, CellRef cell)
             {
                 if (d is MyProgressCellDefinition)
                 {
                     return CreateProgressControl(d);
                 }
 
-                return base.CreateDisplayControlOverride(d);
+                return base.CreateDisplayControlOverride(d, cell);
             }
 
             protected virtual FrameworkElement CreateProgressControl(CellDefinition d)

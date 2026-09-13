@@ -24,7 +24,7 @@ namespace PropertyTools.Wpf
     using PropertyTools.Wpf.Common;
 
     /// <summary>
-    /// Represents a control that shows a list of radio buttons.
+    /// Represents a control that shows a list of radio buttons (for enumeration values).
     /// </summary>
     [TemplatePart(Name = PartPanel, Type = typeof(StackPanel))]
     public class RadioButtonList : RadioButtonSelector

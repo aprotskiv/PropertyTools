@@ -31,6 +31,9 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="TextCopy" Version="6.2.1" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="DataGrid\Cursors\AutoFill.cur" />
     <Resource Include="DataGrid\Cursors\Cross.cur" />
     <Resource Include="DataGrid\Cursors\DownArrow.cur" />

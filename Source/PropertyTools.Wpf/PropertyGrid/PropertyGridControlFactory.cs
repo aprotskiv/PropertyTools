@@ -9,6 +9,7 @@
 
 namespace PropertyTools.Wpf
 {
+
     using PropertyTools.Wpf.Common;
     using PropertyTools.Wpf.Controls;
     using PropertyTools.Wpf.Extensions;
@@ -89,6 +90,8 @@ namespace PropertyTools.Wpf
         /// Gets or sets a value indicating whether to use the DatePicker control for DateTime values.
         /// </summary>
         public bool UseDatePicker { get; set; }
+
+        public IDataGridControlFactory DataGridControlFactory { get; set; }
 
         /// <summary>
         /// Creates the control for a property.
@@ -172,7 +175,12 @@ namespace PropertyTools.Wpf
                 return this.CreateDateTimeControl(property);
             }
 
-            if (property.IsFilePath)
+			if (property.IsCopyToClipboardText)
+			{
+				return this.CreateCopyToClipboardTextControl(property);
+			}
+
+			if (property.IsFilePath)
             {
                 return this.CreateFilePathControl(property);
             }
@@ -513,7 +521,7 @@ namespace PropertyTools.Wpf
             }
 
             if (style == DataAnnotations.SelectorStyle.RadioButtons
-                && property.GetItemsSourceCount(instance) > options.RadioButtonsLimit)
+                && property.GetItemsSourceCount(instance) > (property.RadioButtonsLimit ?? options.RadioButtonsLimit))
             {
                 style = (mode == DataAnnotations.SelectorMode.Single)
                     ? DataAnnotations.SelectorStyle.ComboBox
@@ -590,7 +598,7 @@ namespace PropertyTools.Wpf
             var binding = property.CreateBinding();
             if (c.SelectionMode != SelectionMode.Single)
             {
-                binding.Converter = property.EnumMetadata.Flags
+                binding.Converter = property.EnumMetadata?.Flags == true
                     ? (IValueConverter)new EnumValueToMultiStateSelectorItemsConverter(property.EnumMetadata)
                     : new MultipleSelectListBox.ListToBindableSelectedItemsConverter(selectorDefinition);
 
@@ -676,14 +684,33 @@ namespace PropertyTools.Wpf
             return b;
         }
 
-        /// <summary>
-        /// Creates the date time control.
-        /// </summary>
-        /// <param name="property">The property.</param>
-        /// <returns>
-        /// The control.
-        /// </returns>
-        protected virtual FrameworkElement CreateDateTimeControl(PropertyItem property)
+		/// <summary>
+		/// Creates the Copy To Clipboard Text control.
+		/// </summary>
+		/// <param name="property">The property.</param>
+		/// <returns>
+		/// The control.
+		/// </returns>
+		protected virtual FrameworkElement CreateCopyToClipboardTextControl(PropertyItem property)
+		{
+			var c = new CopyToClipboardText()
+			{
+				IsReadOnly = property.IsReadOnly,
+				TextWrapping = property.TextWrapping,
+			};
+			var trigger = property.AutoUpdateText ? UpdateSourceTrigger.PropertyChanged : UpdateSourceTrigger.Default;
+			c.SetBinding(CopyToClipboardText.TextProperty, property.CreateBinding(trigger));
+			return c;
+		}
+
+		/// <summary>
+		/// Creates the date time control.
+		/// </summary>
+		/// <param name="property">The property.</param>
+		/// <returns>
+		/// The control.
+		/// </returns>
+		protected virtual FrameworkElement CreateDateTimeControl(PropertyItem property)
         {
             var c = new DatePicker();
             c.SetBinding(DatePicker.SelectedDateProperty, property.CreateBinding());
@@ -818,10 +845,11 @@ namespace PropertyTools.Wpf
             }
             else
             {
-                result = new DefaultEnumValuesFilterOperator().GetEnumValuesWithNullEntry(property,
-                    instance: instance,
-                    nullAtStart: nullAtStart
-                ).ToList();
+                result = new DefaultEnumValuesFilterOperator()
+	                .GetEnumValuesWithNullEntry(property,
+	                    instance: instance,
+	                    nullAtStart: nullAtStart
+	                ).ToList();
             }
 
             return result;
@@ -895,7 +923,7 @@ namespace PropertyTools.Wpf
             var style = property.SelectorStyle;
             if (style == DataAnnotations.SelectorStyle.Auto)
             {
-                style = values.Length > options.RadioButtonsLimit
+                style = values.Length > (property.RadioButtonsLimit ?? options.RadioButtonsLimit)
                             ? DataAnnotations.SelectorStyle.ComboBox
                             : DataAnnotations.SelectorStyle.RadioButtons;
             }
@@ -1070,6 +1098,11 @@ namespace PropertyTools.Wpf
             return c;
         }
 
+        protected virtual DataGrid CreateDataGrid()
+        {
+            return new DataGrid();
+        }
+
         /// <summary>
         /// Creates the grid control.
         /// </summary>
@@ -1079,15 +1112,30 @@ namespace PropertyTools.Wpf
         /// </returns>
         protected virtual FrameworkElement CreateGridControl(PropertyItem property)
         {
-            var c = new DataGrid
+            var c = CreateDataGrid();
+
+            c.CanDelete = property.ListCanRemove;
+            c.CanInsert = property.ListCanAdd;
+            c.InputDirection = property.InputDirection;
+            c.IsEasyInsertByMouseEnabled = property.IsEasyInsertByMouseEnabled;
+            c.IsEasyInsertByKeyboardEnabled = property.IsEasyInsertByKeyboardEnabled;
+            c.AutoGenerateColumns = property.Columns.Count == 0;
+
+            if (this.DataGridControlFactory != null)
             {
-                CanDelete = property.ListCanRemove,
-                CanInsert = property.ListCanAdd,
-                InputDirection = property.InputDirection,
-                IsEasyInsertByMouseEnabled = property.IsEasyInsertByMouseEnabled,
-                IsEasyInsertByKeyboardEnabled = property.IsEasyInsertByKeyboardEnabled,
-                AutoGenerateColumns = property.Columns.Count == 0
-            };
+                c.ControlFactory = this.DataGridControlFactory;
+            }
+
+
+            if (property.DataGridDefaultRowHeightInPixels.HasValue)
+            {
+                c.DefaultRowHeight = new GridLength(property.DataGridDefaultRowHeightInPixels.Value);
+            }
+            else if (property.DataGridDefaultRowHeightAuto == true)
+            {
+                c.DefaultRowHeight = new GridLength();
+            }
+
 
             foreach (var cd in property.Columns)
             {
@@ -1253,6 +1301,7 @@ namespace PropertyTools.Wpf
         /// </returns>
         protected virtual FrameworkElement CreateSpinControl(PropertyItem property)
         {
+            var trigger = property.AutoUpdateText ? UpdateSourceTrigger.PropertyChanged : UpdateSourceTrigger.Default;
             var tb = new TextBoxEx
             {
                 IsReadOnly = property.IsReadOnly,
@@ -1271,7 +1320,7 @@ namespace PropertyTools.Wpf
             };
 
             // Note: Do not apply the converter to the SpinControl
-            c.SetBinding(SpinControl.ValueProperty, property.CreateBinding(UpdateSourceTrigger.Default, false));
+            c.SetBinding(SpinControl.ValueProperty, property.CreateBinding(trigger, false));
             return c;
         }
 

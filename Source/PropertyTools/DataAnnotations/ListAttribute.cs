@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies properties for lists.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class ListAttribute : Attribute
+    public class ListAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ListAttribute" /> class.

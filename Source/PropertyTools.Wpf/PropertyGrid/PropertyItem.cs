@@ -193,6 +193,8 @@ namespace PropertyTools.Wpf
         /// Available only when <see cref="PropertyType"/> is Enum or Nullable enum
         /// </remarks>
         public EnumPropertyMetadata EnumMetadata { get; private set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this property is read only.
         /// </summary>
         /// <value><c>true</c> if this property is read only; otherwise, <c>false</c>.</value>
@@ -291,10 +293,15 @@ namespace PropertyTools.Wpf
         /// </summary>
         public bool IsContent { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the property is a directory path.
-        /// </summary>
-        public bool IsDirectoryPath { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether the property is a Copy to Clipboard text.
+		/// </summary>
+		public bool IsCopyToClipboardText { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the property is a directory path.
+		/// </summary>
+		public bool IsDirectoryPath { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the property is editable.
@@ -592,12 +599,18 @@ namespace PropertyTools.Wpf
 		/// Gets or sets the text wrapping.
 		/// </summary>
 		/// <value>The text wrapping.</value>
-		public TextWrapping TextWrapping { get; set; }
+		public System.Windows.TextWrapping TextWrapping { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the property should use radio buttons.
+        /// Gets or sets a value indicating whether the property should use radio buttons (checkboxes), comboBoxes or listboxes.
         /// </summary>
         public SelectorStyle SelectorStyle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the limiting number of values if the property can be shown with radio buttons (<see cref="SelectorStyle"/>)
+        /// </summary>
+        /// <value>The limit. If the number of values exceeds the limit, a multiselect listbox will be used.</value>
+        public int? RadioButtonsLimit { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the property should use single or multiple selection mode.
@@ -619,6 +632,20 @@ namespace PropertyTools.Wpf
         /// Gets or sets the name of the IsChecked property for a property of checkable items.
         /// </summary>
         public string CheckableItemsIsCheckedPropertyName { get; set; }
+
+
+        /// <summary>
+        /// Default row height in pixels
+        /// </summary>
+        public double? DataGridDefaultRowHeightInPixels { get; set; }
+
+        /// <summary>
+        /// Determines whether default row height is set automatically or not.
+        /// </summary>
+        /// <remarks>
+        /// Ignored when <see cref="DataGridDefaultRowHeightInPixels"/> is set
+        /// </remarks>
+        public bool? DataGridDefaultRowHeightAuto { get; set; }
 
         /// <summary>
         /// Creates a binding.

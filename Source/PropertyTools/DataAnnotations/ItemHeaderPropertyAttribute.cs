@@ -15,7 +15,7 @@ namespace PropertyTools.DataAnnotations
     /// Specifies the item header property.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class ItemHeaderPropertyAttribute : Attribute
+    public class ItemHeaderPropertyAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemHeaderPropertyAttribute" /> class.

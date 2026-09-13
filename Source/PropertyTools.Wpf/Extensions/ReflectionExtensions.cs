@@ -239,12 +239,26 @@ namespace PropertyTools.Wpf
             return pd.Description;
         }
 
-        /// <summary>
-        /// Gets the display name for the specified property.
-        /// </summary>
-        /// <param name="pd">The property descriptor.</param>
-        /// <returns>The display name.</returns>
-        public static string GetDisplayName(this System.ComponentModel.PropertyDescriptor pd)
+		/// <summary>
+		/// Determines whether the description property already contains localized string or not.
+		/// </summary>
+		public static bool IsDescriptionLocalizedAlready(this System.ComponentModel.PropertyDescriptor pd)
+		{
+			var a = pd.GetFirstAttributeOrDefault<DataAnnotations.DescriptionAttribute>();
+			if (a != null)
+			{
+				return a.IsLocalizedAlready == true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Gets the display name for the specified property.
+		/// </summary>
+		/// <param name="pd">The property descriptor.</param>
+		/// <returns>The display name.</returns>
+		public static string GetDisplayName(this System.ComponentModel.PropertyDescriptor pd)
         {
             var a = pd.GetFirstAttributeOrDefault<DataAnnotations.DisplayNameAttribute>();
             if (a != null)
@@ -286,6 +300,44 @@ namespace PropertyTools.Wpf
                         value = fieldInfo.GetValue(target);
                         return true;
                     }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get value matching static field or property for target type.
+        /// </summary>
+        /// <param name="target">The target type</param>
+        /// <param name="memberName">Static field or property name</param>
+        /// <param name="value">The output value of matching static field or property</param>
+        /// <returns>TRUE if matching static field or property has been found. Otherwise returns FALSE</returns>
+        public static bool TryGetStaticFieldOrPropertyValue<T>(Type targetType, string memberName, out T value)
+            where T: class
+        {
+            value = null;
+
+            if (targetType != null && !string.IsNullOrEmpty(memberName))
+            {
+                var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
+                if (targetType.GetProperty(memberName, flags) is PropertyInfo propertyInfo)
+                {
+                    value = (T)propertyInfo.GetValue(null, null);
+                    return true;
+                }
+                else if (targetType.GetField(memberName, flags) is FieldInfo fieldInfo)
+                {
+                    value = (T)fieldInfo.GetValue(null);
+                    return true;
+                }
+                else if (targetType.GetMethod(memberName, flags) is MethodInfo methodInfo 
+                    && methodInfo.ReturnType == typeof(T)) 
+                {
+                    // property was obfuscated as method
+                    value = (T)methodInfo.Invoke(null, null);
+                    return true;
                 }
             }
 
@@ -377,8 +429,7 @@ namespace PropertyTools.Wpf
                 return System.Convert.ToInt64(flag) == 0L;
             }   
         }
-
-
+        
         /// <summary>
         /// Sets flag in enum value
         /// </summary>
@@ -404,6 +455,17 @@ namespace PropertyTools.Wpf
                 value = (T)Enum.ToObject(enumType, numericValue);
             }
         }
+        
+        public static void CopyProperties(object src, object target)
+        {
+            var t = src.GetType();
 
+            foreach (var pi in
+                t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(
+                    pi => pi.CanWrite && pi.GetIndexParameters().Length == 0))
+            {
+                pi.SetValue(target, pi.GetValue(src, null), null);
+            }
+        }
     }
 }

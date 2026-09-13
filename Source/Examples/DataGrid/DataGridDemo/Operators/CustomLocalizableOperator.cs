@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CustomLocalizableOperator.cs" company="PropertyTools">
 //   Copyright (c) 2014 PropertyTools contributors
 // </copyright>
@@ -10,11 +10,15 @@ namespace DataGridDemo.Operators
     using PropertyTools.Wpf;
     using PropertyTools.Wpf.Operators;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
 
     public class CustomLocalizableOperator : DefaultLocalizableOperator
     {
-        public override string GetLocalizedString(string key, Type declaringType)
-        {
+        public override string GetLocalizedDescription(string key, Type declaringType, Type instanceType, Type[] resourceClasses)
+		{
             var value = key;
 
             String resourceKey = null;

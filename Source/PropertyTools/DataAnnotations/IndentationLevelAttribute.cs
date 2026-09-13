@@ -14,7 +14,7 @@ namespace PropertyTools.DataAnnotations
     /// <summary>
     /// Specifies the indentation level for the decorated property.
     /// </summary>
-    public class IndentationLevelAttribute : Attribute
+    public class IndentationLevelAttribute : AbstractAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IndentationLevelAttribute" /> class.

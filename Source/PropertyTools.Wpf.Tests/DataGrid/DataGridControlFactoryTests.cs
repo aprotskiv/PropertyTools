@@ -35,9 +35,10 @@ namespace PropertyTools.Wpf.Tests
                 BackgroundBindingPath = null
             };
             var control = new TextBlock { Text = "Test" };
+            var cellRef = new CellRef();
 
             // Act
-            var result = this.factory.CreateDisplayControl(cellDefinition);
+            var result = this.factory.CreateDisplayControl(cellDefinition, cellRef);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -55,9 +56,10 @@ namespace PropertyTools.Wpf.Tests
                 BackgroundBindingSource = brush,
                 BindingPath = "TestProperty"
             };
+            var cellRef = new CellRef();
 
             // Act
-            var result = this.factory.CreateDisplayControl(cellDefinition);
+            var result = this.factory.CreateDisplayControl(cellDefinition, cellRef);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -78,9 +80,10 @@ namespace PropertyTools.Wpf.Tests
                 BackgroundBindingSource = new { BackgroundColor = Colors.LightBlue },
                 BindingPath = "TestProperty"
             };
+            var cellRef = new CellRef();
 
             // Act
-            var result = this.factory.CreateDisplayControl(cellDefinition);
+            var result = this.factory.CreateDisplayControl(cellDefinition, cellRef);
 
             // Assert
             Assert.That(result, Is.Not.Null);

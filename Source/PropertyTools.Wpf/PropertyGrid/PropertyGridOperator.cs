@@ -9,15 +9,15 @@
 
 namespace PropertyTools.Wpf
 {
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
-	using System.ComponentModel;
-	using System.ComponentModel.DataAnnotations;
-	using System.Globalization;
-	using System.Linq;
-	using System.Windows;
-	using System.Windows.Data;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+    using System.Globalization;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Data;
 
     using PropertyTools.DataAnnotations;
     using PropertyTools.Wpf.Common;
@@ -222,70 +222,70 @@ namespace PropertyTools.Wpf
         {
             var instanceType = instance.GetType();
 
-			// check if the MetadataTypeAttribute is set
-			var metadataTypeAttribute = instanceType.GetCustomAttributes(typeof(MetadataTypeAttribute), true)
-									 .OfType<MetadataTypeAttribute>().FirstOrDefault();
-			PropertyDescriptorCollection properties;
-			if (metadataTypeAttribute != null)
-			{
-				// use the metadata type for reflection
-				instanceType = metadataTypeAttribute.MetadataClassType;
-				properties = TypeDescriptor.GetProperties(instanceType);
-			}
-			else
-			{
-				properties = TypeDescriptor.GetProperties(instance);
+            // check if the MetadataTypeAttribute is set
+            var metadataTypeAttribute = instanceType.GetCustomAttributes(typeof(MetadataTypeAttribute), true)
+                                     .OfType<MetadataTypeAttribute>().FirstOrDefault();
+            PropertyDescriptorCollection properties;
+            if (metadataTypeAttribute != null)
+            {
+                // use the metadata type for reflection
+                instanceType = metadataTypeAttribute.MetadataClassType;
+                properties = TypeDescriptor.GetProperties(instanceType);
+            }
+            else
+            {
+                properties = TypeDescriptor.GetProperties(instance);
 
-				// When the instance implements ICustomTypeDescriptor (e.g. DbConnectionStringBuilder),
-				// GetProperties() may return descriptors whose GetValue/SetValue read raw dictionary
-				// entries rather than delegating to the typed CLR property accessors.  WPF binding also
-				// routes through ICustomTypeDescriptor, so it receives null or a plain string instead of
-				// the expected bool / enum / byte[] value.  Replacing each such descriptor with the
-				// corresponding reflection-backed descriptor restores correct typed access (issue #288).
-				if (instance is ICustomTypeDescriptor)
-				{
-					properties = ReplaceWithReflectionDescriptors(properties, instanceType);
-				}
-			}
+                // When the instance implements ICustomTypeDescriptor (e.g. DbConnectionStringBuilder),
+                // GetProperties() may return descriptors whose GetValue/SetValue read raw dictionary
+                // entries rather than delegating to the typed CLR property accessors.  WPF binding also
+                // routes through ICustomTypeDescriptor, so it receives null or a plain string instead of
+                // the expected bool / enum / byte[] value.  Replacing each such descriptor with the
+                // corresponding reflection-backed descriptor restores correct typed access (issue #288).
+                if (instance is ICustomTypeDescriptor)
+                {
+                    properties = ReplaceWithReflectionDescriptors(properties, instanceType);
+                }
+            }
 
             return properties;
         }
 
-		/// <summary>
-		/// Replaces descriptors obtained from <see cref="ICustomTypeDescriptor" /> with the
-		/// corresponding reflection-based descriptors from <paramref name="instanceType" />.
-		/// Descriptors that have no matching CLR property (e.g. dynamic keys) are kept as-is.
-		/// </summary>
-		/// <param name="properties">The descriptor collection from ICustomTypeDescriptor.</param>
-		/// <param name="instanceType">The concrete type of the source object.</param>
-		/// <returns>A new collection where each descriptor uses CLR reflection for value access.</returns>
-		private static PropertyDescriptorCollection ReplaceWithReflectionDescriptors(
-			PropertyDescriptorCollection properties, Type instanceType)
-		{
-			var typeDescriptors = TypeDescriptor.GetProperties(instanceType);
-			var result = new List<PropertyDescriptor>(properties.Count);
+        /// <summary>
+        /// Replaces descriptors obtained from <see cref="ICustomTypeDescriptor" /> with the
+        /// corresponding reflection-based descriptors from <paramref name="instanceType" />.
+        /// Descriptors that have no matching CLR property (e.g. dynamic keys) are kept as-is.
+        /// </summary>
+        /// <param name="properties">The descriptor collection from ICustomTypeDescriptor.</param>
+        /// <param name="instanceType">The concrete type of the source object.</param>
+        /// <returns>A new collection where each descriptor uses CLR reflection for value access.</returns>
+        private static PropertyDescriptorCollection ReplaceWithReflectionDescriptors(
+            PropertyDescriptorCollection properties, Type instanceType)
+        {
+            var typeDescriptors = TypeDescriptor.GetProperties(instanceType);
+            var result = new List<PropertyDescriptor>(properties.Count);
 
-			foreach (PropertyDescriptor pd in properties)
-			{
-				// Prefer the reflection-backed descriptor so that GetValue/SetValue invoke the
-				// actual CLR property getter/setter instead of the ICustomTypeDescriptor override.
-				var reflectPd = typeDescriptors[pd.Name];
-				result.Add(reflectPd ?? pd);
-			}
+            foreach (PropertyDescriptor pd in properties)
+            {
+                // Prefer the reflection-backed descriptor so that GetValue/SetValue invoke the
+                // actual CLR property getter/setter instead of the ICustomTypeDescriptor override.
+                var reflectPd = typeDescriptors[pd.Name];
+                result.Add(reflectPd ?? pd);
+            }
 
-			return new PropertyDescriptorCollection(result.ToArray());
-		}
+            return new PropertyDescriptorCollection(result.ToArray());
+        }
 
-		/// <summary>
-		/// Gets the visible properties from the specified property descriptor collection.
-		/// </summary>
-		/// <param name="properties">The property descriptor collection.</param>
-		/// <param name="instance">The object instance.</param>
-		/// <param name="options">The options.</param>
-		/// <returns>A sequence of property descriptors.</returns>
-		protected IEnumerable<PropertyDescriptor> GetVisibleProperties(PropertyDescriptorCollection properties, object instance, IPropertyGridOptions options)
-		{
-			var instanceType = instance.GetType();
+        /// <summary>
+        /// Gets the visible properties from the specified property descriptor collection.
+        /// </summary>
+        /// <param name="properties">The property descriptor collection.</param>
+        /// <param name="instance">The object instance.</param>
+        /// <param name="options">The options.</param>
+        /// <returns>A sequence of property descriptors.</returns>
+        protected IEnumerable<PropertyDescriptor> GetVisibleProperties(PropertyDescriptorCollection properties, object instance, IPropertyGridOptions options)
+        {
+            var instanceType = instance.GetType();
 
             foreach (PropertyDescriptor pd in this.GetBrowsableProperties(properties))
             {
@@ -416,32 +416,73 @@ namespace PropertyTools.Wpf
         /// </summary>
         /// <param name="pd">The property descriptor.</param>
         /// <param name="declaringType">The declaring type.</param>
+        /// <param name="instance">The instance.</param>
         /// <returns>
         /// A description string.
         /// </returns>
-        protected virtual string GetDescription(PropertyDescriptor pd, Type declaringType)
+        protected virtual string GetDescription(PropertyDescriptor pd, Type declaringType, object instance)
         {
             return pd.GetDescription();
         }
 
-        /// <summary>
-        /// Gets the display name for the specified property.
-        /// </summary>
-        /// <param name="pd">The property descriptor.</param>
-        /// <param name="declaringType">The declaring type.</param>
-        /// <returns>
-        /// A display name string.
-        /// </returns>
-        protected virtual string GetDisplayName(PropertyDescriptor pd, Type declaringType)
+		/// <summary>
+		/// Determines whether the description property already contains localized string or not.
+		/// </summary>
+		/// <param name="pd">The property descriptor.</param>
+		/// <param name="declaringType">The declaring type.</param>
+		/// <param name="instance">The instance.</param>
+		protected virtual bool IsDescriptionLocalizedAlready(PropertyDescriptor pd, Type declaringType, object instance)
+		{
+			return pd.IsDescriptionLocalizedAlready();
+		}
+
+		/// <summary>
+		/// Gets the display name for the specified property.
+		/// </summary>
+		/// <param name="pd">The property descriptor.</param>
+		/// <param name="declaringType">The declaring type.</param>
+		/// <param name="instance">The instance.</param>
+		/// <returns>
+		/// A display name string.
+		/// </returns>
+		protected virtual string GetDisplayName(PropertyDescriptor pd, Type declaringType, object instance)
         {
             var displayName = pd.GetDisplayName();
 
-            if (this.ModifyCamelCaseDisplayNames && displayName == pd.Name)
+            if (!HasLocalizableOperator() && ModifyCamelCaseDisplayNames && displayName == pd.Name)
             {
                 displayName = StringUtilities.FromCamelCase(displayName);
             }
 
             return displayName;
+        }
+
+        /// <summary>
+        /// Gets the TabSortIndex for the specified property.
+        /// </summary>
+        /// <param name="pd">The property descriptor.</param>
+        /// <param name="declaringType">The declaring type.</param>
+        /// <param name="instance">The instance.</param>
+        /// <returns>
+        /// A TabSortIndex.
+        /// </returns>
+        protected virtual uint? GetTabSortIndex(PropertyDescriptor pd, Type declaringType, object instance)
+        {
+            return pd.GetAttributeValue<DataAnnotations.CategoryAttribute, uint?>((x) => x.TabSortIndex);
+        }
+
+        /// <summary>
+        /// Gets the GroupSortIndex for the specified property.
+        /// </summary>
+        /// <param name="pd">The property descriptor.</param>
+        /// <param name="declaringType">The declaring type.</param>
+        /// <param name="instance">The instance.</param>
+        /// <returns>
+        /// A GroupSortIndex.
+        /// </returns>
+        protected virtual uint? GetGroupSortIndex(PropertyDescriptor pd, Type declaringType, object instance)
+        {
+            return pd.GetAttributeValue<DataAnnotations.CategoryAttribute, uint?>((x) => x.GroupSortIndex);
         }
 
         /// <summary>
@@ -451,7 +492,8 @@ namespace PropertyTools.Wpf
         /// <param name="instance">The instance.</param>
         protected virtual void SetProperties(PropertyItem pi, object instance)
         {
-            var tabName = this.DefaultTabName ?? instance.GetType().Name;
+            var instanceType = instance.GetType();
+            var tabName = this.DefaultTabName ?? instanceType.Name;
             var categoryName = this.DefaultCategoryName;
 
             // find the declaring type
@@ -505,20 +547,40 @@ namespace PropertyTools.Wpf
                 }
             }
 
-            var displayName = this.GetDisplayName(pi.Descriptor, declaringType);
-            var description = this.GetDescription(pi.Descriptor, declaringType);
+			var da = pi.Descriptor.GetFirstAttributeOrDefault<DataAnnotations.DescriptionAttribute>();
+
+			var displayName = this.GetDisplayName(pi.Descriptor, declaringType, instance);
+            var description = this.GetDescription(pi.Descriptor, declaringType, instance);
 
             pi.CategoryIdentifier = categoryName;
 
             // set tab/group sort index
-            pi.TabSortIndex = ca2?.TabSortIndex;
-            pi.GroupSortIndex = ca2?.GroupSortIndex;
+            pi.TabSortIndex = this.GetTabSortIndex(pi.Descriptor, declaringType, instance);
+            pi.GroupSortIndex = this.GetGroupSortIndex(pi.Descriptor, declaringType, instance);
 
             // Localize the strings
-            pi.DisplayName = this.GetLocalizedString(displayName, declaringType);
-            pi.Description = this.GetLocalizedDescription(description, declaringType);
-            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType);
-            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType);
+            pi.DisplayName = this.GetLocalizedString(displayName, declaringType, instance.GetType(), LocalizableResourceKind.Name,
+                pi.Descriptor.GetFirstAttributeOrDefault<DataAnnotations.DisplayNameAttribute>()?.ResourceClasses
+            );
+
+			if (IsDescriptionLocalizedAlready(pi.Descriptor, declaringType, instance))
+			{
+				pi.Description = description;
+			}
+			else
+			{ 
+				pi.Description = this.GetLocalizedDescription(description, declaringType, instance.GetType(),
+					da?.ResourceClasses
+				);
+			}
+            
+            pi.Category = this.GetLocalizedString(categoryName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Category,
+                ca2?.ResourceClasses
+            );
+            
+            pi.Tab = this.GetLocalizedString(tabName, this.CurrentCategoryDeclaringType, instance.GetType(), LocalizableResourceKind.Tab,
+                ca2?.ResourceClasses
+            );
 
             pi.IsReadOnly = pi.Descriptor.IsReadOnly();
 
@@ -539,6 +601,12 @@ namespace PropertyTools.Wpf
             }
 
             pi.IsOptional = pi.IsOptional || pi.OptionalDescriptor != null;
+
+            if (pi.Descriptor.PropertyType == typeof(TimeSpan) && pi.Converter == null)
+            {
+                pi.Converter = new TimeSpanToStringConverter();
+                pi.ConverterParameter = pi.FormatString;
+            }
 
             if (pi.Descriptor.PropertyType == typeof(TimeSpan) && pi.Converter == null)
             {
@@ -570,6 +638,7 @@ namespace PropertyTools.Wpf
             if (ssa != null)
             {
                 pi.SelectorStyle = ssa.SelectorStyle;
+                pi.RadioButtonsLimit = ssa.RadioButtonsLimit;
             }
 
             var sma = attribute as SelectorModeAttribute;
@@ -630,7 +699,12 @@ namespace PropertyTools.Wpf
                 pi.FilePathDefaultExtension = ofpa.DefaultExtension;
             }
 
-            if (attribute is DirectoryPathAttribute)
+			if (attribute is CopyToClipboardTextAttribute)
+			{
+				pi.IsCopyToClipboardText = true;
+			}
+
+			if (attribute is DirectoryPathAttribute)
             {
                 pi.IsDirectoryPath = true;
             }
@@ -653,9 +727,9 @@ namespace PropertyTools.Wpf
             var cpa = attribute as ColumnsPropertyAttribute;
             if (cpa != null)
             {
-                var descriptor = pi.GetDescriptor(cpa.PropertyName);
-                var columns = descriptor?.GetValue(instance) as IEnumerable<Column>;
-
+                // allow static and non-static properties
+                var instanceType = instance?.GetType();
+                var columns = instanceType?.GetProperty(cpa.PropertyName)?.GetValue(instance) as IEnumerable<Column>;
                 if (columns != null)
                 {
                     var glc = new GridLengthConverter();
@@ -681,7 +755,9 @@ namespace PropertyTools.Wpf
 
                         if (elementType != null)
                         {
-                            object[] converterAttributes = elementType.GetProperty(column.PropertyName)?.GetCustomAttributes(typeof(ConverterAttribute), true);
+                            var elementProperty = elementType.GetProperty(column.PropertyName);
+
+                            object[] converterAttributes = elementProperty?.GetCustomAttributes(typeof(ConverterAttribute), true);
                             if (converterAttributes != null && converterAttributes.Length > 0)
                             {
                                 Type converterType = ((ConverterAttribute)converterAttributes[0]).ConverterType;
@@ -691,24 +767,35 @@ namespace PropertyTools.Wpf
                                 }
                             }
 
-                            object[] descriptionAttributes = elementType.GetProperty(column.PropertyName)?.GetCustomAttributes(typeof(PropertyTools.DataAnnotations.DescriptionAttribute), true);
-                            if (descriptionAttributes != null && descriptionAttributes.Length > 0)
+                            string description =
+                                elementProperty?.GetCustomAttributes(typeof(PropertyTools.DataAnnotations.DescriptionAttribute), true)
+                                    .Cast<PropertyTools.DataAnnotations.DescriptionAttribute>().FirstOrDefault()?.Description
+                                ??
+                                elementProperty?.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), true)
+                                    .Cast<System.ComponentModel.DescriptionAttribute>().FirstOrDefault()?.Description
+                                ;
+
+                            if (!string.IsNullOrWhiteSpace(description))
                             {
-                                toolTip = ((DataAnnotations.DescriptionAttribute)descriptionAttributes[0]).Description;
+                                toolTip = this.GetLocalizedString(description, declaringType: column.GetType(), instanceType: instanceType, LocalizableResourceKind.Description);
                             }
                         }
 
                         var cd = new ColumnDefinition
                         {
                             PropertyName = column.PropertyName,
-                            Header = this.GetLocalizedString(column.Header, declaringType: elementType),
+                            Header = this.GetLocalizedString(column.Header, declaringType: elementType, instance.GetType(), LocalizableResourceKind.Name),
                             FormatString = column.FormatString,
                             Width = (GridLength)(glc.ConvertFromInvariantString(column.Width) ?? GridLength.Auto),
                             IsReadOnly = column.IsReadOnly,
                             HorizontalAlignment = StringUtilities.ToHorizontalAlignment(column.Alignment.ToString(CultureInfo.InvariantCulture)),
                             Converter = converter,
                             Tooltip = toolTip,
-                        };
+                            CanSort = column.IsSortable,
+                            SelectorStyle = column.SelectorStyle,
+                            SelectorMode = column.SelectorMode,
+                            AutoUpdateText = column.AutoUpdateText
+                        }.ConfigureSelectorDefinition(column);
 
                         if (column.ItemsSourcePropertyName != null)
                         {
@@ -813,7 +900,13 @@ namespace PropertyTools.Wpf
                 pi.AutoUpdateText = true;
             }
 
-            var ispa = attribute as ItemsSourcePropertyAttribute;
+			if (attribute is TextWrappingAttribute twa 
+				&& Enum.TryParse<System.Windows.TextWrapping>(twa.TextWrapping.ToString(), out var textWrapping))
+			{
+				pi.TextWrapping = textWrapping;
+			}
+
+			var ispa = attribute as ItemsSourcePropertyAttribute;
             if (ispa != null)
             {
                 pi.ItemsSourceDescriptor = pi.GetDescriptor(ispa.PropertyName);
@@ -925,6 +1018,13 @@ namespace PropertyTools.Wpf
                 pi.MinimumHeight = hea.MinimumHeight;
                 pi.MaximumHeight = hea.MaximumHeight;
                 pi.AcceptsReturn = true;
+            }
+
+            var dgdrha = attribute as DataGridDefaultRowHeightAttribute;
+            if (dgdrha != null)
+            {
+                pi.DataGridDefaultRowHeightInPixels = dgdrha.Pixels;
+                pi.DataGridDefaultRowHeightAuto = dgdrha.IsAuto();
             }
 
             var fta = attribute as FillTabAttribute;
