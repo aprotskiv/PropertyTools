@@ -25,11 +25,11 @@ namespace PropertyTools.Wpf
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyDialog" /> class.
         /// </summary>
-        public PropertyDialog()
+        public PropertyDialog(double workAreaScale = 0.9)
         {
             this.InitializeComponent();
-            this.MaxWidth = SystemParameters.PrimaryScreenWidth * 0.9;
-            this.MaxHeight = SystemParameters.PrimaryScreenHeight * 0.9;
+            this.MaxWidth = SystemParameters.PrimaryScreenWidth * workAreaScale;
+            this.MaxHeight = SystemParameters.PrimaryScreenHeight * workAreaScale;
             this.ApplyButton.Visibility = Visibility.Collapsed;
             this.CloseButton.Visibility = Visibility.Collapsed;
             this.HelpButton.Visibility = Visibility.Collapsed;
