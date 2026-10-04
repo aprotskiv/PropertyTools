@@ -1141,6 +1141,14 @@ namespace PropertyTools.Wpf
             }
         }
 
+		private void ResetTabItemTemplateBeforeClear()
+		{
+			foreach (var item in this.tabControl.Items.Cast<System.Windows.Controls.TabItem>())
+			{
+				item.Template = null;
+			}
+		}
+
         /// <summary>
         /// Creates the controls.
         /// </summary>
@@ -1153,7 +1161,8 @@ namespace PropertyTools.Wpf
                 return;
             }
 
-            this.tabControl.Items.Clear();
+			ResetTabItemTemplateBeforeClear();
+			this.tabControl.Items.Clear();
             this.panelControl.Children.Clear();
 
             this.tabControl.DataContext = instance;
@@ -1248,7 +1257,8 @@ namespace PropertyTools.Wpf
                 return;
             }
 
-            this.tabControl.Items.Clear();
+			ResetTabItemTemplateBeforeClear();
+			this.tabControl.Items.Clear();
             this.panelControl.Children.Clear();
             this.tabControl.Visibility = Visibility.Hidden;
             this.scrollViewer.Visibility = Visibility.Visible;
