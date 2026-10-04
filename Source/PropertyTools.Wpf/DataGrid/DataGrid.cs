@@ -4638,7 +4638,7 @@ namespace PropertyTools.Wpf
                 if (this.ColumnHeadersSource != null && this.ItemsInRows)
                 {
                     cell.DataContext = this.ColumnHeadersSource;
-                    cell.SetBinding(TextBlock.TextProperty, new Binding($"[{j}]") { StringFormat = this.ColumnHeadersFormatString });
+                    cell.SetBinding(TextBlock.TextProperty, new SafeIndexBinding(j) { StringFormat = this.ColumnHeadersFormatString });
                 }
 
                 Grid.SetColumn(cell, j);
@@ -4884,7 +4884,7 @@ namespace PropertyTools.Wpf
                     cell.DataContext = this.RowHeadersSource;
                     cell.SetBinding(
                         TextBlock.TextProperty,
-                        new Binding($"[{i}]") { StringFormat = this.RowHeadersFormatString });
+                        new SafeIndexBinding(i) { StringFormat = this.RowHeadersFormatString });
                 }
 
                 Grid.SetRow(cell, i);

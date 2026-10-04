@@ -175,7 +175,10 @@ namespace PropertyTools.Wpf
         /// </summary>
         internal void LevelOrIndentationChanged()
         {
-            this.LevelPadding = new Thickness(this.Level * this.ParentTreeListBox.Indentation, 0, 0, 0);
+			if (this.ParentTreeListBox is TreeListBox parentTreeListBox) // null-check
+			{
+				this.LevelPadding = new Thickness(this.Level * parentTreeListBox.Indentation, 0, 0, 0);
+			}
         }
 
         /// <summary>
