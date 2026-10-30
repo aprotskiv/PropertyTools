@@ -12,11 +12,19 @@ namespace PropertyTools.Wpf
     using System;
     using System.Windows.Input;
 
-    /// <summary>
-    /// Represents a delegate command.
-    /// </summary>
-    public class DelegateCommand : ICommand
-    {
+	public interface IDelegateCommand : ICommand
+	{
+		/// <summary>
+		/// Raises the can execute changed.
+		/// </summary>
+		void RaiseCanExecuteChanged();
+	}
+
+	/// <summary>
+	/// Represents a delegate command.
+	/// </summary>
+	public class DelegateCommand : IDelegateCommand, ICommand
+	{
         /// <summary>
         /// The can execute.
         /// </summary>
